@@ -1,0 +1,56 @@
+# build โหมดเดโม (API จำลองในเบราว์เซอร์) แล้ว deploy ขึ้น GitHub Pages
+# ต้องตั้ง Settings → Pages → Source = "GitHub Actions" ครั้งแรกครั้งเดียว
+name: Deploy demo to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# deploy ทีละครั้ง ไม่ยกเลิกตัวที่กำลังรัน
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      # Angular 19 รองรับ Node ^18.19.1 || ^20.11.1 || >=22.0.0 → ใช้ Node 22 LTS
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: build (demo)
+        run: npx ng build --configuration demo --base-href "/KinRaiDee-Demo/"
+
+      # SPA fallback: Pages ส่ง 404.html เมื่อเปิด/รีเฟรช URL ลึก → ให้เป็นแอปเดียวกัน
+      - name: copy index.html → 404.html
+        run: node scripts/copy-404.mjs dist/frontend/browser
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/frontend/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
