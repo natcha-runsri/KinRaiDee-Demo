@@ -21,7 +21,7 @@
           <p class="full">{{ d.menuName }}</p>
           <p class="meta">{{ d.type }} · ความนิยม {{ d.popularity.label }} · ข้อมูลเมนู {{ when(d.scrapedAt) }}</p>
           <p class="links">
-            <a [href]="'/menu/' + d.id" target="_blank" rel="noopener">เปิดหน้าเมนู</a>
+            <a [href]="'menu/' + d.id" target="_blank" rel="noopener">เปิดหน้าเมนู</a>
             @if (d.sourceUrl) { · <a [href]="d.sourceUrl" target="_blank" rel="noopener noreferrer">ต้นทาง</a> }
           </p>
         </div>

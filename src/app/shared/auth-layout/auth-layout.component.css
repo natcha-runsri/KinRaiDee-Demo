@@ -91,7 +91,10 @@
 .photo{
   width:min(78%, 560px);
   aspect-ratio:1 / 1;
-  background:url('/images/food-types/clean.jpg') center / cover no-repeat;
+  /* รูปพื้นตั้งใน style ของ template เป็น path แบบ relative (ตาม <base href>) — ใช้ได้ทั้งที่ราก / และ path ย่อยของ GitHub Pages */
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
   display:flex;
   align-items:center;
   justify-content:center;
