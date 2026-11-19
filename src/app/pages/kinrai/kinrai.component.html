@@ -8,21 +8,21 @@
   <div class="track-row">
     <div class="dish" *ngFor="let dish of rowTop">
       <img [src]="dish.imageUrl" [alt]="dish.alt" class="dish-img" 
-      [loading]="dish.imageUrl === 'images/banner/b1.png' ? 'eager' : 'lazy'">
+      [loading]="dish.imageUrl === 'images/banner/b1.svg' ? 'eager' : 'lazy'">
     </div>
     <!-- duplicate set for seamless loop -->
     <div class="dish" *ngFor="let dish of rowTop">
-      <img [src]="dish.imageUrl" [alt]="dish.alt" class="dish-img" [loading]="dish.imageUrl === 'images/banner/b1.png' ? 'eager' : 'lazy'">
+      <img [src]="dish.imageUrl" [alt]="dish.alt" class="dish-img" [loading]="dish.imageUrl === 'images/banner/b1.svg' ? 'eager' : 'lazy'">
     </div>
   </div>
 
   <div class="track-row reverse">
     <div class="dish" *ngFor="let dish of rowBottom">
-      <img [src]="dish.imageUrl" [alt]="dish.alt" class="dish-img" [loading]="dish.imageUrl === 'images/banner/b7.png' ? 'eager' : 'lazy'">
+      <img [src]="dish.imageUrl" [alt]="dish.alt" class="dish-img" [loading]="dish.imageUrl === 'images/banner/b7.svg' ? 'eager' : 'lazy'">
     </div>
     <!-- duplicate set for seamless loop -->
     <div class="dish" *ngFor="let dish of rowBottom">
-      <img [src]="dish.imageUrl" [alt]="dish.alt" class="dish-img" [loading]="dish.imageUrl === 'images/banner/b7.png' ? 'eager' : 'lazy'">
+      <img [src]="dish.imageUrl" [alt]="dish.alt" class="dish-img" [loading]="dish.imageUrl === 'images/banner/b7.svg' ? 'eager' : 'lazy'">
     </div>
   </div>
 

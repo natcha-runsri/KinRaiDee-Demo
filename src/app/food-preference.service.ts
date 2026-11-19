@@ -17,19 +17,19 @@ export interface FoodPreferenceOption {
 }
 
 /**
- * ตัวเลือกใน pop-up — รูปรสชาติ public/images/preferences/{key}.webp (128×128, ต้นฉบับใน frontend/images_originals/preferences/);
- * โหลดไม่ได้ → แสดง emoji. ประเภทอาหารใช้รูปเดิมใน public/images/food-types/.
+ * ตัวเลือกใน pop-up — รูปรสชาติ public/images/preferences/{key}.svg (ภาพ placeholder ที่วาดเอง);
+ * โหลดไม่ได้ → แสดง emoji. ประเภทอาหารใช้ภาพ placeholder ใน public/images/food-types/.
  */
 export const FOOD_PREFERENCE_OPTIONS: FoodPreferenceOption[] = [
-  { key: 'spicy', label: 'รสเผ็ด', image: 'images/preferences/spicy.webp', fallback: '🌶️' },
-  { key: 'sour', label: 'รสเปรี้ยว', image: 'images/preferences/sour.webp', fallback: '🍋' },
-  { key: 'sweet', label: 'รสหวาน', image: 'images/preferences/sweet.webp', fallback: '🍯' },
-  { key: 'salty', label: 'รสเค็ม', image: 'images/preferences/salty.webp', fallback: '🧂' },
-  { key: 'clean', label: 'อาหารคลีน', image: 'images/food-types/clean.jpg', fallback: '🥗' },
-  { key: 'stir_fry', label: 'อาหารผัด', image: 'images/food-types/stirfry.jpg', fallback: '🍳' },
-  { key: 'fried', label: 'อาหารทอด', image: 'images/food-types/fried.jpg', fallback: '🍗' },
-  { key: 'soup_curry', label: 'อาหารต้ม/แกง', image: 'images/food-types/soup.jpg', fallback: '🍲' },
-  { key: 'noodle', label: 'ก๋วยเตี๋ยว', image: 'images/food-types/noodle.jpg', fallback: '🍜' },
+  { key: 'spicy', label: 'รสเผ็ด', image: 'images/preferences/spicy.svg', fallback: '🌶️' },
+  { key: 'sour', label: 'รสเปรี้ยว', image: 'images/preferences/sour.svg', fallback: '🍋' },
+  { key: 'sweet', label: 'รสหวาน', image: 'images/preferences/sweet.svg', fallback: '🍯' },
+  { key: 'salty', label: 'รสเค็ม', image: 'images/preferences/salty.svg', fallback: '🧂' },
+  { key: 'clean', label: 'อาหารคลีน', image: 'images/food-types/clean.svg', fallback: '🥗' },
+  { key: 'stir_fry', label: 'อาหารผัด', image: 'images/food-types/stirfry.svg', fallback: '🍳' },
+  { key: 'fried', label: 'อาหารทอด', image: 'images/food-types/fried.svg', fallback: '🍗' },
+  { key: 'soup_curry', label: 'อาหารต้ม/แกง', image: 'images/food-types/soup.svg', fallback: '🍲' },
+  { key: 'noodle', label: 'ก๋วยเตี๋ยว', image: 'images/food-types/noodle.svg', fallback: '🍜' },
 ];
 
 /**

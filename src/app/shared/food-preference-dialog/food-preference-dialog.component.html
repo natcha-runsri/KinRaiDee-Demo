@@ -3,12 +3,12 @@
 
     <div class="fpd-banner" [class.short]="step === 2">
       @if (!bannerBroken) {
-        <!-- รูปจริง public/images/preferences/banner.webp (1120×520); โหลดไม่ได้ → ภาพต่อกันจาก images/food-types -->
-        <img src="images/preferences/banner.webp" alt="" (error)="bannerBroken = true">
+        <!-- รูปจริง public/images/preferences/banner.svg (1120×520); โหลดไม่ได้ → ภาพต่อกันจาก images/food-types -->
+        <img src="images/preferences/banner.svg" alt="" (error)="bannerBroken = true">
       } @else {
         <div class="fpd-collage" aria-hidden="true">
           @for (name of collage; track name) {
-            <img [src]="'images/food-types/' + name + '.jpg'" alt="">
+            <img [src]="'images/food-types/' + name + '.svg'" alt="">
           }
         </div>
       }
