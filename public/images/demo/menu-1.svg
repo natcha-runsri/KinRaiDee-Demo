@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <rect width="400" height="300" fill="#F6E3C8"/>
+  <ellipse cx="200" cy="160" rx="120" ry="92" fill="#fff" opacity="0.85"/>
+  <ellipse cx="200" cy="160" rx="84" ry="62" fill="none" stroke="#C9A27E" stroke-width="6"/>
+  <circle cx="178" cy="150" r="14" fill="#C9A27E" opacity="0.55"/>
+  <circle cx="214" cy="170" r="18" fill="#C9A27E" opacity="0.4"/>
+  <circle cx="226" cy="140" r="10" fill="#C9A27E" opacity="0.7"/>
+  <text x="200" y="282" font-family="sans-serif" font-size="18" fill="#C9A27E" text-anchor="middle">ภาพตัวอย่าง (เดโม)</text>
+</svg>

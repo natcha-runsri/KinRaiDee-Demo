@@ -6,6 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "start:demo": "ng serve --configuration demo",
+    "build:demo": "ng build --configuration demo --base-href /KinRaiDee-Demo/ && node scripts/copy-404.mjs",
     "test": "ng test",
     "check:breakpoints": "node scripts/check-breakpoints.mjs",
     "lint": "eslint ."
