@@ -1,0 +1,146 @@
+@if (error()) {
+  <section class="card error-card" role="alert">
+    <p>โหลดข้อมูลภาพรวมไม่สำเร็จ</p>
+    <button type="button" class="btn" (click)="retry()">ลองใหม่</button>
+  </section>
+}
+@if (data(); as d) {
+  <div class="overview" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+    <!-- การ์ด 4 ใบ -->
+    <div class="stats">
+      @for (c of cards; track c.key) {
+        <section class="stat card" [attr.data-tone]="c.tone" [attr.data-key]="c.key">
+          <div class="stat-head">
+            <span class="stat-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                @switch (c.key) {
+                  @case ('users') { <circle cx="12" cy="8" r="4"/><path d="M4 20.5c.8-4.4 3.8-6.8 8-6.8s7.2 2.4 8 6.8z"/> }
+                  @case ('analyses') { <rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M8 16v-3M12 16V9M16 16v-5"/> }
+                  @case ('recommendations') { <path d="M7 3v8M5 3v5a2 2 0 004 0V3M7 11v10M16 3c-2 1.5-3 4-3 7h3v11"/> }
+                  @default { <circle cx="12" cy="12" r="8.5"/><path d="M8.5 14c1 1.4 2.1 2 3.5 2s2.5-.6 3.5-2M9 9.5h.01M15 9.5h.01"/> }
+                }
+              </svg>
+            </span>
+            <h2>{{ c.title }}@if (c.key === 'score') { <span class="sub"> (Behavior Score)</span> }</h2>
+          </div>
+          <p class="stat-value" [class.hidden-value]="c.card.value.value == null">
+            {{ c.card.value.label }}@if (c.unit && c.card.value.value != null) { <span class="unit">{{ c.unit }}</span> }
+          </p>
+          <p class="stat-change" [attr.data-dir]="direction(c.card)" [attr.title]="previousLabel">
+            @switch (direction(c.card)) {
+              @case ('up') { <span class="arrow" aria-label="เพิ่มขึ้น">↑</span> }
+              @case ('down') { <span class="arrow" aria-label="ลดลง">↓</span> }
+              @case ('flat') { <span class="arrow" aria-label="เท่าเดิม">→</span> }
+              @case ('new') { <span class="new-badge">ใหม่</span> }
+            }
+            {{ changeText(c.card) }}
+          </p>
+          <span class="stat-art" aria-hidden="true"></span>
+        </section>
+      }
+    </div>
+
+    <div class="grid">
+      <div class="col-main">
+        <app-admin-trend-chart [points]="d.trend"></app-admin-trend-chart>
+        <app-admin-demographics [gender]="d.gender" [age]="d.age" [total]="d.cards.users.value"></app-admin-demographics>
+
+        <!-- สถานะข้อมูล (แทนตารางผู้ใช้คะแนนสูงสุด) -->
+        <section class="card status" id="data-status" tabindex="-1">
+          <div class="card-head">
+            <span class="head-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="2.5"/><path d="M5 6v12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/></svg></span>
+            <h2>สถานะข้อมูล</h2>
+            <span class="badge-ro">อ่านอย่างเดียว</span>
+          </div>
+          <dl class="status-grid">
+            <div class="tile">
+              <dt>อัปเดตข้อมูลเมนูล่าสุด</dt>
+              <dd><strong>{{ dateTime(d.dataStatus.menusUpdatedAt) }}</strong><small>{{ daysAgo(d.dataStatus.menusUpdatedAt) }}</small></dd>
+            </div>
+            <div class="tile">
+              <dt>เมนูทั้งหมด</dt>
+              <dd><strong>{{ d.dataStatus.totalMenus.toLocaleString('th-TH') }}</strong>
+                <small>แนะนำ {{ d.dataStatus.recommendedMenus.toLocaleString('th-TH') }} · ซ่อน {{ d.dataStatus.hiddenMenus.toLocaleString('th-TH') }}</small></dd>
+            </div>
+            <div class="tile">
+              <dt>รูปเมนู (ของเรา)</dt>
+              <dd><strong>มีรูป {{ d.dataStatus.menusWithImage.toLocaleString('th-TH') }}</strong>
+                <small>ไม่มีรูป {{ d.dataStatus.menusWithoutImage.toLocaleString('th-TH') }}
+                  @if (d.dataStatus.recommendedWithoutImage) { · <a routerLink="/admin/menus" [queryParams]="{ status: 'recommended', image: 'none' }">ที่แนะนำ {{ d.dataStatus.recommendedWithoutImage }}</a> }
+                </small></dd>
+            </div>
+            @for (p of d.dataStatus.products; track p.source) {
+              <div class="tile" [class.warn]="p.stale">
+                <dt>ราคาสินค้า {{ p.label }}</dt>
+                <dd><strong>{{ dateTime(p.updatedAt) }}</strong>
+                  <small>{{ p.products.toLocaleString('th-TH') }} รายการ · {{ daysAgo(p.updatedAt) }}
+                    @if (p.stale) { <span class="flag">เกิน 30 วัน</span> }</small></dd>
+              </div>
+            }
+            <div class="tile" [class.warn]="d.dataStatus.ingredientsWithoutGroup > 0">
+              <dt>วัตถุดิบที่ยังไม่มีหมู่อาหาร</dt>
+              <dd><strong>{{ d.dataStatus.ingredientsWithoutGroup.toLocaleString('th-TH') }}</strong>
+                <small>จาก {{ d.dataStatus.ingredientsTotal.toLocaleString('th-TH') }} รายการที่ใช้ในเมนู</small></dd>
+            </div>
+          </dl>
+          <p class="status-note">ราคาสินค้า: ยังไม่มีเวลาที่ดึงข้อมูลจากเว็บ จึงแสดงวันที่โหลดเข้าระบบแทน</p>
+        </section>
+      </div>
+
+      <div class="col-side">
+        <section class="card activity">
+          <div class="card-head">
+            <span class="head-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></span>
+            <h2>กิจกรรมล่าสุด</h2>
+            <a routerLink="/admin/audit" class="link-all">ดูทั้งหมด <span aria-hidden="true">→</span></a>
+          </div>
+          <ul class="feed">
+            @for (a of d.activity; track $index) {
+              <li>
+                <span class="feed-icon" [attr.data-icon]="a.icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    @switch (a.icon) {
+                      @case ('user') { <circle cx="12" cy="8.5" r="3.5"/><path d="M5.5 19c.7-3.5 3.2-5.5 6.5-5.5s5.8 2 6.5 5.5z"/> }
+                      @case ('analysis') { <path d="M6 17v-3M10 17V9M14 17v-5M18 17V7"/> }
+                      @case ('recommend') { <path d="M8 4v7M6 4v4a2 2 0 004 0V4M8 11v9M16 4c-2 1.5-3 4-3 7h3v9"/> }
+                      @default { <path d="M12 3l7 3v5c0 4.5-3 8.2-7 9.5-4-1.3-7-5-7-9.5V6z"/> }
+                    }
+                  </svg>
+                </span>
+                <span class="feed-text"><strong>{{ a.title }}</strong><small>{{ a.detail }}</small></span>
+                <time class="feed-time">{{ when(a) }}</time>
+              </li>
+            } @empty {
+              <li class="empty-note">ยังไม่มีกิจกรรมในช่วงนี้</li>
+            }
+          </ul>
+        </section>
+
+        <section class="card popular">
+          <div class="card-head">
+            <span class="head-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8L3.5 9.7l5.9-.9z"/></svg></span>
+            <h2>อาหารยอดนิยม</h2>
+            <a routerLink="/admin/menus" [queryParams]="{ sort: 'popular' }" class="link-all">ดูทั้งหมด <span aria-hidden="true">→</span></a>
+          </div>
+          <p class="popular-note">นับจากการถูกใจ + การสุ่มได้ในช่วงนี้</p>
+          <ol class="top">
+            @for (m of d.topMenus; track m.id) {
+              <li>
+                <span class="rank" [attr.data-rank]="m.rank">{{ m.rank }}</span>
+                <app-menu-image class="thumb" [src]="m.imageUrl" [alt]="m.name"></app-menu-image>
+                <a class="top-name" [routerLink]="['/menu', m.id]">{{ m.name }}</a>
+                <span class="top-count">{{ m.count.label }} ครั้ง</span>
+              </li>
+            } @empty {
+              <li class="empty-note">ยังไม่มีการถูกใจหรือสุ่มเมนูในช่วงนี้</li>
+            }
+          </ol>
+        </section>
+      </div>
+    </div>
+  </div>
+} @else if (!error()) {
+  <div class="skeleton" aria-busy="true" aria-label="กำลังโหลด">
+    <span></span><span></span><span></span><span></span>
+  </div>
+}

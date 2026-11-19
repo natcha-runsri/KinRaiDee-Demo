@@ -1,0 +1,135 @@
+*{ box-sizing:border-box; }
+
+.ce-backdrop{
+  position:fixed; inset:0; z-index:1000;
+  display:flex; align-items:center; justify-content:center;
+  padding:16px; overflow-y:auto;
+  background:var(--overlay-bg); -webkit-backdrop-filter:var(--overlay-blur); backdrop-filter:var(--overlay-blur);
+  animation:ce-fade .15s ease-out;
+}
+.ce-dialog{
+  position:relative;
+  width:100%; max-width:860px; margin:auto;
+  padding:clamp(28px, 4vw, 40px) clamp(18px, 9vw, 110px) clamp(28px, 4vw, 40px);
+  border:2px solid #A9C6F0; border-radius:6px;
+  background:#F4F8FD;
+  box-shadow:0 24px 60px rgba(0,0,0,.3);
+  font-family:'Prompt', sans-serif;
+  color:#1F2D4D;
+  animation:ce-pop .18s ease-out;
+}
+.ce-close{
+  position:absolute; top:16px; right:16px;
+  width:36px; height:36px; border-radius:50%; border:none;
+  display:flex; align-items:center; justify-content:center;
+  background:#5B8FD9; cursor:pointer;
+}
+.ce-close svg{ width:18px; height:18px; fill:none; stroke:#fff; stroke-width:3; stroke-linecap:round; }
+.ce-back{
+  position:absolute; top:22px; left:22px;
+  display:inline-flex; align-items:center; gap:6px; padding:4px 6px;
+  border:none; background:none; cursor:pointer;
+  font:inherit; font-size:14px; font-weight:600; color:#1F2D4D;
+}
+.ce-back svg{ width:18px; height:18px; fill:none; stroke:#1F2D4D; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+
+.ce-body{ display:flex; flex-direction:column; }
+
+/* ขั้น 0 */
+.ce-art{ width:min(220px, 60%); height:auto; display:block; margin:0 auto 8px; }
+.ce-art .spark, .ce-art .line{ fill:none; stroke:#5BB6F0; stroke-width:4; stroke-linecap:round; }
+.ce-art .line{ stroke:#DCE3EE; }
+.ce-art .tri{ fill:none; stroke:#5B8FD9; stroke-width:4; stroke-linejoin:round; }
+.ce-art .dot{ fill:#5BB6F0; }
+.ce-art .ring{ fill:none; stroke:#5BB6F0; stroke-width:4; }
+.ce-art .env-back{ fill:#E6E9F7; }
+.ce-art .paper{ fill:#62B8F5; }
+.ce-art .paper-fold{ fill:#BFE3FC; stroke:#BFE3FC; }
+.ce-art .check{ fill:none; stroke:#fff; stroke-width:9; stroke-linecap:round; stroke-linejoin:round; }
+.ce-art .env-front{ fill:#EEF0FA; stroke:#DCE1F2; stroke-width:2; }
+.ce-heading{ margin:0 0 12px; text-align:center; font-size:clamp(16px, 2.4vw, 19px); font-weight:600; }
+
+.ce-title{ margin:0; font-size:clamp(26px, 4vw, 36px); font-weight:700; line-height:1.2; }
+.ce-desc{ margin:4px 0 18px; font-size:13.5px; color:#3d4a6a; overflow-wrap:anywhere; }
+.ce-desc strong{ color:#1F2D4D; }
+.center{ text-align:center; }
+
+.ce-form{ display:flex; flex-direction:column; }
+.ce-form.narrow{ width:min(100%, 560px); margin:0 auto; }
+.ce-label{ margin:6px 0 6px; font-size:16px; font-weight:600; }
+.ce-label.maroon{ color:var(--color-primary); font-size:15px; }
+.ce-input{
+  display:flex; align-items:center; min-height:52px;
+  border:1px solid #A9C6F0; border-radius:4px; background:#fff;
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.ce-input:focus-within{ border-color:#1F2D4D; box-shadow:0 0 0 3px rgba(169,198,240,.5); }
+.ce-input.invalid{ border-color:var(--color-danger); }
+.ce-input input{
+  flex:1; min-width:0; border:none; background:transparent; outline:none;
+  padding:11px 14px; font:inherit; font-size:16px; color:#1F2D4D;
+}
+.ce-input input::placeholder{ color:#9aa6bf; }
+.ce-lead{ width:22px; height:22px; margin-left:18px; flex:none; fill:none; stroke:#1F2D4D; stroke-width:1.5; stroke-linejoin:round; }
+.ce-eye{ border:none; background:none; padding:6px 12px; cursor:pointer; display:flex; }
+.ce-eye svg{ width:20px; height:20px; fill:none; stroke:#6b6b6b; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+
+.ce-error{ margin:6px 0 0; font-size:12.5px; line-height:1.4; color:var(--color-danger); }
+.ce-form-error{ margin:12px 0 0; font-size:13px; color:var(--color-danger); text-align:center; }
+.ce-notice{ margin:0 0 10px; padding:8px 12px; border-radius:6px; background:#E7F5EA; color:#2E7D32; font-size:13px; text-align:center; }
+.ce-notice.inline{ margin:8px 0 0; padding:0; background:none; text-align:left; }
+.ce-forgot{
+  align-self:flex-end; margin-top:6px; padding:2px 0; border:none; background:none; cursor:pointer;
+  font:inherit; font-size:12.5px; font-weight:600; color:var(--color-primary);
+}
+.ce-forgot:hover{ text-decoration:underline; }
+
+.ce-submit{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  width:100%; min-height:46px; margin-top:22px; padding:10px 16px;
+  border:none; border-radius:4px; background:#1F2D4D; color:#FFEBAC;
+  font:inherit; font-size:17px; font-weight:500; cursor:pointer;
+}
+.ce-submit.short{ width:min(100%, 270px); align-self:center; }
+.ce-submit:disabled{ opacity:.65; cursor:not-allowed; }
+.ce-submit[aria-busy="true"]{ cursor:progress; }
+.ce-spinner{
+  width:18px; height:18px; border-radius:50%;
+  border:2.5px solid rgba(255,235,172,.35); border-top-color:#FFEBAC;
+  animation:ce-spin .8s linear infinite;
+}
+.ce-cancel{
+  align-self:center; margin-top:14px; padding:4px 8px;
+  border:none; background:none; cursor:pointer;
+  font:inherit; font-size:14px; font-weight:600; color:#1F2D4D; text-decoration:underline;
+}
+.ce-footer{ margin:12px 0 0; font-size:13px; text-align:center; }
+.ce-link{ border:none; background:none; padding:0 2px; cursor:pointer; font:inherit; font-weight:700; color:var(--color-primary); }
+.ce-link:disabled{ color:#9a9a9a; cursor:not-allowed; }
+.ce-countdown{ margin-left:4px; color:#6F80A6; }
+button:focus-visible{ outline:3px solid #A9C6F0; outline-offset:2px; }
+.sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+@keyframes ce-fade{ from{ opacity:0; } }
+@keyframes ce-pop{ from{ opacity:0; transform:scale(.97); } }
+@keyframes ce-spin{ to{ transform:rotate(360deg); } }
+
+@media (max-width:767.98px){
+  .ce-backdrop{ padding:8px; }
+  .ce-dialog{ padding:56px 16px 24px; }
+  .ce-back{ top:18px; left:12px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .ce-backdrop, .ce-dialog{ animation:none; }
+  .ce-spinner{ animation-duration:2s; }
+}
+
+/* ตัวอักษรบนมือถือ (≤ 767px): เนื้อหาหลัก 14px, ข้อความรอง ≥ 12px */
+@media (max-width:767.98px){
+  .ce-desc{ font-size:14px; }
+  .ce-error{ font-size:13px; }
+  .ce-form-error{ font-size:14px; }
+  .ce-notice{ font-size:14px; }
+  .ce-forgot{ font-size:14px; }
+  .ce-footer{ font-size:14px; }
+}

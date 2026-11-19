@@ -1,0 +1,278 @@
+/* การ์ด "ปริมาณสารอาหารที่ได้รับ" + คำแนะนำ (แยกไฟล์เพื่อไม่เกิน CSS budget) */
+.panel {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .14);
+  padding: 20px 22px;
+  margin-bottom: 22px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.ph-icon {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ph-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.panel h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.note {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #6b6b6b;
+}
+
+.nt-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 14px;
+  max-width: 600px;
+}
+
+.nt {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  min-width: 0;
+}
+
+.donut {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  flex: none;
+}
+
+.donut svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.donut circle {
+  fill: none;
+  stroke-width: 12;
+}
+
+.arc {
+  transition: stroke-dashoffset .6s ease;
+}
+
+.nt-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nt-icon svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nt-text {
+  min-width: 0;
+}
+
+.nt-text h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.pct {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 600;
+  color: #1a1a1a;
+  line-height: 1.2;
+}
+
+.detail {
+  margin: 0;
+  font-size: 12px;
+  color: #6b6b6b;
+}
+
+.nt .pill {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.nt .tone-good {
+  background: #7CC57E;
+  color: #fff;
+}
+
+.nt-protein {
+  background: #F3E4E4;
+}
+
+.nt-protein .track {
+  stroke: #F7B4B4;
+}
+
+.nt-protein .arc {
+  stroke: #C00000;
+}
+
+.nt-protein .nt-icon svg {
+  stroke: #C00000;
+}
+
+.nt-carb {
+  background: #DCEBFB;
+}
+
+.nt-carb .track {
+  stroke: #B5DBF8;
+}
+
+.nt-carb .arc {
+  stroke: #3B82D6;
+}
+
+.nt-carb .nt-icon svg {
+  stroke: #2563B0;
+}
+
+.nt-vitamin {
+  background: #FCE9FB;
+}
+
+.nt-vitamin .track {
+  stroke: #F3B9E6;
+}
+
+.nt-vitamin .arc {
+  stroke: #EE3F87;
+}
+
+.nt-vitamin .nt-icon svg {
+  stroke: #D3203B;
+}
+
+.nt-mineral {
+  background: #E1F9DC;
+}
+
+.nt-mineral .track {
+  stroke: #C6F4BC;
+}
+
+.nt-mineral .arc {
+  stroke: #4CC23A;
+}
+
+.nt-mineral .nt-icon svg {
+  stroke: #2F7E1D;
+}
+
+.nt-fat {
+  background: #FFF6DE;
+}
+
+.nt-fat .track {
+  stroke: #FBEFB6;
+}
+
+.nt-fat .arc {
+  stroke: #C9A23A;
+}
+
+.nt-fat .nt-icon svg {
+  stroke: #9A7A12;
+}
+
+.advice {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.adv-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.adv-text p {
+  margin: 3px 0 0;
+  font-size: 13px;
+  color: #3a3a3a;
+  line-height: 1.6;
+}
+
+@media (max-width:767.98px) {
+  .nt-grid {
+    grid-template-columns: 1fr;
+    max-width: none;
+  }
+
+  .advice {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .adv-text {
+    flex: 1 1 calc(100% - 48px);
+  }
+
+  .advice .btn-maroon {
+    margin-left: 48px;
+  }
+
+  .panel {
+    padding: 18px 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arc {
+    transition: none;
+  }
+}
+
+/* ตัวอักษรบนมือถือ (≤ 767px): เนื้อหาหลัก 14px, ข้อความรอง ≥ 12px */
+@media (max-width:767.98px){
+  .detail{ font-size:13px; }
+  .adv-text p{ font-size:14px; }
+}

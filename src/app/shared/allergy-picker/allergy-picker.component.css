@@ -1,0 +1,60 @@
+/* ฐาน = หน้าโปรไฟล์ (ชิดซ้ายในฟอร์ม); :host(.popup) = ขั้นที่ 2 ของ pop-up ความชอบ (กึ่งกลาง ป้ายใหญ่ ขอบแดงเข้ม) */
+:host{ display:flex; flex-direction:column; gap:10px; min-width:0; --maroon:var(--color-primary); }
+.choices{ display:flex; flex-wrap:wrap; gap:8px; }
+.choice{
+  display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:999px; border:1.5px solid #E2C9C9; background:#fff;
+  color:#5b4a4a; font:inherit; font-size:14px; cursor:pointer; transition:background .15s ease, border-color .15s ease;
+}
+.choice:hover{ border-color:#C98F8F; }
+.choice.on{ background:var(--color-danger-bg); border-color:#C0392B; color:var(--color-danger-text); font-weight:700; }
+.choice.none{ border-style:dashed; }
+.choice.none.on{ border-style:solid; background:#E6F4C8; border-color:#4C7A12; color:#2F4A10; }
+.emoji{ font-size:17px; line-height:1; }
+.loading{ margin:0; font-size:13px; color:#8a7a7a; }
+.tags{ list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:6px; }
+.tag{
+  display:inline-flex; align-items:center; gap:6px; padding:4px 6px 4px 12px; border-radius:999px;
+  background:var(--color-danger-bg); color:var(--color-danger-text); font-size:14px; font-weight:600; line-height:1.4;
+}
+.tag-x{
+  width:20px; height:20px; display:grid; place-items:center; padding:0; border:0; border-radius:50%;
+  background:rgba(155,44,44,.12); color:var(--color-danger-text); font-size:11px; cursor:pointer;
+}
+.tag-x:hover{ background:rgba(155,44,44,.24); }
+.add-row{ display:flex; gap:8px; }
+.add-input{
+  flex:1; min-width:0; padding:8px 12px; border:1.5px solid #E2C9C9; border-radius:10px; font:inherit; font-size:14px; background:#fff;
+}
+.add-input[aria-invalid=true]{ border-color:#C0392B; }
+.add-btn{
+  padding:8px 16px; border-radius:10px; border:1.5px solid var(--maroon); background:#fff; color:var(--maroon);
+  font:inherit; font-size:14px; font-weight:700; cursor:pointer;
+}
+.add-btn:disabled{ opacity:.45; cursor:default; }
+.choice:focus-visible, .tag-x:focus-visible, .add-btn:focus-visible, .add-input:focus-visible{ outline:3px solid #A9C6F0; outline-offset:2px; }
+.field-error{ margin:0; color:#C0392B; font-size:13px; }
+.note{ margin:0; color:#8a8080; font-size:12px; line-height:1.5; }
+
+/* ---------- pop-up ---------- */
+:host(.popup){ width:100%; gap:12px; }
+:host(.popup) .choices, :host(.popup) .tags{ justify-content:center; gap:10px; }
+:host(.popup) .choice{ padding:8px 14px; border-color:var(--maroon); color:#2A0808; font-weight:500; }
+:host(.popup) .choice:hover{ box-shadow:0 3px 10px rgba(var(--color-primary-rgb),.15); }
+:host(.popup) .choice.on{ background:#F8E4E2; border-color:var(--maroon); box-shadow:inset 0 0 0 1.5px var(--maroon); color:#2A0808; font-weight:700; }
+:host(.popup) .choice.none.on{ background:#E6F4C8; border-color:#4C7A12; box-shadow:inset 0 0 0 1.5px #4C7A12; color:#2F4A10; }
+:host(.popup) .add-input{ border-radius:8px; border-color:#D9C4C4; }
+:host(.popup) .add-btn{ border-radius:8px; }
+:host(.popup) .note{ font-size:11.5px; }
+
+@media (max-width:767.98px){
+  :host(.popup) .choice{ padding:7px 12px; font-size:13px; }
+}
+@media (prefers-reduced-motion:reduce){ .choice{ transition:none; } }
+
+/* ตัวอักษรบนมือถือ (≤ 767px): เนื้อหาหลัก 14px, ข้อความรอง ≥ 12px */
+@media (max-width:767.98px){
+  .loading{ font-size:14px; }
+  .field-error{ font-size:14px; }
+  :host(.popup) .note{ font-size:12px; }
+  :host(.popup) .choice{ font-size:14px; }
+}

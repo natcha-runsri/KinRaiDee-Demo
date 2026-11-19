@@ -1,0 +1,42 @@
+/* ฟอร์มในแผงแก้ไขเมนู */
+.lbl{ display:flex; flex-direction:column; gap:4px; font-size:13px; color:var(--adm-muted); }
+.lbl input, .lbl select, .lbl textarea{
+  box-sizing:border-box;
+  width:100%;
+  padding:8px 10px;
+  border:1px solid var(--adm-line);
+  border-radius:10px;
+  font:inherit;
+  font-size:14px;
+  color:var(--adm-text);
+  background:#fff;
+}
+.lbl textarea{ resize:vertical; }
+.lbl [aria-invalid="true"]{ border-color:#d0453b; }
+input:focus-visible, select:focus-visible, textarea:focus-visible{ outline:2px solid var(--adm-red-700); outline-offset:1px; }
+.req{ color:#b3261e; }
+.hint{ margin:0; font-size:12px; color:var(--adm-muted); }
+.err{ margin:0; font-size:13px; color:#b3261e; }
+.hint .over{ color:#b3261e; font-weight:700; }
+.notice{ margin:0; padding:8px 12px; border-radius:10px; background:var(--adm-green-soft); color:#1f6e45; font-size:14px; }
+.block > .btn{ align-self:flex-start; }
+
+.tags{ display:flex; flex-wrap:wrap; gap:6px; padding:6px; border:1px solid var(--adm-line); border-radius:10px; background:#fff; }
+.tags input{ flex:1 1 140px; min-width:120px; border:0; padding:6px; font:inherit; font-size:14px; }
+.tags input:focus-visible{ outline:none; }
+.tags:focus-within{ outline:2px solid var(--adm-red-700); outline-offset:1px; }
+.chip{ display:inline-flex; align-items:center; gap:2px; padding:2px 4px 2px 10px; border-radius:999px; background:var(--adm-bg); color:var(--adm-text); font-size:13px; }
+.chip button{ display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border:0; border-radius:50%; background:transparent; font-size:16px; line-height:1; cursor:pointer; }
+.chip button:hover{ background:#eadfd8; }
+
+.image-row{ display:flex; gap:14px; align-items:flex-start; }
+.current{ display:block; width:110px; height:110px; flex:none; border-radius:12px; overflow:hidden; }
+.image-info{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; min-width:0; }
+.image-info p{ margin:0; font-size:14px; }
+.file-btn{ position:relative; }
+.check{ display:flex; align-items:center; gap:8px; min-height:36px; font-size:14px; }
+.check input{ width:18px; height:18px; }
+
+@media (max-width:479.98px){
+  .image-row{ flex-direction:column; }
+}

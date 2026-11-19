@@ -1,0 +1,88 @@
+<div class="page">
+  <app-navbar></app-navbar>
+
+  <div class="shell">
+    <aside class="sidebar" aria-label="เมนูบัญชี">
+      <div class="who">
+        <div class="avatar-wrap" [class.busy]="uploading">
+          <app-user-avatar class="avatar-lg" [url]="previewUrl ?? account()?.avatarUrl" [name]="name()" [size]="146"></app-user-avatar>
+          <app-user-avatar class="avatar-sm" [url]="previewUrl ?? account()?.avatarUrl" [name]="name()" [size]="56"></app-user-avatar>
+          @if (uploading) {
+            <span class="avatar-loading" aria-hidden="true"><span class="spinner"></span></span>
+          }
+          <button type="button" class="avatar-edit hit44" (click)="pickFile()" [disabled]="uploading || !account()"
+                  aria-label="เปลี่ยนรูปโปรไฟล์">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1.2-4.6L15.8 4.8a2 2 0 012.8 0l.6.6a2 2 0 010 2.8L8.6 18.8 4 20zM14 6.6l3.4 3.4"/></svg>
+          </button>
+          <input #fileInput type="file" class="file-input" accept="image/jpeg,image/png,image/webp"
+                 (change)="onFileSelected($event)" tabindex="-1" aria-hidden="true">
+        </div>
+
+        <p class="hello">สวัสดี {{ name() }}</p>
+        <!-- ออกจากระบบ: ปุ่มเล็กแยกจากเมนู (ทุกขนาดจอ) — ยืนยันผ่าน LogoutService เหมือนเดิม -->
+        <button type="button" class="logout-btn" (click)="askLogout()">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4H6.5A1.5 1.5 0 005 5.5v13A1.5 1.5 0 006.5 20H14M10 12h10M17 8.5l3.5 3.5-3.5 3.5"/></svg>
+          <span>ออกจากระบบ</span>
+        </button>
+      </div>
+
+      <div class="avatar-tools" aria-live="polite">
+        @if (previewUrl) {
+          <div class="avatar-actions">
+            <button type="button" class="tool-save" (click)="saveAvatar()" [disabled]="uploading" [attr.aria-busy]="uploading">
+              {{ uploading ? 'กำลังอัปโหลด...' : 'บันทึกรูป' }}
+            </button>
+            <button type="button" class="tool-cancel" (click)="cancelPreview()" [disabled]="uploading">ยกเลิก</button>
+          </div>
+        } @else if (account()?.avatarUrl) {
+          <button type="button" class="tool-remove" (click)="removeOpen = true" [disabled]="uploading">ลบรูปโปรไฟล์</button>
+        }
+        @if (avatarError) {
+          <p class="avatar-error" role="alert">{{ avatarError }}</p>
+        } @else if (avatarStatus) {
+          <p class="sr-only">{{ avatarStatus }}</p>
+        }
+      </div>
+
+      <nav class="menu" #menuNav aria-label="หน้าในบัญชี">
+        <a routerLink="/profile" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+           #accountLink="routerLinkActive" [attr.aria-current]="accountLink.isActive ? 'page' : null" class="menu-item">
+          <span class="menu-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5c1.2-4.2 4-6.2 7.5-6.2s6.3 2 7.5 6.2z"/></svg>
+          </span>
+          <span>บัญชีของฉัน</span>
+        </a>
+        <a routerLink="/profile/dashboard" routerLinkActive="active" #dashboardLink="routerLinkActive"
+           [attr.aria-current]="dashboardLink.isActive ? 'page' : null" class="menu-item">
+          <span class="menu-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" class="line"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9h17M9 9v11.5M12 17.5v-3M15 17.5v-5M18 17.5v-2"/></svg>
+          </span>
+          <span>Dashboard</span>
+        </a>
+        <a routerLink="/history" routerLinkActive="active" #historyLink="routerLinkActive"
+           [attr.aria-current]="historyLink.isActive ? 'page' : null" class="menu-item">
+          <span class="menu-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" class="line"><path d="M3.5 12a8.5 8.5 0 102.5-6M3.5 4v4h4M12 7.5V12l3 2"/></svg>
+          </span>
+          <span>ประวัติ</span>
+        </a>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <div class="top-strip" aria-hidden="true"></div>
+      <div class="content-inner">
+        @if (loadError) {
+          <p class="load-error" role="alert">{{ loadError }}</p>
+        } @else {
+          <router-outlet></router-outlet>
+        }
+      </div>
+    </main>
+  </div>
+</div>
+
+@if (removeOpen) {
+  <app-confirm-dialog title="ลบรูปโปรไฟล์ใช่ไหม" message="จะกลับไปใช้รูปเริ่มต้น" confirmLabel="ลบรูป" cancelLabel="ยกเลิก"
+                      [danger]="true" (confirmed)="confirmRemove()" (cancelled)="removeOpen = false"></app-confirm-dialog>
+}

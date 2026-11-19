@@ -1,0 +1,66 @@
+/* ข้อความในแชต (แยกไฟล์เพื่อไม่เกิน CSS budget) */
+.row{ display:flex; align-items:flex-end; gap:10px; margin:0 0 16px; }
+.row.user{ justify-content:flex-end; align-items:center; }
+.bubble{ margin:0; max-width:min(560px, 78%); white-space:pre-wrap; overflow-wrap:anywhere; }
+.user-bubble{ padding:7px 16px; border:1.5px solid #A9C6F0; border-radius:999px; background:#fff; font-size:13px; color:#222; }
+.guest-avatar{ width:36px; height:36px; flex:none; border-radius:50%; background:#DCE7F7; display:flex; align-items:center; justify-content:center; }
+.guest-avatar svg{ width:22px; height:22px; fill:#1F2D4D; }
+.bot-icon{ width:28px; height:28px; flex:none; border-radius:50%; object-fit:cover; }
+
+.loading{ display:flex; gap:5px; padding:10px 26px; border:1.5px solid #A9C6F0; border-radius:999px; background:#EEF4FC; }
+.loading span{ width:7px; height:7px; border-radius:50%; background:#1F3F86; opacity:.25; animation:dot 1.2s infinite; }
+.loading span:nth-child(2){ animation-delay:.1s; } .loading span:nth-child(3){ animation-delay:.2s; }
+.loading span:nth-child(4){ animation-delay:.3s; } .loading span:nth-child(5){ animation-delay:.4s; }
+.loading span:nth-child(6){ animation-delay:.5s; } .loading span:nth-child(7){ animation-delay:.6s; }
+@keyframes dot{ 50%{ opacity:1; } }
+
+.bot-card{ padding:18px 20px; border:1.5px solid #C9DBF3; border-radius:14px; background:#F2F6FC; text-align:center; max-width:min(560px, 86%); }
+.bot-card.plain{ text-align:left; padding:12px 18px; }
+.bot-card.multi{ max-width:min(860px, 92%); }
+.reply{ margin:0 0 10px; font-size:13px; color:#333; text-align:left; }
+.reply.small{ font-size:12px; }
+.notices{ list-style:none; margin:0 0 10px; padding:0; display:flex; flex-direction:column; gap:4px; text-align:left; }
+.notices li{ padding:5px 12px; border-radius:6px; background:#FFF4D6; font-size:12px; color:#6b4b00; }
+.link-btn{ border:none; background:none; padding:0; color:#1F3F86; font:inherit; font-weight:700; text-decoration:underline; cursor:pointer; }
+
+.menus{ list-style:none; margin:0; padding:0; display:grid; grid-template-columns:minmax(0, 1fr); gap:16px; justify-items:center; }
+.multi .menus{ grid-template-columns:repeat(3, minmax(0, 1fr)); justify-items:stretch; }
+.menu{ display:flex; flex-direction:column; align-items:center; gap:6px; min-width:0; width:100%; max-width:240px; }
+.menu-img{ display:block; width:min(150px, 100%); aspect-ratio:1 / 1.15; border-radius:10px; overflow:hidden; background:#E9EEF6; }
+.multi .menu-img{ width:100%; aspect-ratio:1.1; }
+.menu-img app-menu-image{ width:100%; height:100%; }
+.menu-name{ font-size:16px; font-weight:700; color:var(--color-primary); text-decoration:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:100%; }
+.menu-name:hover{ text-decoration:underline; }
+.kcal{ margin-top:-4px; font-size:11px; color:#555; }
+.menu-actions{ display:flex; gap:8px; flex-wrap:wrap; justify-content:center; }
+.btn-outline, .btn-like, .btn-liked{ display:inline-flex; align-items:center; gap:6px; padding:6px 16px; border-radius:4px; font:inherit;
+  font-size:12px; font-weight:700; cursor:pointer; text-decoration:none; }
+.btn-outline{ border:1.5px solid #1F2D4D; background:#fff; color:#1F2D4D; }
+.btn-like{ border:none; background:#B5121B; color:#fff; }
+.btn-like svg{ width:14px; height:14px; fill:#fff; }
+.btn-liked{ border:1.5px solid #2F6B2F; background:#E6F4C8; color:#2F4A10; }
+.btn-outline:disabled, .btn-like:disabled{ opacity:.6; cursor:progress; }
+.more-all{ margin-top:14px; }
+.menu-img:focus-visible, .menu-name:focus-visible, .btn-outline:focus-visible, .btn-like:focus-visible, .btn-liked:focus-visible,
+.link-btn:focus-visible{ outline:3px solid #1F2D4D; outline-offset:2px; }
+
+@media (max-width:767.98px){
+  /* ชื่อเมนูตัดด้วย … (overflow:hidden → ใช้ ::after ของ .hit44 ไม่ได้): padding บน-ล่างให้สูง 44px แล้วหักคืนด้วย margin → ตำแหน่งเท่าเดิม */
+  .menu-name{ display:inline-block; min-width:44px; text-align:center; padding-block:10px; margin-block:-10px; }
+  .multi .menus{ grid-template-columns:minmax(0, 1fr); justify-items:center; }
+  .multi .menu-img{ width:min(220px, 100%); }
+  .bubble, .bot-card, .bot-card.multi{ max-width:calc(100% - 40px); }
+}
+@media (prefers-reduced-motion: reduce){
+  .loading span{ animation:none; opacity:.7; }
+}
+
+/* ตัวอักษรบนมือถือ (≤ 767px): เนื้อหาหลัก 14px, ข้อความรอง ≥ 12px */
+@media (max-width:767.98px){
+  .user-bubble{ font-size:14px; }
+  .reply{ font-size:14px; }
+  .reply.small{ font-size:13px; }
+  .notices li{ font-size:13px; }
+  .kcal{ font-size:12px; }
+  .btn-outline, .btn-like, .btn-liked{ font-size:14px; }
+}

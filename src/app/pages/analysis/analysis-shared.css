@@ -1,0 +1,37 @@
+/* ใช้ร่วมทุกหน้าในฟีเจอร์วิเคราะห์ (review / processing / result) */
+:host{ --maroon:var(--color-primary); --maroon-deep:var(--color-primary); --navy:#1F2D4D; --cream:#FFFDF7; display:block; font-family:'Prompt', sans-serif;
+  /* สีระดับ (tone ใน analysis-rules.yml) ชุดเดียวกับป้ายระดับ/หน้าประวัติ — ตัวอักษรบนพื้นขาว ≥ 4.5:1 (เขียว ~10:1, แดง ~7.6:1) */
+  --tone-good-fg:#2F4A10; --tone-good-bg:#E6F4C8; --tone-bad-fg:#9b1c1c; --tone-bad-bg:#FCDADA; }
+*{ box-sizing:border-box; }
+.page{ min-height:100vh; display:flex; flex-direction:column; background:var(--cream); overflow-x:hidden; }
+.breadcrumb{ display:flex; gap:6px; flex-wrap:wrap; background:var(--maroon); color:#fff; font-weight:700; font-size:18px;
+  padding:26px clamp(16px, 5vw, 74px); }
+.crumb-link{ color:#fff; text-decoration:none; }
+.crumb-link:hover{ text-decoration:underline; }
+.content{ flex:1; width:100%; max-width:1180px; margin:0 auto; padding:30px clamp(16px, 4vw, 40px) 64px; }
+.footer-bar{ height:40px; background:var(--maroon); border-top:6px solid #FDEBB0; }
+.sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+.state-msg{ margin:40px 0; text-align:center; color:#6b5b5b; }
+
+/* ป้ายหมู่อาหาร — สีคงที่ต่อหมู่ */
+.chip{ display:inline-flex; align-items:center; padding:4px 14px; border-radius:999px; font-size:12.5px; font-weight:500; white-space:nowrap; }
+.g-protein{ background:#F6DFE3; color:#7B2232; }
+.g-carb{ background:#FCEFC4; color:#7A5300; }
+.g-mineral{ background:#DDF0CF; color:#2F5E17; }
+.g-vitamin{ background:#EDF5CC; color:#566B0E; }
+.g-fat{ background:#FBE2CC; color:#8A4512; }
+
+.btn-primary, .btn-soft{ display:inline-flex; align-items:center; justify-content:center; gap:10px; padding:11px 30px; border-radius:8px;
+  font:inherit; font-size:15px; font-weight:700; text-decoration:none; cursor:pointer; border:none; }
+.btn-primary{ background:var(--color-primary); color:#fff; box-shadow:0 3px 8px rgba(var(--color-primary-rgb),.25); }
+.btn-primary:hover:not(:disabled){ background:var(--color-primary-hover); }
+.btn-primary:disabled{ background:#C9A3A3; box-shadow:none; cursor:not-allowed; }
+.btn-soft{ background:#FFEBAC; color:var(--navy); }
+.btn-soft:hover{ background:#FFE38A; }
+.btn-primary svg, .btn-soft svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+.btn-primary:focus-visible, .btn-soft:focus-visible, .crumb-link:focus-visible{ outline:3px solid #A9C6F0; outline-offset:2px; }
+
+@media (max-width:479.98px){
+  .breadcrumb{ font-size:15px; padding:16px; }
+  .content{ padding:20px 16px 48px; }
+}

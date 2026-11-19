@@ -1,0 +1,57 @@
+<div class="page">
+
+  <app-navbar></app-navbar>
+
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <a routerLink="/history" class="crumb-link hit44">ประวัติการใช้งาน</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">เมนูที่ถูกใจ</span>
+  </nav>
+
+  <main class="content">
+    <section class="liked-all" aria-labelledby="liked-all-title">
+      <header class="la-head">
+        <span class="la-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M7 3v8M5 3v5a2 2 0 004 0V3M7 11v10M17 21V3c-2 1-3.5 3.5-3.5 7 0 2 1.5 3 3.5 3"/></svg>
+        </span>
+        <h1 id="liked-all-title">เมนูอาหารที่เคยแนะนำ</h1>
+        @if (data && data.totalElements) { <span class="la-count">ทั้งหมด {{ data.totalElements }} เมนู</span> }
+      </header>
+
+      <p class="la-status" role="status" aria-live="polite">{{ status }}</p>
+      @if (actionError) { <p class="la-error" role="alert">{{ actionError }}</p> }
+
+      @if (loading && !data) {
+        <p class="state">กำลังโหลด...</p>
+      } @else if (loadError) {
+        <p class="state" role="alert">โหลดเมนูที่ถูกใจไม่สำเร็จ กรุณารีเฟรชหน้า</p>
+      } @else if (!data?.content?.length) {
+        <div class="la-empty">
+          <p>ยังไม่มีเมนูที่คุณถูกใจ</p>
+          <a routerLink="/recommend/random" class="la-btn">ไปสุ่มเมนู</a>
+        </div>
+      } @else {
+        <ul class="la-grid">
+          @for (item of data!.content; track item.recipe.id) {
+            <li><app-liked-card [item]="item" [showUnlike]="true" [busy]="busyId === item.recipe.id"
+                                (unlike)="askUnlike($event)"></app-liked-card></li>
+          }
+        </ul>
+        @if (data!.totalPages > 1) {
+          <nav class="la-pager" aria-label="เปลี่ยนหน้าเมนูที่ถูกใจ">
+            <button type="button" (click)="goPage(data!.page - 1)" [disabled]="data!.page === 0 || loading">‹ ก่อนหน้า</button>
+            <span>หน้า {{ data!.page + 1 }} / {{ data!.totalPages }}</span>
+            <button type="button" (click)="goPage(data!.page + 1)" [disabled]="!data!.hasNext || loading">ถัดไป ›</button>
+          </nav>
+        }
+      }
+    </section>
+  </main>
+
+  <footer class="footer-bar" aria-hidden="true"></footer>
+</div>
+
+@if (pending) {
+  <app-confirm-dialog title="ยกเลิกถูกใจเมนูนี้ใช่ไหม" [message]="pendingName" confirmLabel="ยกเลิกถูกใจ" cancelLabel="ไม่ใช่"
+                      [danger]="true" (confirmed)="confirmUnlike()" (cancelled)="pending = null"></app-confirm-dialog>
+}

@@ -1,0 +1,124 @@
+<div class="admin-shell" [class.collapsed]="collapsed" [class.drawer-open]="drawerOpen">
+  <!-- แถบด้านข้าง (จอแคบ = ลิ้นชัก) -->
+  <aside class="sidebar" id="admin-sidebar" aria-label="เมนูจัดการระบบ">
+   <div class="side-inner">
+    <a routerLink="/admin" class="logo-link" aria-label="KinRai — หน้าหลักแอดมิน">
+      <img src="images/main/logo.png" alt="" class="logo">
+      <span class="logo-text">KINRAI</span>
+    </a>
+
+    <nav class="side-nav">
+      @for (item of nav; track item.path) {
+        <a class="side-link" [routerLink]="item.path" routerLinkActive="active"
+           [routerLinkActiveOptions]="{ exact: !!item.exact }" [attr.title]="collapsed ? item.label : null">
+          <svg class="side-icon" viewBox="0 0 24 24" aria-hidden="true">
+            @switch (item.icon) {
+              @case ('home') { <path d="M3.5 10.5L12 3.5l8.5 7"/><path d="M5.5 9v11h4.5v-6h4v6h4.5V9"/> }
+              @case ('users') { <circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-4 3.2-6 6.5-6s5.9 2 6.5 6"/><path d="M15.5 4.8a3.3 3.3 0 010 6.4M18 14.4c2 .8 3.2 2.8 3.5 5.6"/> }
+              @case ('food') { <rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="M8 8h8M8 12h8M8 16h5"/> }
+              @case ('chart') { <path d="M4 20h16"/><path d="M6.5 20v-6M11 20V9M15.5 20v-8M20 20V5"/> }
+              @case ('audit') { <path d="M14 3.5H6.5A1.5 1.5 0 005 5v14a1.5 1.5 0 001.5 1.5h11A1.5 1.5 0 0019 19V8.5z"/><path d="M14 3.5v5h5M8.5 13h7M8.5 16.5h5"/> }
+              @case ('settings') { <circle cx="12" cy="12" r="3"/><path d="M12 2.5v2.8M12 18.7v2.8M4.6 4.6l2 2M17.4 17.4l2 2M2.5 12h2.8M18.7 12h2.8M4.6 19.4l2-2M17.4 6.6l2-2"/> }
+            }
+          </svg>
+          <span class="side-label">{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="side-art" aria-hidden="true">
+      <p class="tagline">สุขภาพดี<br>เริ่มจากการเลือกกิน<br>ในสิ่งที่ใช่</p>
+      <img src="images/food-types/clean.jpg" alt="" class="bowl" loading="lazy">
+    </div>
+   </div>
+  </aside>
+  <div class="scrim" (click)="closeDrawer()" aria-hidden="true"></div>
+
+  <div class="main">
+    <header class="topbar">
+      <button #drawerToggle type="button" class="icon-btn menu-btn" aria-controls="admin-sidebar"
+              [attr.aria-expanded]="drawerOpen || !collapsed" aria-label="เปิด/ปิดเมนูด้านข้าง" (click)="toggleDrawer()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg>
+      </button>
+      <div class="heading">
+        <h1>{{ title }}@if (readOnly()) { <span class="ro-badge" title="ผู้ประเมินระบบ: เปิดดูได้ทุกหน้า แต่แก้ไขข้อมูลไม่ได้">บัญชีดูอย่างเดียว</span> }</h1>
+        @if (subtitle) { <p>{{ subtitle }}</p> }
+      </div>
+
+      <div class="tools">
+        @if (showRange) {
+          <div class="popover-anchor">
+            <button type="button" class="range-btn" aria-haspopup="dialog" [attr.aria-expanded]="rangeOpen"
+                    (click)="toggleRange()" [attr.aria-label]="'ช่วงวันที่ ' + rangeState.label()">
+              <svg class="cal" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+              <span class="range-text"><span class="long">{{ rangeState.label() }}</span><span class="short">{{ rangeState.shortLabel() }}</span></span>
+              <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            @if (rangeOpen) {
+              <div class="popover range-pop" role="dialog" aria-label="เลือกช่วงวันที่">
+                <div class="presets">
+                  @for (d of [7, 30, 90]; track d) {
+                    <button type="button" class="preset" [class.on]="rangeState.range().preset === d"
+                            (click)="pickPreset($any(d))">{{ d }} วันล่าสุด</button>
+                  }
+                </div>
+                <form class="custom" (ngSubmit)="applyCustom()">
+                  <span class="custom-title">กำหนดเอง</span>
+                  <label>ตั้งแต่ <input type="date" name="from" class="min44" [(ngModel)]="customFrom" [max]="today"></label>
+                  <label>ถึง <input type="date" name="to" class="min44" [(ngModel)]="customTo" [max]="today"></label>
+                  @if (customError) { <p class="err" role="alert">{{ customError }}</p> }
+                  <button type="submit" class="apply">ใช้ช่วงนี้</button>
+                </form>
+              </div>
+            }
+          </div>
+        }
+
+        <div class="popover-anchor">
+          <button type="button" class="icon-btn bell" aria-haspopup="dialog" [attr.aria-expanded]="bellOpen"
+                  [attr.aria-label]="notificationCount ? 'เรื่องที่ต้องจัดการ ' + notificationCount + ' เรื่อง' : 'ไม่มีเรื่องที่ต้องจัดการ'"
+                  (click)="toggleBell()">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16.5V11a6 6 0 1112 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 004 0"/></svg>
+            @if (notificationCount) { <span class="badge">{{ notificationCount }}</span> }
+          </button>
+          @if (bellOpen) {
+            <div class="popover bell-pop" role="dialog" aria-label="เรื่องที่ต้องจัดการ">
+              <p class="pop-title">เรื่องที่ต้องจัดการ</p>
+              @for (n of notifications(); track n.key) {
+                <button type="button" class="notice" [class.warn]="n.severity === 'warn'" (click)="openNotification(n)">
+                  <span class="dot" aria-hidden="true"></span>
+                  <span class="notice-text"><strong>{{ n.title }}</strong><small>{{ n.detail }}</small></span>
+                  <svg class="go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+                </button>
+              } @empty {
+                <p class="empty">ไม่มีเรื่องที่ต้องจัดการ</p>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="popover-anchor">
+          <button type="button" class="admin-btn" aria-haspopup="menu" [attr.aria-expanded]="userOpen" (click)="toggleUser()"
+                  [attr.aria-label]="'เมนูแอดมิน ' + (me()?.username ?? '')">
+            <app-user-avatar [url]="me()?.avatarUrl" [name]="me()?.username ?? ''" [size]="40"></app-user-avatar>
+            <span class="admin-name">
+              <strong>{{ me()?.displayName || me()?.username }}</strong>
+              <small>{{ readOnly() ? 'ผู้ประเมินระบบ' : 'ผู้ดูแลระบบ' }}</small>
+            </span>
+            <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          @if (userOpen) {
+            <div class="popover user-pop" role="menu">
+              <button type="button" role="menuitem" (click)="backToSite()">กลับไปหน้าเว็บ</button>
+              <button type="button" role="menuitem" class="danger" (click)="signOut()">ออกจากระบบ</button>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

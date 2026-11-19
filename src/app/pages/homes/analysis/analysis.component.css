@@ -1,0 +1,426 @@
+:host {
+  --maroon: var(--color-primary);
+  --maroon-deep: var(--color-primary);
+  --navy: #1F2D4D;
+  --cream: #FFFDF7;
+  display: block;
+  font-family: 'Prompt', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+  overflow-x: hidden;
+}
+
+main {
+  flex: 1;
+}
+
+.footer-bar {
+  height: 40px;
+  background: var(--maroon);
+  border-top: 6px solid #FDEBB0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- แถบแดงเข้ม ---------- */
+.band {
+  background: var(--maroon);
+  padding: 44px 16px 120px;
+  text-align: center;
+}
+
+.groups {
+  list-style: none;
+  margin: 0 auto 34px;
+  padding: 0;
+  max-width: 900px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.g-img {
+  aspect-ratio: 1 / 0.97;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.band h1 {
+  margin: 0;
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 700;
+  color: #A9C6F0;
+}
+
+.sub {
+  margin: 6px 0 30px;
+  color: #fff;
+  font-size: clamp(14px, 1.6vw, 18px);
+}
+
+.start-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 44px;
+  border-radius: 8px;
+  background: #FFEBAC;
+  color: var(--navy);
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .18);
+}
+
+.start-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: var(--navy);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.start-btn:hover {
+  background: #FFE38A;
+}
+
+.start-btn:focus-visible {
+  outline: 3px solid #A9C6F0;
+  outline-offset: 3px;
+}
+
+/* ---------- การ์ดสรุป (ซ้อนขอบล่างของแถบ) ---------- */
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin: -80px auto 50px;
+  padding: 0 16px;
+  max-width: 900px;
+  position: relative;
+}
+
+.card {
+  background: #FFFDF9;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .14);
+}
+
+.score-card {
+  flex: 0 1 440px;
+  padding: 14px 22px 16px;
+  min-width: 0;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #3a0c0c;
+}
+
+.fork {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.score-body {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.donut {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  flex: none;
+}
+
+.donut svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.donut circle {
+  fill: none;
+  stroke-width: 14;
+}
+
+.donut .track {
+  stroke: #D3F2C4;
+}
+
+.donut .bar {
+  stroke: #4CC23A;
+  stroke-linecap: butt;
+  transition: stroke-dashoffset .6s ease;
+}
+
+.donut.tone-warn .track {
+  stroke: #FCEBC2;
+}
+
+.donut.tone-warn .bar {
+  stroke: #E8A317;
+}
+
+.donut.tone-bad .track {
+  stroke: #F8D3D3;
+}
+
+.donut.tone-bad .bar {
+  stroke: #D64545;
+}
+
+.donut-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.05;
+  color: #1F2D4D;
+}
+
+.donut-text strong {
+  font-size: 20px;
+}
+
+.donut-text small {
+  font-size: 11px;
+}
+
+.divider {
+  align-self: stretch;
+  width: 1.5px;
+  background: #E6B7B7;
+}
+
+.level {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.face {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border-radius: 50%;
+  background: #DDEFE3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.face svg {
+  width: 34px;
+  height: 34px;
+  fill: none;
+  stroke: #2E6B3E;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.face.tone-warn {
+  background: #FBEFD2;
+}
+
+.face.tone-warn svg {
+  stroke: #9A6A00;
+}
+
+.face.tone-bad {
+  background: #F9DADA;
+}
+
+.face.tone-bad svg {
+  stroke: #A12A2A;
+}
+
+.level-label {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.delta {
+  margin: 0;
+  font-size: 12.5px;
+  color: #3a0c0c;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.delta b {
+  font-size: 16px;
+  color: var(--color-primary);
+}
+
+.delta small {
+  flex-basis: 100%;
+  padding-left: 24px;
+  font-size: 10.5px;
+  color: #7a6a6a;
+}
+
+.arrow {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #DDEFE3;
+  color: #2E6B3E;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.delta.down .arrow {
+  background: #F9DADA;
+  color: #A12A2A;
+}
+
+.empty {
+  margin: 22px 0;
+  text-align: center;
+  color: #7a6a6a;
+  font-size: 15px;
+}
+
+.meals-card {
+  flex: 0 1 260px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 26px;
+}
+
+.book {
+  width: 74px;
+  height: 74px;
+  flex: none;
+  border-radius: 8px;
+  background: #F5DDE0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.book svg {
+  width: 44px;
+  height: 44px;
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.meals-text {
+  text-align: center;
+  flex: 1;
+}
+
+.meals-text h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1F2D4D;
+}
+
+.count {
+  margin: 4px 0 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--color-primary);
+  line-height: 1.1;
+}
+
+.unit {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: #1F2D4D;
+}
+
+@media (max-width:767.98px) {
+  .band {
+    padding: 28px 16px 90px;
+  }
+
+  .groups {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .start-btn {
+    padding: 12px 28px;
+    font-size: 16px;
+  }
+
+  .cards {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    margin-top: -60px;
+  }
+
+  .score-card,
+  .meals-card {
+    flex: none;
+  }
+}
+
+@media (max-width:479.98px) {
+  .score-body {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .divider {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .donut .bar {
+    transition: none;
+  }
+}
+
+/* ตัวอักษรบนมือถือ (≤ 767px): เนื้อหาหลัก 14px, ข้อความรอง ≥ 12px */
+@media (max-width:767.98px){
+  .donut-text small{ font-size:12px; }
+  .delta small{ font-size:12px; }
+}

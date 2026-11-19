@@ -1,0 +1,58 @@
+<div class="page">
+
+  <app-navbar></app-navbar>
+
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <a routerLink="/analysis" class="crumb-link hit44">วิเคราะห์</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">ประมวลผลข้อมูล</span>
+  </nav>
+
+  <main class="content">
+    <a routerLink="/analysis/review" class="back-link hit44">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>ย้อนกลับ
+    </a>
+
+    @if (notFound) {
+      <section class="center">
+        <h1>ไม่พบการวิเคราะห์นี้</h1>
+        <a routerLink="/analysis/review" class="btn-primary hit44">กลับไปหน้าตรวจสอบ</a>
+      </section>
+    } @else if (failed) {
+      <section class="center" role="alert">
+        <span class="fail-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.3v.2"/></svg></span>
+        <h1>วิเคราะห์ไม่สำเร็จ</h1>
+        <p class="sub">{{ failMessage || 'ระบบใช้เวลานานเกินไปหรือเกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง' }}</p>
+        <div class="fail-actions">
+          <button type="button" class="btn-primary hit44" (click)="retry()" [disabled]="retrying">{{ retrying ? 'กำลังลองใหม่...' : 'ลองใหม่' }}</button>
+          <a routerLink="/analysis/review" class="btn-soft hit44">กลับ</a>
+        </div>
+      </section>
+    } @else {
+      <section class="center" aria-labelledby="pr-title">
+        <app-art-image class="waiting" src="images/analysis/waiting.png"></app-art-image>
+        <h1 id="pr-title">กำลังวิเคราะห์พฤติกรรมการกิน....</h1>
+        <p class="sub">ระบบกำลังอ่านและประมวลผลข้อมูลการบริโภคอาหารของคุณ กรุณารอสักครู่..</p>
+
+        <ol class="steps" aria-label="ขั้นตอนการวิเคราะห์" aria-live="polite">
+          @for (s of steps; track s; let i = $index) {
+            @if (i > 0) { <li class="arrow" aria-hidden="true"></li> }
+            <li class="step" [class.done]="stepState(i) === 2" [class.active]="stepState(i) === 1" [class.todo]="stepState(i) === 0"
+                [attr.aria-current]="stepState(i) === 1 ? 'step' : null">
+              @if (stepState(i) === 2) {
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.7 2.7L16 9.6"/></svg>
+              } @else if (stepState(i) === 1) {
+                <svg class="spin" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 11-2.3-5.6M20 4v4h-4"/></svg>
+              } @else {
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/></svg>
+              }
+              <span>{{ s }}<span class="sr-only"> ({{ stepLabel(i) }})</span></span>
+            </li>
+          }
+        </ol>
+      </section>
+    }
+  </main>
+
+  <footer class="footer-bar" aria-hidden="true"></footer>
+</div>

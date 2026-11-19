@@ -1,0 +1,150 @@
+<div class="page">
+
+  <app-navbar></app-navbar>
+
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <span>แนะนำ</span><span aria-hidden="true">/</span><span aria-current="page">โหมดการสอบถามและคำแนะนำ AI</span>
+  </nav>
+
+  <main class="chat">
+    <div #thread class="thread" role="log" aria-label="บทสนทนากับผู้ช่วยแนะนำเมนู">
+      @if (!started) {
+        <!-- ---------- สถานะเริ่มต้น ---------- -->
+        <section class="intro" aria-labelledby="ai-title">
+          <div class="logo-frame"><img src="images/main/logo.png" alt="Smart Pick KinRai"></div>
+          <h1 id="ai-title">มื้อนี้ได้เมนูอะไรกินคะ??</h1>
+          <p>สวัสดีครับ วันนี้อยากกินอะไร บอกรสชาติ มื้ออาหาร หรือจำนวนเมนูที่อยากได้มาได้เลย ถ้าไม่บอกจำนวน เดี๋ยวเลือกให้ 1 เมนูครับ</p>
+          <ul class="chips" aria-label="ตัวอย่างคำถาม">
+            @for (c of chips; track c) {
+              <li><button type="button" class="chip hit44" (click)="sendChip(c)" [disabled]="busy">{{ c }}</button></li>
+            }
+          </ul>
+        </section>
+      }
+
+      @for (m of messages; track $index) {
+        @if (m.role === 'user') {
+          <div class="row user">
+            <p class="bubble user-bubble">{{ m.text }}</p>
+            @if (user(); as u) {
+              <app-user-avatar [url]="u.avatarUrl" [name]="u.username" [size]="36"></app-user-avatar>
+            } @else {
+              <span class="guest-avatar" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.6-4.3 3.6-6.8 7.5-6.8s6.9 2.5 7.5 6.8z"/></svg></span>
+            }
+          </div>
+        } @else if (m.loading) {
+          <div class="row bot" aria-busy="true">
+            <img class="bot-icon" src="images/main/logo.png" alt="">
+            <p class="bubble loading" aria-label="กำลังหาเมนูให้"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></p>
+          </div>
+        } @else {
+          <div class="row bot">
+            <img class="bot-icon" src="images/main/logo.png" alt="">
+            <div class="bubble bot-card" [class.plain]="!m.recipes?.length && !m.groups?.length"
+                 [class.multi]="(m.recipes?.length ?? 0) > 1 || !!m.groups?.length" [class.meals]="!!m.groups?.length">
+              <p class="reply">{{ m.text }}</p>
+              @if (m.limitHit && !user()) {
+                <p class="reply small"><button type="button" class="link-btn" (click)="goLogin()">เข้าสู่ระบบ</button> เพื่อถามได้มากขึ้นต่อวัน</p>
+              }
+              @if (m.notices?.length) {
+                <ul class="notices">
+                  @for (n of m.notices; track n) { <li>{{ n }}</li> }
+                </ul>
+              }
+              @if (m.groups?.length) {
+                <!-- คำขอหลายมื้อ: การ์ดแยกตามมื้อ ปุ่ม "ขอเมนูอื่น" ต่อมื้อ (ทีละมื้อ) -->
+                <div class="meal-groups">
+                  @for (g of m.groups; track g.meal) {
+                    <section class="meal-group" [attr.aria-label]="g.label" [attr.aria-busy]="m.groupBusy === g.meal">
+                      <h3 class="meal-label">{{ g.label }}</h3>
+                      @if (g.notFound) {
+                        <p class="meal-empty">ไม่พบเมนูสำหรับ{{ g.label }}ตามเงื่อนไข</p>
+                      } @else {
+                        <ul class="menus">
+                          @for (r of g.recipes; track r.id) {
+                            <ng-container [ngTemplateOutlet]="card" [ngTemplateOutletContext]="{ $implicit: r, m: m, g: g, inlineMore: g.recipes.length === 1 }"></ng-container>
+                          }
+                        </ul>
+                        @if (g.recipes.length > 1) {
+                          <button type="button" class="btn-outline meal-more hit44" (click)="moreMeal(m, g)" [disabled]="busy || !!m.groupBusy || !canMore(m)" [attr.title]="canMore(m) ? null : expiredHint">
+                            {{ m.groupBusy === g.meal ? 'กำลังหาเมนู...' : 'ขอเมนูอื่น' }}
+                          </button>
+                        }
+                      }
+                    </section>
+                  }
+                </div>
+              } @else if (m.recipes?.length) {
+                <ul class="menus">
+                  @for (r of m.recipes; track r.id) {
+                    <ng-container [ngTemplateOutlet]="card" [ngTemplateOutletContext]="{ $implicit: r, m: m, g: null, inlineMore: m.recipes!.length === 1 }"></ng-container>
+                  }
+                </ul>
+                @if (m.recipes!.length > 1) {
+                  <button type="button" class="btn-outline more-all hit44" (click)="more(m)" [disabled]="busy || !canMore(m)" [attr.title]="canMore(m) ? null : expiredHint">ขอเมนูอื่น</button>
+                }
+              }
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+    <p class="sr-only" aria-live="polite">{{ announcement }}</p>
+
+    <!-- ---------- ช่องพิมพ์ ---------- -->
+    <form class="composer" (submit)="$event.preventDefault(); send()">
+      <label for="ai-input" class="sr-only">พิมพ์บอกความต้องการ</label>
+      <textarea #input id="ai-input" rows="2" [(ngModel)]="draft" name="draft" [attr.maxlength]="maxLength"
+                placeholder="พิมพ์บอกความต้องการ เช่น อยากกินเผ็ดๆ ไม่กินหมู หรือขอ 3 เมนูมื้อเย็นแบบคลีน"
+                (keydown)="onKeydown($event)" aria-describedby="ai-hint"></textarea>
+      @if (showCounter) { <span class="counter" aria-live="polite">{{ draft.length }}/{{ maxLength }}</span> }
+      <span id="ai-hint" class="sr-only">กด Enter เพื่อส่ง, Shift+Enter เพื่อขึ้นบรรทัดใหม่</span>
+      <button type="submit" class="send hit44" [disabled]="!canSend" [attr.aria-busy]="busy" aria-label="ส่งข้อความ">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4l15 8-15 8 3-8z"/></svg>
+      </button>
+    </form>
+  </main>
+
+  <!-- การ์ดเมนู 1 ใบ: g = มื้อ (คำขอหลายมื้อ) หรือ null (แบบเดิม); inlineMore = มีเมนูเดียว → ปุ่มขอเมนูอื่นอยู่ในการ์ด -->
+  <ng-template #card let-r let-m="m" let-g="g" let-inlineMore="inlineMore">
+    <li class="menu">
+      <a class="menu-img" [routerLink]="menuLink(r.id)" [attr.aria-label]="'ดูรายละเอียด ' + r.displayName">
+        <app-menu-image [src]="r.imageUrl" [alt]="r.displayName"></app-menu-image>
+      </a>
+      <a class="menu-name" [routerLink]="menuLink(r.id)" [title]="r.menuName">{{ r.displayName }}</a>
+      @if (r.calories) { <span class="kcal">{{ r.calories }}</span> }
+      <div class="menu-actions">
+        @if (inlineMore) {
+          @if (g) {
+            <button type="button" class="btn-outline meal-more hit44" (click)="moreMeal(m, g)" [disabled]="busy || !!m.groupBusy || !canMore(m)" [attr.title]="canMore(m) ? null : expiredHint">
+              {{ m.groupBusy === g.meal ? 'กำลังหาเมนู...' : 'ขอเมนูอื่น' }}
+            </button>
+          } @else {
+            <button type="button" class="btn-outline hit44" (click)="more(m)" [disabled]="busy || !canMore(m)" [attr.title]="canMore(m) ? null : expiredHint">ขอเมนูอื่น</button>
+          }
+        }
+        @if (r.liked) {
+          <a class="btn-liked" [routerLink]="menuLink(r.id)">ถูกใจแล้ว · ดูรายละเอียด</a>
+        } @else {
+          <button type="button" class="btn-like hit44" (click)="like(m, r)" [disabled]="m.likeBusy?.has(r.id)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 21V10l4.5-7c1.4 0 2.2 1.1 1.9 2.4L12.7 9H19a2 2 0 012 2.3l-1.4 7.6A2.5 2.5 0 0117.1 21zM3 10h3v11H3z"/></svg>
+            ถูกใจเมนูนี้
+          </button>
+        }
+      </div>
+    </li>
+  </ng-template>
+
+  @if (guestLikePrompt) {
+    <div class="mini-backdrop" (click)="closeGuestPrompt()">
+      <div class="mini-dialog" role="alertdialog" aria-modal="true" aria-labelledby="ai-like-title" (click)="$event.stopPropagation()">
+        <p id="ai-like-title" class="mini-title">เข้าสู่ระบบเพื่อบันทึกเมนูที่ชอบ</p>
+        <div class="mini-actions">
+          <button type="button" class="mini-primary" (click)="guestLogin()">เข้าสู่ระบบ</button>
+          <button type="button" class="mini-secondary" (click)="closeGuestPrompt()">ไว้ทีหลัง</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

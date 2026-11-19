@@ -1,0 +1,25 @@
+@if (breadcrumb()) {
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <span aria-current="page">{{ breadcrumb() }}</span>
+  </nav>
+}
+
+<div class="guest-body">
+  <section class="guest" aria-labelledby="guest-title">
+    @if (!artMissing()) {
+      <img class="guest-art" src="images/history/brain.png" alt="" (error)="artMissing.set(true)">
+    } @else {
+      <div class="art-ph guest-art" aria-hidden="true">images/history/brain.png</div>
+    }
+    <h1 id="guest-title">{{ title() }}</h1>
+    @if (subtitle()) {
+      <p class="guest-sub">{{ subtitle() }}</p>
+    }
+    <button type="button" class="guest-login hit44" (click)="goLogin()">เข้าสู่ระบบ</button>
+    @if (showRegister()) {
+      <p class="guest-register">
+        ยังไม่มีบัญชี?&nbsp;<a routerLink="/register" [queryParams]="{ returnUrl: returnUrl() }">สมัครสมาชิก</a>
+      </p>
+    }
+  </section>
+</div>

@@ -1,0 +1,34 @@
+<div class="hero">
+  <div class="eyebrow">หิวแล้วเลือกไม่ถูก?</div>
+  <h1 class="logo">KinRai</h1>
+</div>
+
+<div class="banner" aria-hidden="true">
+
+  <div class="track-row">
+    <div class="dish" *ngFor="let dish of rowTop">
+      <img [src]="dish.imageUrl" [alt]="dish.alt" class="dish-img" 
+      [loading]="dish.imageUrl === 'images/banner/b1.png' ? 'eager' : 'lazy'">
+    </div>
+    <!-- duplicate set for seamless loop -->
+    <div class="dish" *ngFor="let dish of rowTop">
+      <img [src]="dish.imageUrl" [alt]="dish.alt" class="dish-img" [loading]="dish.imageUrl === 'images/banner/b1.png' ? 'eager' : 'lazy'">
+    </div>
+  </div>
+
+  <div class="track-row reverse">
+    <div class="dish" *ngFor="let dish of rowBottom">
+      <img [src]="dish.imageUrl" [alt]="dish.alt" class="dish-img" [loading]="dish.imageUrl === 'images/banner/b7.png' ? 'eager' : 'lazy'">
+    </div>
+    <!-- duplicate set for seamless loop -->
+    <div class="dish" *ngFor="let dish of rowBottom">
+      <img [src]="dish.imageUrl" [alt]="dish.alt" class="dish-img" [loading]="dish.imageUrl === 'images/banner/b7.png' ? 'eager' : 'lazy'">
+    </div>
+  </div>
+
+</div>
+
+<div class="content">
+  <p class="tagline">ไม่ต้องเสียเวลาเลือกเมนูเป็น<strong> 100</strong> เราช่วยคุณได้</p>
+  <button class="cta" (click)="goToHome()">เริ่มกันเลย</button>
+</div>

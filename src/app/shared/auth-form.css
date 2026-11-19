@@ -1,0 +1,250 @@
+/*
+ * สไตล์ฟอร์มด้านในของ modal auth (Login / Register / Forgot) — global, ทุก class ขึ้นต้น .auth-
+ * import จาก src/styles.css ครั้งเดียว (ไม่ซ้ำในทุก component → ไม่ชน budget CSS ต่อ component)
+ * โครง modal/รูป/ปุ่ม X อยู่ที่ shared/auth-modal
+ */
+.auth-title{
+  margin:0;
+  font-family:'Prompt', sans-serif;
+  font-weight:700;
+  font-size:clamp(28px, 3.6vw, 34px);
+  line-height:1.2;
+  color:#FFEBAC;
+  text-align:center;
+}
+.auth-subtitle{
+  margin:10px 0 18px;
+  font-size:11px;
+  line-height:1.6;
+  text-align:center;
+  color:#fff;
+}
+.auth-subtitle strong{ color:#FFEBAC; font-weight:600; word-break:break-all; }
+
+.auth-form{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  font-family:'Prompt', sans-serif;
+}
+
+.auth-field{
+  display:flex;
+  flex-direction:column;
+  margin-top:14px;
+}
+.auth-field > label{
+  font-size:11px;
+  font-weight:600;
+  color:#fff;
+  margin-bottom:4px;
+}
+.auth-input{
+  position:relative;
+  display:flex;
+  align-items:center;
+  border-bottom:1px solid rgba(255,255,255,.55);
+  transition:border-color .15s ease;
+}
+.auth-input:focus-within{ border-bottom-color:#FFEBAC; }
+.auth-input.invalid{ border-bottom-color:#FFC2C2; }
+.auth-input input{
+  flex:1;
+  min-width:0;
+  background:transparent;
+  border:none;
+  border-radius:0;
+  padding:6px 0;
+  color:#fff;
+  font-family:inherit;
+  font-size:14px;
+  outline:none;
+}
+.auth-input input::placeholder{ color:rgba(255,255,255,.45); }
+.auth-input svg{
+  width:16px;
+  height:16px;
+  flex:none;
+  stroke:rgba(255,255,255,.8);
+  stroke-width:1.8;
+  fill:none;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.auth-input .lead-icon{ margin-right:8px; }
+.auth-icon-btn{
+  flex:none;
+  display:grid;
+  place-items:center;
+  width:28px;
+  height:28px;
+  padding:0;
+  border:none;
+  background:none;
+  cursor:pointer;
+  border-radius:50%;
+}
+.auth-icon-btn:hover svg{ stroke:#FFEBAC; }
+.auth-icon-btn:focus-visible{ outline:2px solid #FFEBAC; outline-offset:1px; }
+/* ปุ่มตาในช่องรหัสผ่านหน้า Login / Register: พื้นที่กด 44×44 (margin ติดลบ → ช่องไม่สูงขึ้นบนจอคอม, ไอคอนชิดขวา)
+   ไอคอนขาวทึบ 20px ให้เห็นชัดบนพื้นแดง; input เป็น flex:1 จึงหดให้ปุ่มเอง ตัวอักษรไม่ทับไอคอน */
+.auth-icon-btn.pw-toggle{ width:44px; height:44px; margin:-6px -10px -6px 4px; }
+.auth-icon-btn.pw-toggle svg{ width:20px; height:20px; stroke:#fff; stroke-width:1.9; }
+.auth-icon-btn.pw-toggle:hover svg{ stroke:#FFEBAC; }
+
+/* error ไม่จองที่ — render เฉพาะตอนมี (@if) แล้วดันช่องล่างลงตามธรรมชาติ */
+.auth-error,
+.auth-form-error{
+  margin:6px 0 0;
+  font-size:12px;
+  line-height:1.4;
+  color:#FFC2C2;
+}
+.auth-form-error{ text-align:center; margin-top:14px; }
+.auth-success{
+  margin:0 0 4px;
+  padding:8px 12px;
+  border-radius:6px;
+  font-size:13px;
+  text-align:center;
+  color:#1E2A44;
+  background:#D7F2DC;
+}
+.auth-success.inline{ background:none; color:#FFEBAC; padding:0; margin-top:14px; }
+
+.auth-row{
+  margin-top:24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.auth-remember{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:11px;
+  cursor:pointer;
+}
+.auth-remember input{
+  width:12px;
+  height:12px;
+  margin:0;
+  accent-color:#8FB4EE;
+  cursor:pointer;
+}
+
+.auth-submit{
+  align-self:center;
+  margin-top:40px;
+  min-width:120px;
+  padding:7px 22px;
+  border:none;
+  border-radius:6px;
+  background:#8FB4EE;
+  color:#1E2A44;
+  font-family:inherit;
+  font-weight:600;
+  font-size:14px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  cursor:pointer;
+  transition:background .15s ease, transform .1s ease;
+}
+.auth-submit:hover:not(:disabled){ background:#7AA2DF; }
+.auth-submit:active:not(:disabled){ transform:translateY(1px); }
+.auth-submit:disabled{ opacity:.75; cursor:progress; }
+.auth-submit:focus-visible{ outline:2px solid #FFEBAC; outline-offset:2px; }
+
+.auth-spinner{
+  width:14px;
+  height:14px;
+  border:2px solid rgba(30,42,68,.3);
+  border-top-color:#1E2A44;
+  border-radius:50%;
+  animation:auth-spin .7s linear infinite;
+}
+@keyframes auth-spin{ to{ transform:rotate(360deg); } }
+
+/* ลิงก์ = <button type="button"> ขีดเส้นใต้ (คลิกเดียวไม่ trigger submit/validate) */
+.auth-link{
+  padding:2px 4px;
+  background:none;
+  border:none;
+  color:#fff;
+  font-family:inherit;
+  font-size:11px;
+  font-weight:600;
+  text-decoration:underline;
+  text-underline-offset:2px;
+  cursor:pointer;
+}
+.auth-link:hover:not(:disabled){ color:#FFEBAC; }
+.auth-link:disabled{ opacity:.6; cursor:default; text-decoration:none; }
+.auth-link:focus-visible{ outline:2px solid #FFEBAC; outline-offset:2px; }
+.auth-footer{
+  align-self:center;
+  margin-top:10px;
+  font-size:11px;
+  color:rgba(255,255,255,.8);
+  text-align:center;
+}
+
+/* ---------- OTP 6 ช่อง ---------- */
+.auth-otp{
+  margin-top:18px;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+}
+.auth-otp input{
+  width:40px;
+  height:48px;
+  padding:0;
+  border:1px solid rgba(255,255,255,.55);
+  border-radius:8px;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-family:inherit;
+  font-size:20px;
+  font-weight:600;
+  text-align:center;
+  outline:none;
+  transition:border-color .15s ease, background .15s ease;
+}
+.auth-otp input:focus{ border-color:#FFEBAC; background:rgba(255,255,255,.14); }
+.auth-otp.invalid input{ border-color:#FFC2C2; }
+.auth-otp + .auth-error{ text-align:center; }
+/* พื้นขาว (pop-up เปลี่ยนรหัสผ่านหน้าโปรไฟล์) */
+.auth-otp.light{ justify-content:flex-start; gap:clamp(6px, 2.2vw, 16px); margin-top:6px; }
+.auth-otp.light input{
+  width:clamp(38px, 11vw, 60px); height:clamp(46px, 13vw, 72px);
+  border:1px solid #A9C6F0; border-radius:4px; background:#F3F8FE; color:#1F2D4D; font-size:24px;
+}
+.auth-otp.light input:focus{ border-color:#1F2D4D; background:#fff; box-shadow:0 0 0 3px rgba(169,198,240,.5); }
+.auth-otp.light.invalid input{ border-color:var(--color-danger); }
+
+@media (max-width:767.98px){
+  .auth-subtitle{ font-size:12px; }
+}
+@media (max-width:479.98px){
+  .auth-otp{ gap:6px; }
+  .auth-otp input{ width:36px; height:44px; }
+}
+@media (prefers-reduced-motion:reduce){
+  .auth-spinner{ animation-duration:1.6s; }
+}
+
+/* ตัวอักษรบนมือถือ (≤ 767px): เนื้อหาหลัก 14px, ข้อความรอง ≥ 12px */
+@media (max-width:767.98px){
+  .auth-subtitle{ font-size:14px; }
+  .auth-field > label{ font-size:14px; }
+  .auth-error, .auth-form-error{ font-size:13px; }
+  .auth-success{ font-size:14px; }
+  .auth-remember{ font-size:14px; }
+  .auth-link{ font-size:14px; }
+  .auth-footer{ font-size:14px; }
+  app-auth-layout .auth-submit{ margin-top:28px; }   /* หน้า Login/Register มีรูปแบนเนอร์ด้านบน — Login พอดีจอ 390×844 (pop-up ไม่เปลี่ยน) */
+}

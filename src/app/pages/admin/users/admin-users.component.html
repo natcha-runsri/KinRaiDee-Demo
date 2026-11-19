@@ -1,0 +1,112 @@
+<section class="card">
+  <div class="filters" role="search">
+    <label class="search">
+      <span class="sr-only">ค้นหาผู้ใช้</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+      <input type="search" class="min44" placeholder="ค้นหา username หรืออีเมล" [(ngModel)]="q" (ngModelChange)="onSearch()" name="q">
+    </label>
+    <label class="field"><span>สถานะ</span>
+      <select class="min44" [(ngModel)]="status" (ngModelChange)="onFilter()" name="status">
+        <option value="">ทั้งหมด</option><option value="active">ใช้งานได้</option><option value="suspended">ถูกระงับ</option>
+      </select>
+    </label>
+    <label class="field"><span>role</span>
+      <select class="min44" [(ngModel)]="role" (ngModelChange)="onFilter()" name="role">
+        <option value="">ทั้งหมด</option><option value="USER">USER</option><option value="REVIEWER">REVIEWER</option><option value="ADMIN">ADMIN</option>
+      </select>
+    </label>
+  </div>
+
+  @if (data(); as d) {
+    <ul class="counts" aria-label="สรุปบัญชี">
+      <li>บัญชีทั้งหมด <b>{{ d.counts.all }}</b></li>
+      <li>ใช้งานได้ <b>{{ d.counts.active }}</b></li>
+      <li>ถูกระงับ <b>{{ d.counts.suspended }}</b></li>
+      <li>แอดมิน <b>{{ d.counts.admins }}</b></li>
+    </ul>
+  }
+  @if (notice()) { <p class="notice" role="status">{{ notice() }}</p> }
+
+  @if (error()) {
+    <div class="error" role="alert"><p>โหลดรายชื่อผู้ใช้ไม่สำเร็จ</p><button type="button" class="btn" (click)="retry()">ลองใหม่</button></div>
+  } @else {
+    <div class="table-wrap" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+      <table class="users">
+        <thead>
+          <tr>
+            <th scope="col">ผู้ใช้</th>
+            <th scope="col" class="c-date">สมัคร</th>
+            <th scope="col" class="c-date">ใช้งานล่าสุด</th>
+            <th scope="col">สถานะ</th>
+            <th scope="col">role</th>
+            <th scope="col"><span class="sr-only">จัดการ</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of data()?.items ?? []; track u.id) {
+            <tr>
+              <td>
+                <strong>{{ u.username }}</strong>@if (u.self) { <span class="you">(คุณ)</span> }
+                <small class="email">{{ u.email ?? 'ไม่มีอีเมล' }}</small>
+              </td>
+              <td class="c-date" data-label="สมัคร">{{ date(u.createdAt) }}</td>
+              <td class="c-date" data-label="ใช้งานล่าสุด">{{ date(u.lastActiveAt) }}</td>
+              <td class="c-badges"><span class="badge" [attr.data-tone]="u.status">{{ u.status === 'active' ? 'ใช้งานได้' : 'ถูกระงับ' }}</span></td>
+              <td class="c-badges"><span class="badge" [attr.data-tone]="u.role.toLowerCase()">{{ u.role }}</span></td>
+              <td class="c-actions"><fieldset class="ro-lock" [disabled]="ro()" [attr.title]="ro() ? 'บัญชีดูอย่างเดียว' : null"><div class="actions">
+                @if (u.status === 'active') {
+                  <button type="button" class="btn danger" [disabled]="u.self" [attr.title]="u.self ? 'ระงับบัญชีของตัวเองไม่ได้' : null"
+                          (click)="open(u, 'suspend')">ระงับ</button>
+                } @else {
+                  <button type="button" class="btn" (click)="open(u, 'unsuspend')">เปิดบัญชี</button>
+                }
+                <button type="button" class="btn" (click)="open(u, 'role')">เปลี่ยน role</button>
+              </div></fieldset></td>
+            </tr>
+          } @empty {
+            @if (!loading()) { <tr><td colspan="6" class="empty-note">ไม่พบผู้ใช้</td></tr> }
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (data(); as d) {
+      <nav class="pager" aria-label="แบ่งหน้า">
+        <span>{{ d.total }} บัญชี · หน้า {{ d.page + 1 }} / {{ pages }}</span>
+        <button type="button" class="btn" [disabled]="d.page === 0" (click)="goPage(d.page - 1)">ก่อนหน้า</button>
+        <button type="button" class="btn" [disabled]="d.page + 1 >= pages" (click)="goPage(d.page + 1)">ถัดไป</button>
+      </nav>
+    }
+  }
+  <p class="privacy">แสดงเฉพาะข้อมูลที่จำเป็นต่อการจัดการบัญชี — ไม่แสดงรหัสผ่าน ข้อมูลสุขภาพ หรือผลวิเคราะห์รายคน</p>
+</section>
+
+@if (target(); as u) {
+  <div class="modal-scrim" (click)="cancel()" aria-hidden="true"></div>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="user-action-title">
+    <h2 id="user-action-title">{{ dialogTitle }}</h2>
+    @switch (kind()) {
+      @case ('suspend') { <p>บัญชีนี้จะเข้าสู่ระบบไม่ได้ และถูกออกจากระบบทุกอุปกรณ์ทันที</p> }
+      @case ('unsuspend') { <p>บัญชีนี้จะกลับมาเข้าสู่ระบบได้</p> }
+      @case ('role') {
+        <label class="lbl">role ใหม่
+          <select class="min44" [(ngModel)]="newRole" name="newRole">
+            <option value="USER">USER — ผู้ใช้ทั่วไป</option>
+            <option value="REVIEWER">REVIEWER — ดูหน้าแอดมินได้ แก้ไม่ได้ (ผู้ประเมินระบบ)</option>
+            <option value="ADMIN">ADMIN — จัดการระบบได้</option>
+          </select>
+        </label>
+        @if (u.self && newRole === 'USER') { <p class="warn">คุณจะไม่สามารถเข้าหน้าจัดการระบบได้อีก</p> }
+        @if (u.self && newRole === 'REVIEWER') { <p class="warn">คุณจะดูหน้าจัดการระบบได้อย่างเดียว แก้อะไรไม่ได้อีก</p> }
+      }
+    }
+    <label class="lbl">เหตุผล <span class="req">(จำเป็น)</span>
+      <textarea rows="3" maxlength="300" [(ngModel)]="reason" name="reason" [attr.aria-invalid]="!!formError"></textarea>
+    </label>
+    @if (formError) { <p class="err" role="alert">{{ formError }}</p> }
+    <div class="modal-actions">
+      <button type="button" class="btn" (click)="cancel()">ยกเลิก</button>
+      <button type="button" class="btn" [class.danger]="kind() === 'suspend'" [class.primary]="kind() !== 'suspend'"
+              [disabled]="busy()" (click)="confirm()">{{ kind() === 'suspend' ? 'ระงับบัญชี' : 'ยืนยัน' }}</button>
+    </div>
+  </div>
+}

@@ -1,0 +1,58 @@
+<nav class="navbar">
+  <div class="nav-start" #navStart>
+    <a routerLink="/home" class="brand">
+      <img src="images/main/logo.png" alt="โลโก้" class="brand-logo">
+    </a>
+    <!-- จอ ≤ 767px: แท็บซ่อน → ปุ่ม ☰ เปิดแผงเมนูใต้ navbar -->
+    <button type="button" class="menu-toggle" aria-controls="main-menu" [attr.aria-expanded]="navOpen"
+            [attr.aria-label]="navOpen ? 'ปิดเมนู' : 'เปิดเมนู'" (click)="toggleNav()">
+      @if (navOpen) {
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      } @else {
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      }
+    </button>
+  </div>
+
+  <div class="nav-links" id="main-menu" [class.open]="navOpen" (click)="onNavLinkClick($event)">
+    <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-link">หน้าหลัก</a>
+    <a routerLink="/recommend" routerLinkActive="active" [class.active-section]="isMenuDetail()" class="nav-link">แนะนำ</a>
+    <a routerLink="/analysis" routerLinkActive="active" class="nav-link">วิเคราะห์</a>
+    <a routerLink="/history" routerLinkActive="active" class="nav-link">ประวัติ</a>
+  </div>
+
+  <div class="profile-area" #profileArea>
+    @if (authService.currentUser(); as user) {
+      <!-- login แล้ว: ปุ่มชื่อผู้ใช้ + รูปโปรไฟล์ → dropdown (โปรไฟล์ผู้ใช้ / ออกจากระบบ) -->
+      <button #menuButton type="button" class="profile-btn" id="user-menu-button"
+              aria-haspopup="menu" [attr.aria-expanded]="menuOpen" aria-controls="user-menu"
+              [attr.aria-label]="'เมนูผู้ใช้ ' + user.username"
+              (click)="toggleMenu($event)" (keydown)="onButtonKeydown($event)">
+        <span class="profile-name">{{ user.username }}</span>
+        <app-user-avatar [url]="user.avatarUrl" [name]="user.username" [size]="36"></app-user-avatar>
+      </button>
+
+      @if (menuOpen) {
+        <div class="dropdown" id="user-menu" role="menu" aria-labelledby="user-menu-button" (keydown)="onMenuKeydown($event)">
+          <button #menuItem type="button" class="dropdown-item" role="menuitem" tabindex="-1" (click)="goToProfile()">
+            <svg class="item-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7.5" r="4.5"/><path d="M3.5 21.5c.8-5 4.2-7.8 8.5-7.8s7.7 2.8 8.5 7.8z"/></svg>
+            <span>โปรไฟล์ผู้ใช้</span>
+          </button>
+          @if (authService.canOpenAdmin()) {
+            <button #menuItem type="button" class="dropdown-item" role="menuitem" tabindex="-1" (click)="goToAdmin()">
+              <svg class="item-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l8 3.2v5.6c0 5-3.4 9.1-8 10.2-4.6-1.1-8-5.2-8-10.2V5.7z"/><path class="item-tick" d="M8.5 12l2.4 2.4 4.6-4.8"/></svg>
+              <span>จัดการระบบ</span>
+            </button>
+          }
+          <div class="dropdown-divider" role="separator"></div>
+          <button #menuItem type="button" class="dropdown-item danger" role="menuitem" tabindex="-1" (click)="logoutFromMenu()">
+            <svg class="item-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 4H5.5A1.5 1.5 0 004 5.5v13A1.5 1.5 0 005.5 20H13M9.5 12H21M17.5 8l4 4-4 4"/></svg>
+            <span>ออกจากระบบ</span>
+          </button>
+        </div>
+      }
+    } @else {
+      <button class="login-btn" (click)="goToLogin()">เข้าสู่ระบบ</button>
+    }
+  </div>
+</nav>

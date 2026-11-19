@@ -1,0 +1,112 @@
+<section class="trends" aria-labelledby="tr-title">
+  <header class="tr-head">
+    <span class="tr-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.5 18.5l5-6 4 3.5 7.5-9M15 7h5v5"/></svg></span>
+    <h2 id="tr-title">แนวโน้มของคุณ</h2>
+    <div class="ttoggle" role="group" aria-label="ช่วงเวลาของแนวโน้ม">
+      @for (o of options; track o.value) {
+        <button type="button" class="ttg hit44" [class.on]="days === o.value" [attr.aria-pressed]="days === o.value" (click)="setDays(o.value)">{{ o.label }}</button>
+      }
+    </div>
+  </header>
+
+  @if (loading && !data) {
+    <p class="tr-msg" aria-live="polite">กำลังโหลด...</p>
+  } @else if (loadError) {
+    <p class="tr-msg" role="alert">โหลดแนวโน้มไม่สำเร็จ กรุณารีเฟรชหน้า</p>
+  } @else if (data && !data.enough) {
+    <div class="tr-empty" aria-live="polite">
+      <span class="te-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3.5 18.5l5-6 4 3.5 7.5-9"/></svg></span>
+      <p>วิเคราะห์อย่างน้อย 2 วันเพื่อดูแนวโน้ม</p>
+      <small>ช่วง {{ days }} วันนี้มีผลวิเคราะห์ {{ data.recordedDays }} วัน</small>
+      <a routerLink="/analysis/review" class="btn-maroon hit44">ไปวิเคราะห์ <span aria-hidden="true">▸</span></a>
+    </div>
+  } @else if (data) {
+    <!-- ---------- กราฟคะแนน ---------- -->
+    <p class="tr-summary" aria-hidden="true">
+      เฉลี่ย <strong>{{ data.average }}</strong> คะแนน
+      @if (changeText) {
+        · <span [class.up]="data.changeFromPrevious! > 0" [class.down]="data.changeFromPrevious! < 0">{{ changeText }}</span>
+      }
+    </p>
+    <p class="sr-only" aria-live="polite">{{ srSummary }}</p>
+
+    <div #plot class="plot" (mouseleave)="active = null">
+      <svg [attr.width]="width" [attr.height]="height" [attr.viewBox]="'0 0 ' + width + ' ' + height" role="group"
+           [attr.aria-label]="'กราฟคะแนนพฤติกรรมการกิน ' + days + ' วัน (กดจุดเพื่อดูผลวิเคราะห์ของวันนั้น)'">
+        @for (b of data.bands; track b.from) {
+          <rect [class]="'band band-' + b.tone" [attr.x]="pad.left" [attr.y]="bandY(b).y" [attr.width]="plotW" [attr.height]="bandY(b).h"/>
+        }
+        @for (t of ticks; track t) {
+          <line class="grid" [attr.x1]="pad.left" [attr.x2]="pad.left + plotW" [attr.y1]="y(t)" [attr.y2]="y(t)"/>
+          <text class="ylab" [attr.x]="pad.left - 6" [attr.y]="y(t) + 4">{{ t }}</text>
+        }
+        @for (l of xLabels; track l.p.date) {
+          <text class="xlab" [attr.x]="l.x" [attr.y]="height - 8">{{ dm(l.p.date) }}</text>
+        }
+        <path class="line" [attr.d]="path"/>
+        @for (pt of pts; track pt.p.date) {
+          @if (pt.y != null) {
+            <g class="pt" [class.on]="active?.p?.date === pt.p.date" tabindex="0" role="link" [attr.aria-label]="tip(pt.p) + ' ดูผลวิเคราะห์'"
+               (mouseenter)="active = pt" (focus)="active = pt" (blur)="active = null"
+               (click)="open(pt)" (keydown.enter)="open(pt)" (keydown.space)="$event.preventDefault(); open(pt)">
+              <circle class="hit" [attr.cx]="pt.x" [attr.cy]="pt.y" r="14"/>
+              <circle class="pt-dot" [attr.cx]="pt.x" [attr.cy]="pt.y" r="5"/>
+            </g>
+          }
+        }
+      </svg>
+      @if (active; as a) {
+        <div class="tip" aria-hidden="true" [style.left.px]="a.x" [style.top.px]="a.y"
+             [class.flip]="a.x > width - 120" [class.flip-left]="a.x < 120">{{ tip(a.p) }}</div>
+      }
+    </div>
+    <ul class="legend" aria-hidden="true">
+      @for (b of data.bands; track b.from) {
+        <li><span [class]="'sw band-' + b.tone"></span>{{ b.label ? b.label + ' (' + b.from + '–' + b.to + ')' : 'ต่ำกว่า ' + (b.to + 1) }}</li>
+      }
+      <li class="gap-note">วันที่ไม่ได้วิเคราะห์ = เว้นว่าง</li>
+    </ul>
+
+    <table class="sr-only">
+      <caption>คะแนนพฤติกรรมการกินรายวัน {{ days }} วันล่าสุด</caption>
+      <thead><tr><th scope="col">วันที่</th><th scope="col">คะแนน</th><th scope="col">ระดับ</th></tr></thead>
+      <tbody>
+        @for (p of data.points; track p.date) {
+          <tr><td>{{ dm(p.date) }}</td><td>{{ p.score ?? 'ไม่ได้วิเคราะห์' }}</td><td>{{ p.level?.label ?? '-' }}</td></tr>
+        }
+      </tbody>
+    </table>
+
+    <!-- ---------- หมู่อาหารที่ขาดบ่อยที่สุด ---------- -->
+    <div class="missed">
+      <h3>หมู่อาหารที่ขาดบ่อยที่สุด</h3>
+      @if (data.mostMissedGroup; as mg) {
+        <p class="mg-main"><strong>{{ mg.labelWithExample }}</strong> ขาด {{ mg.missedDays }} จาก {{ mg.recordedDays }} วันที่บันทึก</p>
+        <ul class="mg-bars">
+          @for (g of data.missingGroups; track g.key) {
+            <li [class.top]="g.key === mg.key">
+              <span class="mg-label">{{ g.label }}</span>
+              <span class="mg-bar" aria-hidden="true"><span [style.width.%]="missPercent(g.missedDays, g.recordedDays)"></span></span>
+              <span class="mg-n">ขาด {{ g.missedDays }}/{{ g.recordedDays }} วัน</span>
+            </li>
+          }
+        </ul>
+        @if (data.recommendations.length) {
+          <h4>เมนูแนะนำที่มี{{ mg.label }}</h4>
+          <ul class="recs">
+            @for (r of data.recommendations; track r.id) {
+              <li>
+                <a class="rec" [routerLink]="['/menu', r.id]" [attr.aria-label]="r.name + ' ดูรายละเอียด'">
+                  <span class="rec-img"><app-menu-image [src]="r.imageUrl" [alt]="r.name"></app-menu-image></span>
+                  <span class="rec-name" [title]="r.menuName">{{ r.name }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        }
+      } @else {
+        <p class="mg-all">เยี่ยมมาก! คุณกินครบทุกหมู่ในช่วงนี้</p>
+      }
+    </div>
+  }
+</section>

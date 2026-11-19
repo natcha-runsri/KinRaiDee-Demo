@@ -1,0 +1,73 @@
+/* ---------- การ์ดหัว ---------- */
+.head-card{ display:flex; align-items:center; gap:18px; padding:18px 26px; border-radius:10px; background:#F7E6EE; margin-bottom:26px; }
+.head-icon{ width:58px; height:58px; flex:none; border-radius:50%; background:var(--color-primary); display:flex; align-items:center; justify-content:center; }
+.head-icon svg{ width:30px; height:30px; fill:none; stroke:#fff; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; }
+.head-text{ flex:1; min-width:0; padding-left:18px; border-left:2px solid var(--color-primary); }
+.head-text h1{ margin:0; font-size:clamp(22px, 2.6vw, 30px); font-weight:700; color:#3a0c0c; }
+.head-text p{ margin:2px 0 0; font-size:14px; color:#3a2a2a; }
+.date-select{ position:relative; display:flex; align-items:center; flex:none; }
+.date-select svg{ position:absolute; left:14px; width:17px; height:17px; fill:none; stroke:var(--color-primary); stroke-width:1.8; pointer-events:none; }
+.date-select select{ appearance:none; padding:7px 40px 7px 40px; border:1.5px solid var(--color-primary); border-radius:999px; font:inherit; font-size:14px;
+  font-weight:600; color:#3a0c0c; cursor:pointer;
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 9l6 6 6-6' fill='none' stroke='%236E1E1E' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 12px center / 16px; }
+.date-select select:focus-visible{ outline:3px solid #A9C6F0; outline-offset:2px; }
+.head-art{ width:110px; height:84px; flex:none; border-radius:10px; overflow:hidden; }
+
+/* ---------- 2 คอลัมน์ ---------- */
+.cols{ display:grid; grid-template-columns:minmax(0, 1fr) minmax(0, 0.72fr); gap:22px; align-items:start; }
+.panel{ background:#fff; border-radius:12px; box-shadow:0 3px 12px rgba(0,0,0,.12); padding:22px 26px 24px; min-width:0; }
+.panel-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+.panel-head h2{ margin:0; flex:1; font-size:clamp(18px, 2vw, 22px); font-weight:700; color:#3a0c0c; }
+.ph-icon{ width:30px; height:30px; flex:none; fill:none; stroke:#3a0c0c; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.ph-icon.lines{ stroke:var(--color-primary); stroke-width:2.2; }
+.count-pill{ padding:4px 14px; border-radius:999px; background:#DCE7F7; color:#1F2D4D; font-size:12.5px; white-space:nowrap; }
+
+.meal-list{ list-style:none; margin:0; padding:0; }
+.meal-list li + li{ border-top:1px solid #F1DCDC; }
+.meal{ display:flex; align-items:center; gap:14px; padding:14px 6px; color:inherit; text-decoration:none; border-radius:8px; }
+.meal:hover{ background:#FFF7F2; }
+.meal:focus-visible{ outline:3px solid #A9C6F0; outline-offset:1px; }
+.thumb{ width:46px; height:46px; flex:none; border-radius:6px; overflow:hidden; background:#F3E3D6; }
+.thumb app-menu-image{ width:100%; height:100%; }
+.meal-name{ width:108px; flex:none; display:flex; flex-direction:column; min-width:0; }
+.meal-name b{ font-size:14px; color:#1a1a1a; }
+.meal-name small{ font-size:12px; color:#555; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.chips{ flex:1; display:flex; flex-wrap:wrap; gap:8px; min-width:0; }
+.chev{ width:20px; height:20px; flex:none; fill:none; stroke:#3a0c0c; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+
+.empty{ display:flex; flex-direction:column; align-items:center; gap:12px; padding:34px 10px; text-align:center; }
+.empty p{ margin:0; font-weight:600; color:#3a0c0c; }
+.empty-btn{ padding:8px 24px; border-radius:999px; background:var(--color-primary); color:#fff; font-size:14px; font-weight:600; text-decoration:none; }
+.empty-btn:focus-visible{ outline:3px solid #A9C6F0; outline-offset:2px; }
+
+.marks{ list-style:none; margin:0; padding:0; display:flex; flex-wrap:wrap; gap:10px 14px; }
+.mark{ display:inline-flex; align-items:center; gap:10px; padding:5px 18px 5px 10px; border-radius:999px; background:#EFEFEF; color:#555; font-size:13.5px; }
+.mark.on{ background:#E6F4C8; color:#2F4A10; }
+.mark.off{ background:#F7E1E4; color:#7B2232; }
+.mk-icon{ width:22px; height:22px; flex:none; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; text-align:center; }
+.overview hr{ border:none; border-top:1.5px solid #D9D9D9; margin:18px 0; }
+.alert{ display:flex; align-items:center; gap:14px; margin:0; padding:16px 18px; border-radius:8px; background:#F4E1E5; color:#3a0c0c; font-size:14px; font-weight:600; }
+.alert svg{ width:28px; height:28px; flex:none; fill:none; stroke:var(--color-primary); stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.alert.ok{ background:#E6F4C8; color:#2F4A10; }
+.alert.ok svg{ stroke:#2F4A10; }
+.alert.muted{ background:#F2F2F2; color:#6b6b6b; font-weight:500; }
+
+.actions{ display:flex; flex-direction:column; align-items:center; gap:14px; margin-top:22px; }
+.actions .btn-primary{ min-width:220px; }
+.hint{ margin:-6px 0 0; font-size:12.5px; color:#8a6a6a; }
+
+@media (max-width:1023.98px){
+  .cols{ grid-template-columns:1fr; }
+  .head-art{ display:none; }
+}
+@media (max-width:767.98px){
+  .head-card{ flex-wrap:wrap; padding:16px; gap:12px; }
+  .head-icon{ width:46px; height:46px; }
+  .head-text{ padding-left:12px; flex-basis:calc(100% - 60px); }
+  .date-select{ margin-left:58px; }
+  .panel{ padding:18px 14px 20px; }
+  .meal{ flex-wrap:wrap; gap:10px; }
+  .meal-name{ width:auto; flex:1; }
+  .chips{ order:3; flex-basis:100%; padding-left:56px; }
+}
+

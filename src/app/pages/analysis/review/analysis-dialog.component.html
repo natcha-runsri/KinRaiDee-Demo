@@ -1,0 +1,117 @@
+<div class="ad-backdrop" (mousedown)="onBackdrop($event)">
+  <div #dialog class="ad-dialog" role="dialog" aria-modal="true" aria-labelledby="ad-title" aria-describedby="ad-desc">
+    <button type="button" class="ad-close hit44" (click)="close()" aria-label="ปิด" [disabled]="submitting">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>
+    </button>
+
+    <app-art-image class="ad-banner" src="images/analysis/health-banner.webp"></app-art-image>
+
+    <div class="ad-body">
+      <p class="ad-kicker">
+        <span class="kicker-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M7 4h10v3a5 5 0 01-10 0zM12 12v4M8.5 20h7M10 16h4v4h-4z"/></svg>
+        </span>
+        เริ่มต้นดูแลสุขภาพของคุณ
+        <span class="step-no">ขั้นที่ {{ step }} / 2</span>
+      </p>
+
+      @if (step === 1) {
+        <h2 id="ad-title">กรอกข้อมูลพื้นฐานของคุณ</h2>
+        <!-- มือถือแสดงฉบับสั้น 2 วลี (ตัดบรรทัดระหว่างวลีเท่านั้น) — analysis-dialog-mobile.css -->
+        <p id="ad-desc" class="ad-desc">
+          <span class="desc-long">ก่อนที่เราจะเริ่มต้นวิเคราะห์ เราขอถามเก็บข้อมูลคุณอีกเล็กน้อย<br>เพื่อให้ระบบวิเคราะห์และแนะนำได้อย่างแม่นยำ</span>
+          <span class="desc-short"><span class="ph">ขอข้อมูลพื้นฐานอีกนิด</span>&ngsp;<span class="ph">เพื่อให้วิเคราะห์และแนะนำได้แม่นยำ</span></span>
+        </p>
+
+        <div class="grid">
+          <div class="field-card" [class.invalid]="errors.weightKg">
+            <span class="fc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8.5 10a4 4 0 017 0M12 10l1.4-1.6"/></svg></span>
+            <label for="ad-weight" class="fc-label">น้ำหนัก<small>กรุณากรอกน้ำหนักปัจจุบันของคุณ</small></label>
+            <div class="fc-input">
+              <input class="min44" id="ad-weight" type="text" inputmode="decimal" autocomplete="off" placeholder="เช่น 65" [(ngModel)]="form.weightKg"
+                     (blur)="validateField('weightKg')" [attr.aria-invalid]="!!errors.weightKg" aria-describedby="ad-weight-err">
+              <span class="unit"><span class="u-long">กิโลกรัม</span><span class="u-short" aria-hidden="true">กก.</span></span>
+            </div>
+            <p id="ad-weight-err" class="err" aria-live="polite">{{ errors.weightKg }}</p>
+          </div>
+
+          <div class="field-card" [class.invalid]="errors.heightCm">
+            <span class="fc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10" cy="5" r="2"/><path d="M10 8v6M7.5 10.5h5M8.5 21l1.5-7 1.5 7M18 4v16M16.5 6h3M16.5 18h3"/></svg></span>
+            <label for="ad-height" class="fc-label">ส่วนสูง<small>กรุณากรอกส่วนสูงของคุณ</small></label>
+            <div class="fc-input">
+              <input class="min44" id="ad-height" type="text" inputmode="decimal" autocomplete="off" placeholder="เช่น 165" [(ngModel)]="form.heightCm"
+                     (blur)="validateField('heightCm')" [attr.aria-invalid]="!!errors.heightCm" aria-describedby="ad-height-err">
+              <span class="unit"><span class="u-long">เซนติเมตร</span><span class="u-short" aria-hidden="true">ซม.</span></span>
+            </div>
+            <p id="ad-height-err" class="err" aria-live="polite">{{ errors.heightCm }}</p>
+          </div>
+
+          <div class="field-card" [class.invalid]="errors.age">
+            <span class="fc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4M8 13.5h1M11.5 13.5h1M15 13.5h1M8 16.5h1M11.5 16.5h1"/></svg></span>
+            <label for="ad-age" class="fc-label">อายุ<small>กรุณากรอกอายุของคุณ</small></label>
+            <div class="fc-input">
+              <input class="min44" id="ad-age" type="text" inputmode="numeric" autocomplete="off" placeholder="เช่น 25" [(ngModel)]="form.age"
+                     (blur)="validateField('age')" [attr.aria-invalid]="!!errors.age" aria-describedby="ad-age-err">
+              <span class="unit">ปี</span>
+            </div>
+            <p id="ad-age-err" class="err" aria-live="polite">{{ errors.age }}</p>
+          </div>
+
+          <div class="field-card" [class.invalid]="errors.gender" role="group" aria-labelledby="ad-gender-label" aria-describedby="ad-gender-err">
+            <span class="fc-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10" cy="14" r="5"/><path d="M13.5 10.5L19 5M15 5h4v4M10 19v3M8 21h4"/></svg></span>
+            <span id="ad-gender-label" class="fc-label">เพศ<small>เลือกเพศของคุณ</small></span>
+            <div class="genders">
+              @for (g of genders; track g.value) {
+                <button type="button" class="gender-btn" [class.selected]="form.gender === g.value" [attr.aria-pressed]="form.gender === g.value"
+                        (click)="pickGender(g.value)">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    @if (g.value === 'other') { <circle cx="10" cy="14" r="4.5"/><path d="M13.3 10.7L18.5 5.5M15 5.5h3.5V9M10 18.5V22M8 20.5h4"/> }
+                    @else { <circle cx="12" cy="8" r="4"/><path d="M4.5 21c.6-4.3 3.6-6.8 7.5-6.8s6.9 2.5 7.5 6.8z"/> }
+                  </svg>
+                  {{ g.label }}
+                </button>
+              }
+            </div>
+            <p id="ad-gender-err" class="err" aria-live="polite">{{ errors.gender }}</p>
+          </div>
+        </div>
+
+        <div class="ad-actions">
+          <button type="button" class="ad-primary hit44" (click)="next()">ถัดไป</button>
+        </div>
+      } @else {
+        <h2 id="ad-title">พฤติกรรมการกินของคุณวันนี้</h2>
+        <p id="ad-desc" class="ad-desc"><span class="ph">ตอบคำถามสั้น ๆ ที่ข้อมูลเมนูบอกไม่ได้</span>&ngsp;<span class="ph">เพื่อให้ผลวิเคราะห์ตรงกับคุณมากขึ้น</span></p>
+
+        <ol class="questions">
+          @for (q of config.questions; track q.key; let i = $index) {
+            <li class="q-card" [class.invalid]="answersError && !answers[q.key]">
+              <fieldset>
+                <legend><span class="q-no">{{ i + 1 }}</span>{{ q.text }}</legend>
+                <div class="options">
+                  @for (o of q.options; track o.value) {
+                    <label class="opt" [class.selected]="answers[q.key] === o.value">
+                      <input type="radio" [name]="'q-' + q.key" [attr.name]="'q-' + q.key" [value]="o.value" [attr.value]="o.value" [(ngModel)]="answers[q.key]" (ngModelChange)="answersError = ''">
+                      <span>{{ o.label }}</span>
+                    </label>
+                  }
+                </div>
+              </fieldset>
+            </li>
+          }
+        </ol>
+        @if (answersError) { <p class="err block" role="alert">{{ answersError }}</p> }
+        @if (submitError) { <p class="err block" role="alert">{{ submitError }}</p> }
+
+        <div class="ad-actions two">
+          <button type="button" class="ad-back hit44" (click)="back()" [disabled]="submitting">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>ย้อนกลับ
+          </button>
+          <button type="button" class="ad-primary hit44" (click)="submit()" [disabled]="submitting" [attr.aria-busy]="submitting">
+            {{ submitting ? 'กำลังเริ่ม...' : 'เริ่มวิเคราะห์' }}
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</div>

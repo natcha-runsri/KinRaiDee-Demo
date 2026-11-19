@@ -1,0 +1,39 @@
+@if (options) {
+<div class="choices" role="group" aria-label="อาหารที่แพ้ เลือกได้หลายข้อ (ตัวเลือกมาตรฐาน)">
+  @for (o of options.items; track o.key) {
+  <button type="button" class="choice hit44" [class.on]="selected(o.key)" [attr.aria-pressed]="selected(o.key)"
+    [attr.data-key]="o.key" (click)="toggle(o.key)">
+    @if (showEmoji) { <span class="emoji" aria-hidden="true">{{ emoji(o.key) }}</span> }{{ o.label }}
+  </button>
+  }
+  @if (showNone) {
+  <button type="button" class="choice none hit44" [class.on]="none" [attr.aria-pressed]="none" (click)="chooseNone()">
+    @if (showEmoji) { <span class="emoji" aria-hidden="true">🙂</span> }ไม่มีอาหารที่แพ้
+  </button>
+  }
+</div>
+} @else if (loadError) {
+<p class="field-error" role="alert">โหลดตัวเลือกอาหารที่แพ้ไม่สำเร็จ — พิมพ์เพิ่มเองด้านล่างได้</p>
+} @else {
+<p class="loading" aria-live="polite">กำลังโหลดตัวเลือก...</p>
+}
+
+@if (value.custom.length) {
+<ul class="tags custom" aria-label="อาหารที่แพ้ที่เพิ่มเอง">
+  @for (c of value.custom; track c) {
+  <li class="tag">{{ c }}
+    <button type="button" class="tag-x hit44" [attr.aria-label]="'ลบ ' + c" (click)="remove(c)">✕</button>
+  </li>
+  }
+</ul>
+}
+<div class="add-row">
+  <input #addInput [id]="idPrefix + '-add'" class="add-input" type="text" (input)="draft = addInput.value; error = ''"
+    (keydown)="onKeydown($event)" [attr.maxlength]="maxLength + 10" autocomplete="off"
+    placeholder="พิมพ์อาหารที่แพ้เพิ่มเอง แล้วกด Enter" aria-label="เพิ่มอาหารที่แพ้เอง" [attr.aria-invalid]="!!error"
+    [attr.aria-describedby]="idPrefix + '-error ' + idPrefix + '-note'">
+  <button type="button" class="add-btn hit44" (click)="add()" [disabled]="!draft.trim()">เพิ่ม</button>
+</div>
+@if (error) { <p [id]="idPrefix + '-error'" class="field-error" role="alert">{{ error }}</p> }
+<p [id]="idPrefix + '-note'" class="note">ระบบกรองจากข้อมูลวัตถุดิบในสูตร อาจไม่ครบทุกส่วนผสม
+  กรุณาตรวจสอบรายการวัตถุดิบก่อนรับประทาน</p>

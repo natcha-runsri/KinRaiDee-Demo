@@ -1,0 +1,77 @@
+<section class="card trend">
+  <div class="card-head">
+    <span class="head-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M5 15l4-4 4 3 6-7"/></svg>
+    </span>
+    <h2>แนวโน้มการใช้งานระบบ</h2>
+    <ul class="legend" aria-label="คำอธิบายเส้น">
+      @for (s of series; track s.key) {
+        <li><span class="swatch" [style.background]="s.color"></span>{{ s.label }}</li>
+      }
+    </ul>
+  </div>
+
+  <p class="sr-only">{{ summary }}</p>
+  <div class="plot" #plot (mouseleave)="active = null">
+    <svg [attr.width]="width" [attr.height]="height" role="img" [attr.aria-label]="summary">
+      <!-- แถบค่าที่ซ่อน (0–5) — ตัวนับการใช้งานแสดงจริงทุกจุด จึงมีเฉพาะเมื่อมีค่าที่ถูกซ่อน -->
+      @if (anyHidden) {
+        <rect class="band" [attr.x]="pad.left" [attr.y]="bandTop" [attr.width]="plotW" [attr.height]="bandH"></rect>
+        <text class="band-label" [attr.x]="pad.left + 6" [attr.y]="bandTop + 12">น้อยกว่า 5</text>
+      }
+      @for (t of ticks; track t) {
+        <line class="grid" [attr.x1]="pad.left" [attr.x2]="width - pad.right" [attr.y1]="y(t)" [attr.y2]="y(t)"></line>
+        <text class="tick" [attr.x]="pad.left - 8" [attr.y]="y(t) + 4">{{ t.toLocaleString('th-TH') }}</text>
+      }
+      @for (l of xLabels; track l.x) {
+        <text class="tick x" [attr.x]="l.x" [attr.y]="height - 8">{{ l.text }}</text>
+      }
+      @for (s of series; track s.key) {
+        <path class="area" [attr.d]="area(s.key)" [attr.fill]="s.color"></path>
+      }
+      @if (active != null) {
+        <line class="cross" [attr.x1]="x(active)" [attr.x2]="x(active)" [attr.y1]="pad.top" [attr.y2]="y(0)"></line>
+      }
+      @for (s of series; track s.key) {
+        <path class="line" [attr.d]="path(s.key, false)" [attr.stroke]="s.color"></path>
+        <path class="line dashed" [attr.d]="path(s.key, true)" [attr.stroke]="s.color"></path>
+        @for (p of pts(s.key); track $index) {
+          <circle class="dot" [class.hollow]="p.hidden" [class.on]="active === $index" [attr.cx]="p.x" [attr.cy]="p.y"
+                  [attr.r]="active === $index ? 5.5 : 4" [attr.stroke]="s.color" [attr.fill]="p.hidden ? '#fff' : s.color"></circle>
+        }
+      }
+      <!-- พื้นที่ชี้ (ใหญ่กว่าจุด) -->
+      @for (p of points; track p.date) {
+        <rect class="hit" [attr.x]="x($index) - colW / 2" [attr.y]="pad.top" [attr.width]="colW" [attr.height]="plotH"
+              (mouseenter)="active = $index" (touchstart)="active = $index"></rect>
+      }
+    </svg>
+    @if (active != null && points[active]; as p) {
+      <div class="tip" [style.left.px]="tipLeft" role="status">
+        <strong>{{ dm(p.date) }}</strong>
+        @for (s of series; track s.key) {
+          <span><i class="swatch" [style.background]="s.color"></i>{{ s.label }} <b>{{ p[s.key].label }}</b></span>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="foot">
+    @if (anyHidden) { <p class="note">จุดกลวง + เส้นประ = มีผู้ใช้น้อยกว่า 5 คน (ไม่แสดงตัวเลขจริง)</p> }
+    <button type="button" class="link-btn" (click)="showTable = !showTable" [attr.aria-expanded]="showTable">
+      {{ showTable ? 'ซ่อนตาราง' : 'ดูเป็นตาราง' }}
+    </button>
+  </div>
+  @if (showTable) {
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">วันที่</th>@for (s of series; track s.key) { <th scope="col">{{ s.label }}</th> }</tr></thead>
+        <tbody>
+          @for (p of points; track p.date) {
+            <tr><th scope="row">{{ dm(p.date) }}</th>@for (s of series; track s.key) { <td>{{ p[s.key].label }}</td> }</tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

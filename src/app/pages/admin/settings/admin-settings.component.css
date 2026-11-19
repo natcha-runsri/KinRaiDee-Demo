@@ -1,0 +1,40 @@
+.page{ display:flex; flex-direction:column; gap:18px; max-width:980px; }
+.notice{ margin:0; padding:8px 12px; border-radius:10px; background:var(--adm-green-soft); color:#1f6e45; font-size:14px; }
+
+.row{ display:grid; grid-template-columns:1fr auto; gap:6px 20px; align-items:center; padding:14px 0; border-top:1px solid var(--adm-line); }
+.row:first-of-type{ border-top:0; }
+.row.disabled .row-text{ opacity:.6; }
+.row-text{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+.row-label{ font-weight:600; font-size:15px; }
+.row-text small{ color:var(--adm-muted); font-size:13px; }
+.row-text .meta{ font-size:12px; }
+.row-input{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+.num{ width:96px; height:42px; box-sizing:border-box; padding:0 10px; border:1px solid var(--adm-line); border-radius:10px; font:inherit; font-size:15px; text-align:right; }
+.num[aria-invalid="true"]{ border-color:#d0453b; }
+.range{ font-size:12px; color:var(--adm-muted); }
+.switch{ display:inline-flex; align-items:center; gap:8px; min-height:44px; font-size:14px; cursor:pointer; }
+.switch input{ width:20px; height:20px; accent-color:var(--adm-red-800); }
+.cats{ display:flex; flex-wrap:wrap; gap:8px 14px; margin:0; padding:0; border:0; }
+.cat{ display:inline-flex; align-items:center; gap:6px; min-height:36px; font-size:14px; }
+.cat input{ width:18px; height:18px; accent-color:var(--adm-red-800); }
+.err{ grid-column:1 / -1; margin:0; color:#b3261e; font-size:13px; }
+input:focus-visible{ outline:2px solid var(--adm-red-700); outline-offset:1px; }
+
+.actions{ display:flex; flex-direction:column; gap:10px; }
+.lbl{ display:flex; flex-direction:column; gap:4px; font-size:13px; color:var(--adm-muted); }
+.lbl input{ box-sizing:border-box; padding:8px 10px; border:1px solid var(--adm-line); border-radius:10px; font:inherit; font-size:14px; }
+.buttons{ display:flex; flex-wrap:wrap; gap:8px; }
+.buttons .danger{ margin-left:auto; }
+
+.hint{ margin:0 0 8px; font-size:13px; color:var(--adm-muted); }
+.file{ border:1px solid var(--adm-line); border-radius:12px; margin-top:8px; }
+.file summary{ padding:10px 12px; cursor:pointer; font-size:14px; }
+.file pre{ margin:0; max-height:360px; overflow:auto; padding:12px; border-top:1px solid var(--adm-line); background:var(--adm-bg);
+  font-size:12px; line-height:1.5; white-space:pre; }
+
+@media (max-width:767.98px){
+  .row{ grid-template-columns:1fr; }
+  .row-input{ justify-content:flex-start; }
+  .buttons .danger{ margin-left:0; }
+  .buttons .btn{ flex:1 1 auto; }
+}

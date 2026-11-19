@@ -1,0 +1,135 @@
+:host{
+  --maroon:var(--color-primary);
+  --navy:#1F2D4D;
+  --cream:#FFFDF7;
+  --cream-text:#FFEBAC;
+  display:block;
+  font-family:'Prompt', sans-serif;
+}
+*{ box-sizing:border-box; }
+
+.page{ min-height:100vh; display:flex; flex-direction:column; background:var(--cream); }
+.shell{ flex:1; display:grid; grid-template-columns:clamp(240px, 23vw, 362px) 1fr; background:var(--maroon); }
+
+/* ---------- sidebar ---------- */
+.sidebar{ display:flex; flex-direction:column; padding:50px 0 40px; background:var(--maroon); min-width:0; }
+.who{ display:flex; flex-direction:column; align-items:center; gap:16px; padding:0 16px; }
+.avatar-wrap{ position:relative; display:inline-flex; border-radius:50%; }
+.avatar-sm{ display:none; }
+.avatar-loading{
+  position:absolute; inset:0; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.45);
+}
+.spinner{
+  width:34px; height:34px; border-radius:50%;
+  border:4px solid rgba(255,255,255,.35); border-top-color:#fff;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.avatar-edit{
+  position:absolute; right:-4px; bottom:-2px;
+  width:48px; height:48px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  border:3px solid var(--maroon); background:var(--navy); cursor:pointer;
+  transition:transform .15s ease;
+}
+.avatar-edit:hover:not(:disabled){ transform:scale(1.06); }
+.avatar-edit:disabled{ opacity:.7; cursor:progress; }
+.avatar-edit svg{ width:22px; height:22px; fill:none; stroke:var(--cream-text); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.file-input{ position:absolute; width:1px; height:1px; opacity:0; pointer-events:none; }
+.hello{ margin:0; font-size:clamp(20px, 1.8vw, 24px); font-weight:600; color:var(--cream-text); text-align:center; overflow-wrap:anywhere; }
+
+/* ออกจากระบบ: ปุ่มเล็กแยกจากเมนู — จอกว้างอยู่ใต้ชื่อ, จอแคบอยู่มุมขวาของแถบชื่อ */
+.logout-btn{
+  display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:6px 14px;
+  border:1.5px solid rgba(255,235,172,.7); border-radius:999px; background:transparent; color:var(--cream-text);
+  font:inherit; font-size:14px; font-weight:600; cursor:pointer; transition:background-color .15s ease;
+}
+.logout-btn:hover{ background:rgba(255,255,255,.12); }
+.logout-btn svg{ width:16px; height:16px; flex:none; fill:none; stroke:currentColor; stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+.logout-btn:focus-visible{ outline:3px solid #A9C6F0; outline-offset:2px; }
+
+.avatar-tools{ display:flex; flex-direction:column; align-items:center; gap:6px; min-height:12px; padding:8px 16px 0; }
+.avatar-actions{ display:flex; gap:8px; }
+.avatar-tools button{
+  padding:6px 14px; border-radius:999px; font:inherit; font-size:13px; font-weight:600; cursor:pointer;
+}
+.tool-save{ border:none; background:var(--cream-text); color:var(--maroon); }
+.tool-cancel, .tool-remove{ border:1.5px solid rgba(255,235,172,.8); background:transparent; color:var(--cream-text); }
+.tool-remove{ border:none; padding:2px 6px; font-weight:500; text-decoration:underline; }
+.avatar-tools button:disabled{ opacity:.6; cursor:progress; }
+.avatar-error{ margin:0; max-width:260px; font-size:12.5px; text-align:center; color:#FFC2C2; }
+
+.menu{ display:flex; flex-direction:column; gap:36px; margin-top:44px; }
+.menu-item{
+  display:flex; align-items:center; gap:20px;
+  width:100%; padding:14px 28px 14px 32px;
+  border:none; border-left:12px solid transparent;
+  background:var(--cream); color:#3a0c0c;
+  font:inherit; font-size:17px; font-weight:500; text-align:left; text-decoration:none; cursor:pointer;
+  transition:background-color .15s ease;
+}
+.menu-item:hover{ background:#FFF3DC; }
+.menu-item.active{ border-left-color:var(--navy); font-weight:700; }
+.menu-icon{
+  width:50px; height:50px; flex:none; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; background:#fff;
+}
+.menu-icon svg{ width:24px; height:24px; fill:var(--color-danger); }
+.menu-icon svg.line{ fill:none; stroke:var(--color-danger); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.menu-item.active .menu-icon{ background:var(--navy); }
+.menu-item.active .menu-icon svg{ fill:#fff; }
+.menu-item.active .menu-icon svg.line{ fill:none; stroke:#fff; }
+.menu-item:focus-visible, .avatar-edit:focus-visible, .avatar-tools button:focus-visible{ outline:3px solid #A9C6F0; outline-offset:2px; }
+
+/* ---------- เนื้อหา ---------- */
+.content{ min-width:0; background:var(--cream); display:flex; flex-direction:column; }
+.top-strip{ height:16px; background:var(--navy); }
+.content-inner{ flex:1; padding:38px clamp(16px, 2.2vw, 32px) 60px clamp(16px, 3vw, 46px); border-bottom:16px solid #FFE9A6; }
+.load-error{ margin:40px 0; text-align:center; color:var(--color-danger); }
+
+.sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+/* ---------- จอแคบ: sidebar เป็นแถบบนสุด ---------- */
+@media (max-width:1023.98px){
+  .shell{ grid-template-columns:1fr; }
+  .sidebar{ padding:16px 16px 0; }
+  .who{ flex-direction:row; justify-content:flex-start; gap:14px; padding:0; }
+  .avatar-lg{ display:none; }
+  .avatar-sm{ display:inline-flex; }
+  .avatar-edit{ width:28px; height:28px; right:-6px; bottom:-4px; border-width:2px; }
+  .avatar-edit svg{ width:14px; height:14px; }
+  .hello{ flex:1; min-width:0; font-size:18px; text-align:left; }
+  .logout-btn{ flex:none; min-height:44px; padding:6px 12px; }
+  .avatar-tools{ align-items:flex-start; padding:8px 0 0; }
+  .avatar-error{ text-align:left; max-width:none; }
+  .menu{ flex-direction:row; gap:6px; margin-top:12px; overflow-x:auto; overscroll-behavior-x:contain;
+    scrollbar-width:none; scroll-behavior:smooth; }
+  .menu::-webkit-scrollbar{ display:none; }
+  .menu-item{
+    flex:1 0 auto; width:auto; justify-content:center; gap:8px; white-space:nowrap;
+    padding:10px 6px; border-left:none; border-bottom:4px solid transparent;
+    border-radius:10px 10px 0 0; font-size:14px; text-align:center;
+  }
+  .menu-item.active{ border-bottom-color:var(--navy); }
+  .menu-icon{ width:30px; height:30px; }
+  .menu-icon svg{ width:16px; height:16px; }
+  .top-strip{ height:6px; }
+  .content-inner{ padding:20px 16px 40px; }
+}
+/*
+ * มือถือ (≤ 767px): แท็บแถวเดียวเลื่อนแนวนอน (ปัดได้, ไม่มี scrollbar) — แถบยืดถึงขอบจอ แท็บกว้างตามข้อความ (ไม่ยืดให้พอดี)
+ * จึงเห็นแท็บถัดไปโผล่ที่ขอบ; แท็บที่เลือกขีดเส้นใต้ + ตัวหนา, component เลื่อนให้อยู่ในจอเสมอ. สูง ≥ 44px
+ */
+@media (max-width:767.98px){
+  .menu{ gap:4px; margin:12px -16px 0; padding:0 16px; scroll-padding-inline:16px; }
+  .menu-item{ flex:0 0 auto; min-height:44px; padding:7px 16px; gap:8px; }
+  .menu-icon{ width:28px; height:28px; }
+  .hello{ font-size:17px; }
+}
+@media (prefers-reduced-motion: reduce){ .spinner{ animation-duration:2s; } }
+
+/* ตัวอักษรบนมือถือ (≤ 767px): เนื้อหาหลัก 14px, ข้อความรอง ≥ 12px */
+@media (max-width:767.98px){
+  .avatar-tools button{ font-size:14px; }
+}

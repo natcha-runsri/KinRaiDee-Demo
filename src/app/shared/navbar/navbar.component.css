@@ -1,0 +1,206 @@
+:host{
+  --maroon-deep:var(--color-primary);
+  --maroon-darker:var(--color-primary-active);
+  --cream:#FFFDF7;
+  --periwinkle:#A9C6F0;
+  --ink:#3a0c0c;
+
+  display:block;
+  font-family:'Prompt', sans-serif;
+}
+
+*{ box-sizing:border-box; }
+
+/* ---------- Navbar ---------- */
+.navbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:var(--cream);
+  padding:10px 50px;
+  margin:0 100px;
+  position:relative;
+  z-index:10;
+}
+
+.nav-start{ display:flex; align-items:center; gap:10px; }
+.brand{ display:flex; align-items:center; gap:10px; text-decoration:none; }
+
+.brand-logo{
+  width:60px;
+  height:60px;
+  object-fit:cover;
+  border-radius:50%;
+}
+
+.nav-links{ display:flex; gap:60px; }
+
+.nav-link{
+  white-space:nowrap;
+  color:var(--ink);
+  opacity:.55;
+  text-decoration:none;
+  font-weight:700;
+  font-size:16px;
+  padding-bottom:4px;
+  border-bottom:4px solid transparent;
+  transition: opacity .15s ease, border-color .15s ease, color .15s ease;
+}
+
+.nav-link:hover{ opacity:.85; }
+
+.nav-link.active,
+.nav-link.active-section{
+  opacity:1;
+  color:var(--color-primary);
+  border-bottom-color:var(--color-primary);
+}
+
+/* ---------- Login button (guest) ---------- */
+.login-btn{
+  background:var(--maroon-deep);
+  color:var(--cream);
+  border:none;
+  font-family:'Prompt', sans-serif;
+  font-weight:700;
+  font-size:14px;
+  padding:12px 26px;
+  white-space:nowrap;
+  border-radius:999px;
+  cursor:pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+
+.login-btn:hover{
+  background:var(--maroon-darker);
+  transform:translateY(-1px);
+}
+
+/* ---------- ปุ่มผู้ใช้ (login แล้ว) ---------- */
+.profile-area{ position:relative; }
+
+.profile-btn{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  max-width:220px;
+  background:var(--maroon-darker);
+  border-radius:999px;
+  padding:5px 5px 5px 20px;
+  font-family:'Prompt', sans-serif;
+  font-weight:600;
+  font-size:17px;
+  color:#FFEBAC;
+  border:none;
+  cursor:pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+.profile-btn:hover{ background:var(--maroon-deep); transform:translateY(-1px); }
+.profile-btn:focus-visible{ outline:3px solid var(--periwinkle); outline-offset:2px; }
+.profile-name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+
+/* dropdown: ดีไซน์เดิมจาก home.component (commit b296bf1) + ไอคอนตามภาพ */
+.dropdown{
+  position:absolute;
+  top:calc(100% + 10px);
+  right:0;
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.3);
+  min-width:220px;
+  max-width:calc(100vw - 24px);
+  padding:8px;
+  z-index:30;
+  animation: dropIn .15s ease both;
+}
+
+@keyframes dropIn{
+  from{ opacity:0; transform:translateY(-6px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+
+.dropdown-item{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  width:100%;
+  text-align:left;
+  background:none;
+  border:none;
+  color:#1F2D4D;
+  font-family:'Prompt', sans-serif;
+  font-weight:500;
+  font-size:16px;
+  padding:10px 12px;
+  border-radius:8px;
+  cursor:pointer;
+}
+.dropdown-item:hover, .dropdown-item:focus-visible{ background:rgba(0,0,0,.06); outline:none; }
+.dropdown-item:focus-visible{ box-shadow:inset 0 0 0 2px var(--periwinkle); }
+.dropdown-item.danger{ color:#E53935; }
+.item-icon{ width:24px; height:24px; flex:none; fill:#1F2D4D; }
+.dropdown-item.danger .item-icon{ fill:none; stroke:#E53935; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.item-icon .item-tick{ fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+/* ---------- ปุ่ม ☰ (แสดงเฉพาะจอ ≤ 767px) ---------- */
+.menu-toggle{
+  display:none;
+  align-items:center;
+  justify-content:center;
+  width:44px;
+  height:44px;
+  padding:0;
+  border:none;
+  border-radius:12px;
+  background:transparent;
+  color:var(--ink);
+  cursor:pointer;
+}
+.menu-toggle svg{ width:26px; height:26px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; }
+.menu-toggle:hover{ background:rgba(0,0,0,.06); }
+.menu-toggle:focus-visible{ outline:3px solid var(--periwinkle); outline-offset:2px; }
+
+.dropdown-divider{
+  height:1px;
+  background:rgba(0,0,0,.1);
+  margin:6px 4px;
+}
+
+@media (max-width:1023.98px){
+  .navbar{ padding:10px 24px; margin:0 16px; }
+  .nav-links{ gap:28px; }
+  .profile-btn{ max-width:190px; }
+}
+@media (max-width:767.98px){
+  .navbar{ padding:12px 18px; margin:0 8px; }
+  .menu-toggle{ display:inline-flex; }
+  /* แผงเมนูลงมาจากใต้ navbar */
+  .nav-links{
+    display:none;
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    flex-direction:column;
+    gap:0;
+    padding:6px 12px 12px;
+    background:var(--cream);
+    border-radius:0 0 16px 16px;
+    box-shadow:0 12px 24px rgba(0,0,0,.18);
+    z-index:25;
+  }
+  .nav-links.open{ display:flex; animation: dropIn .15s ease both; }
+  .nav-link{
+    display:flex;
+    align-items:center;
+    min-height:48px;
+    padding:0 12px;
+    border-bottom:none;
+    border-left:4px solid transparent;
+    border-radius:6px;
+  }
+  .nav-link.active, .nav-link.active-section{ border-left-color:var(--color-primary); background:rgba(var(--color-primary-rgb),.06); }
+  .profile-btn{ font-size:15px; padding-left:14px; max-width:170px; }
+  .dropdown{ min-width:200px; }
+}
+@media (prefers-reduced-motion: reduce){ .dropdown, .nav-links.open{ animation:none; } }

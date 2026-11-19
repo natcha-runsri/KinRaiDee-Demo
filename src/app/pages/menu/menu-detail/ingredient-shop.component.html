@@ -1,0 +1,51 @@
+@if (sheet) {
+  <div class="backdrop" (click)="closed.emit()" aria-hidden="true"></div>
+}
+<div #box class="shop" role="dialog" [attr.aria-modal]="sheet ? 'true' : null" [attr.aria-labelledby]="labelledBy"
+     [class.sheet]="sheet" [class.bottom]="placement === 'bottom'" [class.single]="products.length === 1"
+     [style.left.px]="sheet ? null : left" [style.visibility]="positioned ? 'visible' : 'hidden'"
+     [style.--arrow-x.px]="arrowX"
+     (mouseenter)="boxEnter.emit()" (mouseleave)="boxLeave.emit()" (click)="$event.stopPropagation()">
+  @if (sheet) {
+    <div class="sheet-head">
+      <span class="sheet-title">{{ ingredientName }}</span>
+      <button type="button" class="close-btn hit44" aria-label="ปิด" (click)="closed.emit()">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+  }
+  <ul class="offers">
+    @for (p of products; track p.store) {
+      <li class="offer">
+        <div class="offer-img">
+          <img [src]="p.imageUrl" alt="" loading="lazy" referrerpolicy="no-referrer">
+          @if (logo(p); as src) {
+            <img class="store-logo" [src]="src" [alt]="storeLabel(p)" (error)="brokenLogos.add(p.store)">
+          } @else {
+            <span class="store-tag">{{ storeLabel(p) }}</span>
+          }
+          @if (isCheaper(p)) {
+            <span class="cheaper">ถูกกว่า</span>
+          }
+        </div>
+        <p class="offer-name" [title]="p.name + (p.size ? ' ' + p.size : '')">{{ p.name }}</p>
+        @if (p.size) {
+          <p class="offer-size">{{ p.size }}</p>
+        }
+        <div class="offer-foot">
+          @if (p.price !== null && p.price !== undefined) {
+            <span class="price">{{ price(p.price) }}@if (p.unit) {<span class="unit"> / {{ p.unit }}</span>}</span>
+          }
+          @if (url(p); as href) {
+            <a class="buy hit44" [href]="href" target="_blank" rel="noopener noreferrer"
+               [attr.aria-label]="'สนใจซื้อ ' + ingredientName + ' ที่ ' + storeLabel(p) + ' (เปิดในแท็บใหม่)'">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h18l-1.6 9.2a2 2 0 01-2 1.8H6.6a2 2 0 01-2-1.8L3 9zM8 9l3-5M16 9l-3-5"/></svg>
+              สนใจซื้อ
+            </a>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+  <p class="note">{{ footnote }}</p>
+</div>

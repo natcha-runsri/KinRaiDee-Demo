@@ -1,0 +1,236 @@
+*{ box-sizing:border-box; }
+
+.fpd-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px 16px;
+  background:var(--overlay-bg);
+  -webkit-backdrop-filter:var(--overlay-blur);
+  backdrop-filter:var(--overlay-blur);
+  overflow-y:auto;
+  animation:fpd-fade .15s ease-out;
+}
+
+.fpd-dialog{
+  position:relative;
+  width:100%;
+  max-width:560px;
+  margin:auto;
+  border-radius:18px;
+  background:#FFFDF7;
+  box-shadow:var(--popup-shadow);
+  overflow:hidden;
+  font-family:'Prompt', sans-serif;
+  animation:fpd-pop .18s ease-out;
+}
+
+/* ---------- แบนเนอร์ ---------- */
+.fpd-banner{
+  position:relative;
+  height:clamp(150px, 30vw, 260px);
+  background:#F3E3C4;
+  overflow:hidden;
+}
+.fpd-banner > img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.fpd-collage{
+  display:grid;
+  grid-template-columns:repeat(5, minmax(0, 1fr));
+  grid-template-rows:minmax(0, 1fr);
+  height:100%;
+}
+.fpd-collage img{
+  width:100%;
+  height:100%;
+  min-height:0;
+  object-fit:cover;
+  display:block;
+}
+.fpd-close{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:32px;
+  height:32px;
+  padding:0;
+  border:none;
+  border-radius:50%;
+  background:rgba(255,255,255,.88);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  box-shadow:0 1px 6px rgba(0,0,0,.2);
+  transition:background .15s ease, transform .15s ease;
+}
+.fpd-close svg{ width:16px; height:16px; stroke:var(--color-primary); stroke-width:2; stroke-linecap:round; fill:none; }
+.fpd-close:hover{ background:#fff; transform:scale(1.06); }
+.fpd-close:focus-visible{ outline:3px solid #8FB4EE; outline-offset:2px; }
+
+/* ---------- เนื้อหา ---------- */
+.fpd-body{
+  padding:20px 28px 28px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.fpd-lead{
+  margin:0;
+  font-size:12px;
+  color:#C47E80;
+  text-align:center;
+}
+.fpd-title{
+  margin:4px 0 22px;
+  font-size:clamp(18px, 2.6vw, 21px);
+  font-weight:700;
+  color:var(--color-primary);
+  text-align:center;
+}
+
+.fpd-grid{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:18px 20px;
+}
+
+.fpd-card{
+  position:relative;
+  aspect-ratio:97 / 104;
+  min-width:0;
+  padding:14px 6px 10px;
+  border:1.5px solid var(--color-primary);
+  border-radius:10px;
+  background:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  cursor:pointer;
+  font-family:inherit;
+  transition:background .15s ease, border-color .15s ease, box-shadow .15s ease, transform .1s ease;
+}
+.fpd-card:hover{ box-shadow:0 4px 12px rgba(var(--color-primary-rgb),.15); }
+.fpd-card:active{ transform:scale(.98); }
+.fpd-card:focus-visible{ outline:3px solid #8FB4EE; outline-offset:2px; }
+.fpd-card.selected{
+  background:#F8E4E2;
+  border-color:var(--color-primary);
+  border-width:3px;
+  padding:12.5px 4.5px 8.5px; /* ขอบหนาขึ้น 1.5px → ชดเชยไม่ให้เนื้อหาขยับ */
+}
+
+.fpd-icon{
+  width:48px;
+  height:48px;
+  border-radius:10px;
+  overflow:hidden;
+  background:#F5F0EA;
+  display:grid;
+  place-items:center;
+  box-shadow:0 1px 3px rgba(0,0,0,.12);
+  flex:none;
+}
+.fpd-icon img{ width:100%; height:100%; object-fit:cover; display:block; }
+.fpd-emoji{ font-size:26px; line-height:1; }
+
+.fpd-label{
+  font-size:13px;
+  font-weight:500;
+  color:#2A0808;
+  text-align:center;
+  line-height:1.3;
+}
+
+.fpd-check{
+  position:absolute;
+  top:6px;
+  right:6px;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:var(--color-primary);
+  display:grid;
+  place-items:center;
+  opacity:0;
+  transform:scale(.6);
+  transition:opacity .15s ease, transform .15s ease;
+}
+.fpd-check svg{ width:13px; height:13px; stroke:#fff; stroke-width:3; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+.fpd-card.selected .fpd-check{ opacity:1; transform:scale(1); }
+
+.fpd-error{
+  margin:16px 0 0;
+  font-size:13px;
+  color:#B3261E;
+  text-align:center;
+}
+
+.fpd-submit{
+  width:100%;
+  margin-top:26px;
+  padding:11px 20px;
+  border:none;
+  border-radius:8px;
+  background:#8FB4EE;
+  color:#1E2A44;
+  font-family:inherit;
+  font-weight:700;
+  font-size:17px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  cursor:pointer;
+  transition:background .15s ease, opacity .15s ease;
+}
+.fpd-submit:hover:not(:disabled){ background:#7AA2DF; }
+.fpd-submit:disabled{ opacity:.5; cursor:not-allowed; }
+.fpd-submit[aria-busy="true"]{ cursor:progress; }
+.fpd-submit:focus-visible{ outline:3px solid var(--color-primary); outline-offset:2px; }
+
+.fpd-spinner{
+  width:16px;
+  height:16px;
+  border:2px solid rgba(30,42,68,.3);
+  border-top-color:#1E2A44;
+  border-radius:50%;
+  animation:fpd-spin .7s linear infinite;
+}
+
+@keyframes fpd-spin{ to{ transform:rotate(360deg); } }
+@keyframes fpd-fade{ from{ opacity:0; } }
+@keyframes fpd-pop{ from{ opacity:0; transform:translateY(8px) scale(.98); } }
+
+/* tablet 3 คอลัมน์ */
+@media (max-width:1023.98px){
+  .fpd-grid{ grid-template-columns:repeat(3, 1fr); }
+}
+/* มือถือ — ขนาดกะทัดรัด 3 คอลัมน์อยู่ที่ food-preference-mobile.css */
+@media (max-width:767.98px){
+  .fpd-backdrop{ padding:10px 8px; align-items:flex-start; }
+  .fpd-dialog{ border-radius:14px; }
+  .fpd-body{ padding:16px 16px 20px; }
+  .fpd-grid{ grid-template-columns:repeat(2, 1fr); gap:12px; }
+  .fpd-card{ aspect-ratio:auto; min-height:104px; }
+}
+@media (prefers-reduced-motion:reduce){
+  .fpd-backdrop, .fpd-dialog, .fpd-check{ animation:none; transition:none; }
+  .fpd-spinner{ animation-duration:1.6s; }
+}
+
+/* ตัวอักษรบนมือถือ (≤ 767px): เนื้อหาหลัก 14px, ข้อความรอง ≥ 12px */
+@media (max-width:767.98px){
+  .fpd-lead{ font-size:14px; }
+  .fpd-label{ font-size:14px; }
+  .fpd-error{ font-size:14px; }
+}

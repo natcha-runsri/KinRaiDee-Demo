@@ -1,0 +1,11 @@
+/* การ์ด BMI (ใบที่ 4 ข้างการ์ดสรุปเดิม) — แยกไฟล์ (โหลดหลังไฟล์หลัก จึงแทนจำนวนคอลัมน์ได้) */
+.cards{ grid-template-columns:repeat(3, minmax(0, 1fr)) minmax(0, .8fr); }
+.c-bmi{ background:#F6EFFA; display:flex; flex-direction:column; }
+.c-bmi .ci{ background:#5B3A8C; }
+.big-bmi{ font-size:30px; color:#3E2466; line-height:1.2; }
+.bmi-note{ margin:4px 0 0; font-size:12px; color:#7d6f8a; }
+.bmi-fill{ align-self:flex-start; margin-top:auto; padding:4px 16px; border-radius:999px; background:#5B3A8C; color:#fff; font-size:12px;
+  font-weight:600; text-decoration:none; }
+.bmi-fill:focus-visible{ outline:3px solid #A9C6F0; outline-offset:2px; }
+@media (max-width:1199.98px){ .cards{ grid-template-columns:repeat(2, minmax(0, 1fr)); } }
+@media (max-width:767.98px){ .cards{ grid-template-columns:1fr; } }

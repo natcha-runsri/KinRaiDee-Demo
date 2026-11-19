@@ -1,0 +1,35 @@
+/* ปุ่มถูกใจใต้ชื่อเมนู */
+.like-row{ margin-top:14px; display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:6px 12px; }
+.like-btn{
+  min-height:44px; padding:10px 20px; border-radius:8px; border:2px solid var(--navy);
+  background:#fff; color:var(--navy); font:inherit; font-weight:700; font-size:16px;
+  display:inline-flex; align-items:center; gap:8px; cursor:pointer;
+}
+.like-btn:hover:not(:disabled){ background:#F1F4FA; }
+.like-btn.liked{ background:var(--navy); color:#FFEBAC; }
+.like-btn.liked:hover:not(:disabled){ background:#15203a; }
+.like-btn:disabled{ opacity:.6; cursor:progress; }
+.like-btn:focus-visible{ outline:3px solid var(--blue-line); outline-offset:3px; }
+.thumb{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linejoin:round; }
+.thumb.solid{ fill:currentColor; }
+.like-spinner{ width:16px; height:16px; border:2px solid rgba(31,45,77,.25); border-top-color:var(--navy); border-radius:50%;
+  animation:like-spin .8s linear infinite; }
+@keyframes like-spin{ to{ transform:rotate(360deg); } }
+.like-hint{ font-size:13px; color:#5B6478; }
+.like-error{ flex-basis:100%; margin:0; text-align:center; font-size:14px; color:#B3261E; }
+
+/* pop-up เล็ก (guest กดถูกใจ) — เหมือนหน้าสุ่ม */
+.mini-backdrop{ position:fixed; inset:0; z-index:1000; background:var(--overlay-bg); -webkit-backdrop-filter:var(--overlay-blur); backdrop-filter:var(--overlay-blur);
+  display:flex; align-items:center; justify-content:center; padding:16px; }
+.mini-dialog{ width:100%; max-width:340px; background:#fff; border-radius:16px; padding:26px 22px 20px; text-align:center;
+  box-shadow:var(--popup-shadow); }
+.mini-title{ margin:0 0 18px; font-size:17px; font-weight:700; color:var(--maroon); }
+.mini-actions{ display:flex; flex-direction:column; gap:8px; }
+.mini-primary, .mini-secondary{ min-height:44px; padding:11px; border-radius:8px; font:inherit; font-weight:700; font-size:15px; cursor:pointer; }
+.mini-primary{ border:none; background:var(--maroon); color:#fff; }
+.mini-secondary{ border:1.5px solid var(--navy); background:#fff; color:var(--navy); }
+.mini-primary:focus-visible, .mini-secondary:focus-visible{ outline:3px solid var(--blue-line); outline-offset:2px; }
+
+@media (prefers-reduced-motion: reduce){
+  .like-spinner{ animation:none; }
+}

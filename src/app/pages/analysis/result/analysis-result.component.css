@@ -1,0 +1,61 @@
+.content{ position:relative; max-width:1000px; }
+.not-found{ text-align:center; padding:50px 0; }
+.not-found h1{ margin:0 0 6px; color:var(--color-primary); font-size:28px; }
+.not-found p{ margin:0 0 20px; color:#6b5b5b; }
+
+.deco{ position:absolute; left:-40px; top:44px; margin:0; transform:rotate(-12deg); font-size:12px; font-weight:600; color:var(--color-primary);
+  text-align:center; line-height:1.3; }
+.deco span{ font-size:16px; }
+.title{ text-align:center; margin-bottom:24px; }
+.title h1{ margin:0; font-size:clamp(28px, 3.4vw, 40px); font-weight:700; color:var(--color-primary); }
+.title p{ margin:4px auto 0; max-width:620px; font-size:12.5px; color:#555; }
+
+/* ---------- การ์ดคู่ ---------- */
+.pair{ display:grid; grid-template-columns:minmax(0, 0.7fr) minmax(0, 1.3fr); border:1.5px solid #E7A5AE; border-radius:10px; background:#fff;
+  margin:0 auto 30px; max-width:860px; }
+.pair-left{ display:flex; align-items:center; gap:18px; padding:20px 26px; border-right:1.5px solid #E7A5AE; }
+.siren{ width:56px; height:56px; flex:none; display:flex; align-items:center; justify-content:center; }
+.siren{ border-radius:50%; }
+.siren svg{ width:36px; height:36px; fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.siren.tone-good{ background:var(--tone-good-bg); } .siren.tone-good svg{ stroke:var(--tone-good-fg); }
+.siren.tone-bad{ background:var(--tone-bad-bg); } .siren.tone-bad svg{ stroke:var(--tone-bad-fg); }
+.pair h2{ margin:0; font-size:17px; font-weight:700; color:#1a1a1a; }
+.pair h2.tone-text-good{ color:var(--tone-good-fg); } .pair h2.tone-text-bad{ color:var(--tone-bad-fg); }
+.small{ margin:2px 0 0; font-size:11.5px; color:#3a3a3a; }
+.chips{ list-style:none; margin:10px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:6px; }
+.pair-right{ padding:16px 22px; min-width:0; }
+.me-head{ display:flex; gap:14px; align-items:center; }
+.id-icon{ width:48px; height:48px; flex:none; border-radius:50%; background:#FAD9DD; display:flex; align-items:center; justify-content:center; }
+.id-icon svg{ width:28px; height:28px; fill:none; stroke:#3a0c0c; stroke-width:1.5; stroke-linecap:round; }
+.me-head .small{ font-size:10.5px; color:#666; }
+.me-stats{ list-style:none; margin:12px 0 0; padding:0; display:grid; grid-template-columns:repeat(5, minmax(0, 1fr)); gap:8px; }
+.ms{ display:flex; align-items:center; gap:6px; padding:8px 8px; border-radius:6px; font-size:12px; font-weight:600; color:#1F2D4D; min-width:0; }
+.ms > span:last-child{ display:flex; flex-direction:column; min-width:0; line-height:1.25; }
+.ms small{ font-size:9.5px; font-weight:400; color:#555; }
+.ms em{ font-style:normal; font-size:10px; font-weight:500; }
+.ms-icon{ width:24px; height:24px; flex:none; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:700; }
+.ms-weight{ background:#F7E0E3; } .ms-weight .ms-icon{ background:var(--color-primary); }
+.ms-height{ background:#DCE7F7; } .ms-height .ms-icon{ background:#1F2D4D; }
+.ms-age{ background:#E3EFE6; } .ms-age .ms-icon{ background:#2E5B3B; }
+.ms-gender{ background:#FCEFC4; } .ms-gender .ms-icon{ background:#C08A00; }
+.ms-bmi{ background:#EDE3F6; } .ms-bmi .ms-icon{ background:#5B3A8A; font-size:7.5px; }
+
+@media (max-width:1199.98px){ .deco{ display:none; } }
+@media (max-width:1023.98px){
+  .pair{ grid-template-columns:1fr; }
+  .pair-left{ border-right:none; border-bottom:1.5px solid #E7A5AE; }
+  .me-stats{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width:479.98px){
+  .pair-left, .pair-right{ padding:16px 14px; }
+  .me-stats{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+}
+
+/* ตัวอักษรบนมือถือ (≤ 767px): เนื้อหาหลัก 14px, ข้อความรอง ≥ 12px */
+@media (max-width:767.98px){
+  .title p{ font-size:14px; }
+  .small{ font-size:14px; }
+  .me-head .small{ font-size:14px; }
+  .ms small{ font-size:12px; }
+  .ms em{ font-size:12px; }
+}

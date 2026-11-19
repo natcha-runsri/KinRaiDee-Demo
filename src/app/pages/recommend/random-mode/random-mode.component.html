@@ -1,0 +1,240 @@
+<div class="page">
+
+  <app-navbar></app-navbar>
+
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <span>แนะนำ</span>
+    <span class="sep" aria-hidden="true">/</span>
+    <span aria-current="page">โหมดการสุ่มอาหาร</span>
+  </nav>
+
+  <main class="content">
+
+    <!-- ลายเส้นอาหารตกแต่ง (SVG) -->
+    <svg class="doodle doodle-tl" viewBox="0 0 120 90" aria-hidden="true">
+      <path d="M10 70c18-6 34-22 44-40M14 76c20-8 40-26 52-48M50 22l10-14M56 26l12-12M62 30l12-10"/>
+      <path d="M70 44c10 6 22 8 34 4M74 52c10 8 26 10 38 4"/>
+      <circle cx="28" cy="64" r="7"/><circle cx="18" cy="74" r="5"/>
+    </svg>
+    <svg class="doodle doodle-tr" viewBox="0 0 160 110" aria-hidden="true">
+      <ellipse cx="80" cy="70" rx="62" ry="26"/><path d="M18 70c4 22 32 34 62 34s58-12 62-34"/>
+      <path d="M96 12l40 36M108 8l36 32M120 4l30 28"/><circle cx="60" cy="62" r="10"/><circle cx="88" cy="58" r="8"/>
+    </svg>
+    <svg class="doodle doodle-bl" viewBox="0 0 140 110" aria-hidden="true">
+      <path d="M14 58h112c0 26-24 44-56 44S14 84 14 58z"/><path d="M40 58c4-14 12-22 22-24M70 58c2-12 10-20 20-22"/>
+      <path d="M96 6l-26 48M110 10l-30 46"/>
+    </svg>
+    <svg class="doodle doodle-mid" viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="60" r="50"/><circle cx="60" cy="60" r="36"/><path d="M40 52c10-8 30-8 40 0M44 70c8 6 24 6 32 0"/>
+    </svg>
+    <svg class="doodle doodle-br" viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="70" cy="70" r="40"/><path d="M48 54h44M48 68h44M48 82h30"/><path d="M14 20l26 30M8 30l26 28"/>
+    </svg>
+
+    <!-- ---------- ซ้าย: รูปเมนูบนจาน ---------- -->
+    <section class="showcase" [attr.aria-label]="view === 'result' ? 'เมนูที่สุ่มได้' : 'ตัวอย่างเมนูที่ตรงกับความชอบ'"
+             (mouseenter)="onBannerEnter()" (mouseleave)="onBannerLeave()">
+      @if (view === 'result' && showBubble && !rolling) {
+        <div class="bubble" aria-hidden="true"><span>เมนูแนะนำ<br>สำหรับคุณ</span></div>
+      }
+      <div class="plate" aria-hidden="true"></div>
+      <div class="dish" [class.no-anim]="reducedMotion" [class.is-rolling]="rolling" [class.landed]="landed"
+           [style.transform]="'rotate(' + dishAngle + 'deg)'" [style.transition]="dishTransition">
+        @if (rolling && rollSrc) {
+          <img [src]="rollSrc" alt="" class="dish-img active roll-img" referrerpolicy="no-referrer">
+        } @else if (view === 'result' && result) {
+          <app-menu-image class="dish-img active result-img" [src]="result.recipe.imageUrl" [alt]="result.recipe.title" [eager]="true"></app-menu-image>
+        } @else {
+          @for (s of slides; track s.id; let i = $index) {
+            @if (loaded.has(s.id)) {
+              <img [src]="s.imageUrl" [alt]="s.name" class="dish-img" [class.active]="i === current"
+                   [attr.aria-hidden]="i !== current" (error)="dropSlide(s)" referrerpolicy="no-referrer">
+            }
+          }
+          @if (!slides.length) {
+            <div class="dish-empty" aria-hidden="true">🍲</div>
+          }
+        }
+      </div>
+      @if (confetti.length) {
+        <div class="confetti" aria-hidden="true">
+          @for (c of confetti; track $index) { <i [style]="c.style"></i> }
+        </div>
+      }
+    </section>
+
+    <!-- ---------- ขวา ---------- -->
+    @if (view === 'pre') {
+    <section class="card" aria-labelledby="random-title">
+      <h1 id="random-title" class="card-title">สุ่มเมนูอร่อย</h1>
+      <p class="card-sub">จากความชอบของคุณ</p>
+      @if (loggedIn && preferences) {
+        <button type="button" class="adjust-link hit44" (click)="openAdjust()">ปรับความชอบ</button>
+      }
+      <div class="divider" aria-hidden="true"></div>
+
+      <ul class="features">
+        <li>
+          <span class="f-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg>
+          </span>
+          <span class="f-text"><strong>ตรงใจคุณ</strong><small>อิงจากความชอบที่คุณเลือก</small></span>
+        </li>
+        <li>
+          <span class="f-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="9" r="1"/><circle cx="12" cy="15" r="1"/></svg>
+          </span>
+          <span class="f-text"><strong>หลากหลาย</strong><small>เมนูไม่ซ้ำ ไม่จำเจ มีความหลากหลาย</small></span>
+        </li>
+        <li>
+          <span class="f-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="7"/><path d="M12 9.5V13l2.5 2M5 4.5L3 6.5M19 4.5l2 2"/></svg>
+          </span>
+          <span class="f-text"><strong>รวดเร็ว</strong><small>ได้เมนูแนะนำในพริบตา</small></span>
+        </li>
+        <li>
+          <span class="f-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6z"/><path d="M8.8 12.2l2.2 2.2 4.2-4.4"/></svg>
+          </span>
+          <!-- จริง: สุ่ม/แบนเนอร์ตัดเมนูที่มีอาหารที่แพ้ (login = โปรไฟล์, guest = ที่เลือกใน pop-up) — ระบบยังไม่มีแคลอรี่รายเมนู -->
+          <span class="f-text"><strong>ปลอดภัยสำหรับคุณ</strong><small>ไม่แนะนำเมนูที่มีอาหารที่คุณแพ้</small></span>
+        </li>
+      </ul>
+
+      <p class="prompt">นึกถึงเมนูที่อยากกิน แล้วมารอลุ้นกัน</p>
+
+      <button type="button" class="spin-btn" (click)="spin()"
+              [disabled]="busy || !quota || exhausted" [attr.aria-busy]="busy">
+        @if (busy) {
+          <span class="spinner" aria-hidden="true"></span><span>กำลังสุ่ม...</span>
+        } @else {
+          <svg class="dice" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/>
+            <circle cx="12" cy="7.2" r="1.3"/><circle cx="8" cy="12" r="1.3"/><circle cx="16" cy="12" r="1.3"/><circle cx="12" cy="16.6" r="1.3"/>
+          </svg>
+          <span>กดเลย</span>
+        }
+      </button>
+
+      <div class="quota" aria-live="polite">
+        @if (quotaError) {
+          <p class="quota-error">{{ quotaError }}</p>
+        } @else if (exhausted) {
+          <p class="quota-out">วันนี้ใช้ครบแล้ว กลับมาใหม่พรุ่งนี้นะ</p>
+          @if (!loggedIn) {
+            <p class="quota-login">
+              <a routerLink="/login" [queryParams]="{ returnUrl: loginReturnUrl }">เข้าสู่ระบบ</a>เพื่อรับสิทธิ์สุ่ม 5 ครั้งต่อวัน
+            </p>
+          }
+        } @else if (quota) {
+          <p class="quota-left">คุณมีโอกาสอีก <span class="quota-n">{{ quota.remaining }}</span> ครั้ง</p>
+        }
+        @if (spinError) {
+          <p class="quota-error" role="alert">{{ spinError }}</p>
+        }
+      </div>
+    </section>
+    } @else if (result) {
+    <!-- ---------- การ์ดผลการสุ่ม ---------- -->
+    <section class="card result-card" aria-labelledby="result-title" [class.dimmed]="rolling" [class.reveal]="revealing">
+      <h1 id="result-title" class="result-title">{{ result.recipe.name }}</h1>
+
+      @if (result.recipe.calories || result.recipe.highlights.length) {
+        <ul class="chips" aria-label="จุดเด่นของเมนู">
+          @if (result.recipe.calories) {
+            <li class="chip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c1 3 4 4.5 4 9a4 4 0 01-8 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 0-8z"/></svg>{{ result.recipe.calories }}</li>
+          }
+          @for (h of result.recipe.highlights.slice(0, result.recipe.calories ? 2 : 3); track h.label) {
+            <li class="chip">
+              @switch (h.icon) {
+                @case ('heart') { <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z"/></svg> }
+                @case ('protein') { <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15c2-6 6-9 10-9 2 0 3 1 3 3s-2 3-4 3c-2 0-3 1-3 3s-2 3-4 3-2-1-2-3z"/></svg> }
+                @case ('clock') { <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg> }
+                @case ('plate') { <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/></svg> }
+                @default { <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c0-8 6-14 14-14 0 8-6 14-14 14zM5 19l7-7"/></svg> }
+              }
+              {{ h.label }}
+            </li>
+          }
+        </ul>
+      }
+
+      @if (result.recipe.description) {
+        <p class="result-desc">{{ result.recipe.description }}</p>
+      }
+      <div class="divider-pink" aria-hidden="true"></div>
+
+      <div class="actions">
+        <button type="button" class="like-btn" [class.liked]="result.liked" (click)="onLike()"
+                [disabled]="busy || likeBusy" [attr.aria-busy]="likeBusy">
+          @if (likeBusy) {
+            <span class="spinner light" aria-hidden="true"></span><span>กำลังบันทึก...</span>
+          } @else if (result.liked) {
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="thumb solid"><path d="M2 10h4v11H2zM8 21h9.5a2 2 0 002-1.6l1.4-7A2 2 0 0019 10h-5.5l.9-4.3A1.5 1.5 0 0012.9 4L8 10z"/></svg>
+            <span>ถูกใจแล้ว · ดูรายละเอียด</span>
+          } @else {
+            <svg viewBox="0 0 24 24" aria-hidden="true" class="thumb"><path d="M2 10h4v11H2zM8 21h9.5a2 2 0 002-1.6l1.4-7A2 2 0 0019 10h-5.5l.9-4.3A1.5 1.5 0 0012.9 4L8 10z"/></svg>
+            <span>ถูกใจเมนูนี้</span>
+          }
+        </button>
+        <button type="button" class="respin-btn" (click)="spin()" [disabled]="busy || likeBusy" [attr.aria-busy]="busy">
+          @if (busy) {
+            <span class="spinner dark" aria-hidden="true"></span><span>กำลังสุ่ม...</span>
+          } @else {
+            <svg class="dice dark" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/>
+              <circle cx="12" cy="7.2" r="1.3"/><circle cx="8" cy="12" r="1.3"/><circle cx="16" cy="12" r="1.3"/><circle cx="12" cy="16.6" r="1.3"/>
+            </svg>
+            <span>สุ่มใหม่</span>
+          }
+        </button>
+      </div>
+
+      <div class="quota">
+        @if (limitReached) {
+          <p class="quota-out" role="alert">วันนี้ใช้โควตาสุ่มครบแล้ว กลับมาใหม่พรุ่งนี้นะ</p>
+          @if (!loggedIn) {
+            <p class="quota-login">
+              <a routerLink="/login" [queryParams]="{ returnUrl: loginReturnUrl }">เข้าสู่ระบบ</a>เพื่อรับสิทธิ์สุ่ม 5 ครั้งต่อวัน
+            </p>
+          }
+        } @else if (quota) {
+          <p class="quota-left">คุณมีโอกาสอีก <span class="quota-n">{{ quota.remaining }}</span> ครั้ง</p>
+        }
+        @if (spinError) {
+          <p class="quota-error" role="alert">{{ spinError }}</p>
+        }
+        @if (likeError) {
+          <p class="quota-error" role="alert">{{ likeError }}</p>
+        }
+      </div>
+    </section>
+    }
+
+    <p class="sr-only" aria-live="polite">{{ announcement }}</p>
+
+    <!-- คลื่นสีเหลืองด้านล่าง -->
+    <svg class="wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 52 C 180 18, 360 18, 560 44 S 900 74, 1100 40 S 1340 20, 1440 46 V120 H0 Z"/>
+    </svg>
+  </main>
+
+  @if (guestLikePrompt) {
+    <div class="mini-backdrop" (click)="closeGuestPrompt()">
+      <div class="mini-dialog" role="alertdialog" aria-modal="true" aria-labelledby="guest-like-title"
+           (click)="$event.stopPropagation()">
+        <p id="guest-like-title" class="mini-title">เข้าสู่ระบบเพื่อบันทึกเมนูที่ชอบ</p>
+        <div class="mini-actions">
+          <button type="button" class="mini-primary" (click)="guestLogin()">เข้าสู่ระบบ</button>
+          <button type="button" class="mini-secondary" (click)="closeGuestPrompt()">ไว้ทีหลัง</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (dialogOpen) {
+    <app-food-preference-dialog [initial]="dialogInitial" [initialAllergies]="dialogAllergies" [busy]="dialogBusy" [errorMessage]="dialogError"
+                                (confirmed)="onDialogConfirmed($event)"
+                                (dismissed)="onDialogDismissed()"></app-food-preference-dialog>
+  }
+</div>

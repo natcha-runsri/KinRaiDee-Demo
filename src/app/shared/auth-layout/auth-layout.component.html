@@ -1,0 +1,28 @@
+<div class="auth-page">
+
+  <header class="auth-topbar">
+    <a class="brand hit44" routerLink="/home" aria-label="KinRai — กลับหน้าหลัก">
+      <img class="brand-logo" src="images/main/logo.png" alt="" width="40" height="40">
+      <span class="brand-text">KinRai</span>
+    </a>
+    <button type="button" class="page-close" (click)="close()" aria-label="ปิด">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </header>
+
+  <aside class="photo-panel" aria-hidden="true">
+    <div class="photo">
+      <div class="smart-pick">
+        <img src="images/food-types/clean.jpg" alt="">
+        <span>Smart Pick</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="form-panel">
+    <div class="form-inner">
+      <ng-content></ng-content>
+    </div>
+  </main>
+
+</div>

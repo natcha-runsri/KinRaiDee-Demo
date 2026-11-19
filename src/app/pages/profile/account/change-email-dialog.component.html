@@ -1,0 +1,157 @@
+@if (step === 'forgot') {
+  <!-- ลืมรหัสผ่าน: component เดิมของหน้า Login ธีมฟ้า โหมดบัญชี — แทนที่เนื้อหาในตำแหน่งเดิม (ไม่ซ้อน) -->
+  <app-forgot-password-dialog theme="light-blue" [accountEmail]="currentEmail"
+                              (closed)="onForgotClosed($event)" (backToStart)="backFromForgot()"></app-forgot-password-dialog>
+} @else {
+<div class="ce-backdrop" (mousedown)="onBackdropMouseDown($event)" (click)="onBackdropClick($event)">
+  <div #dialog class="ce-dialog" role="dialog" aria-modal="true" aria-labelledby="ce-title">
+
+    @if (step === 'otp') {
+      <button type="button" class="ce-back" (click)="backToEmail()" [disabled]="busy">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>ย้อนกลับ
+      </button>
+    }
+    <button type="button" class="ce-close hit44" aria-label="ปิด" (click)="requestClose()">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>
+    </button>
+
+    <div class="ce-body" [attr.aria-hidden]="confirmingClose || null" [attr.inert]="confirmingClose || null">
+
+      @if (stepIndex >= 0) {
+        <ol class="ce-steps" [attr.aria-label]="'ขั้นตอนที่ ' + (stepIndex + 1) + ' จาก 3'">
+          @for (label of stepLabels; track label; let i = $index) {
+            <li [class.done]="i < stepIndex" [class.current]="i === stepIndex" [attr.aria-current]="i === stepIndex ? 'step' : null">
+              <span class="dot">
+                @if (i < stepIndex) {
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+                  <span class="sr-only">เสร็จแล้ว</span>
+                } @else { {{ i + 1 }} }
+              </span>
+              <span class="label">{{ label }}</span>
+            </li>
+          }
+        </ol>
+      }
+
+      @switch (step) {
+
+        <!-- ===== 0) ยืนยันรหัสผ่านปัจจุบัน ===== -->
+        @case ('password') {
+          <svg class="ce-art" viewBox="0 0 220 160" aria-hidden="true">
+            <path class="spark" d="M126 14l-4 10M140 20l-10 6M112 18l2 10"/>
+            <path class="tri" d="M44 52l14 6-12 9z"/>
+            <circle class="dot" cx="184" cy="60" r="4"/>
+            <circle class="ring" cx="182" cy="110" r="5"/>
+            <path class="line" d="M28 98h22M34 108h16M42 118h8"/>
+            <rect class="env-back" x="66" y="70" width="104" height="80" rx="6"/>
+            <path class="paper" d="M78 40h64l14 14v62H78z"/>
+            <path class="paper-fold" d="M142 40v14h14"/>
+            <path class="check" d="M96 80l12 12 24-26"/>
+            <path class="env-front" d="M66 84l52 36 52-36v60a6 6 0 01-6 6H72a6 6 0 01-6-6z"/>
+          </svg>
+          <h2 id="ce-title" class="ce-heading">กรุณายืนยันตัวตนด้วยรหัสผ่านปัจจุบัน</h2>
+          @if (passwordNotice) { <p class="ce-notice" role="status">{{ passwordNotice }}</p> }
+          <form class="ce-form narrow" (ngSubmit)="submitPassword()" novalidate>
+            <label for="ce-password" class="ce-label maroon">รหัสผ่าน</label>
+            <div class="ce-input" [class.invalid]="passwordError">
+              <input id="ce-password" name="password" [type]="showPassword ? 'text' : 'password'" [(ngModel)]="password"
+                     (ngModelChange)="onPasswordInput()" placeholder="ระบุรหัสผ่าน" autocomplete="current-password"
+                     [attr.aria-invalid]="!!passwordError" [attr.aria-describedby]="passwordError ? 'ce-password-error' : null">
+              <button type="button" class="ce-eye hit44" (click)="showPassword = !showPassword"
+                      [attr.aria-label]="showPassword ? 'ซ่อนรหัสผ่าน' : 'แสดงรหัสผ่าน'" [attr.aria-pressed]="showPassword">
+                @if (showPassword) {
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18M10.6 5.1A10 10 0 0112 5c6.4 0 10 7 10 7a17 17 0 01-3.2 4.1M6.6 6.6A17 17 0 002 12s3.6 7 10 7a9.7 9.7 0 005.4-1.6M9.9 9.9a3 3 0 004.2 4.2"/></svg>
+                }
+              </button>
+            </div>
+            @if (passwordError) { <p id="ce-password-error" class="ce-error" role="alert">{{ passwordError }}</p> }
+            <button type="button" class="ce-forgot hit44" (click)="openForgot()">ลืมรหัสผ่าน?</button>
+            @if (formError) { <p class="ce-form-error" role="alert">{{ formError }}</p> }
+            <button type="submit" class="ce-submit" [disabled]="busy" [attr.aria-busy]="busy">
+              @if (busy) { <span class="ce-spinner" aria-hidden="true"></span>กำลังตรวจสอบ... } @else { ยืนยัน }
+            </button>
+          </form>
+        }
+
+        <!-- ===== 1) อีเมลใหม่ ===== -->
+        @case ('email') {
+          <h2 id="ce-title" class="ce-title">อีเมลของคุณ</h2>
+          <p class="ce-desc">
+            @if (adding) { กรอกอีเมลของท่าน ระบบจะส่งรหัสยืนยัน 6 หลัก ไปยังอีเมลนี้ }
+            @else { กรอกอีเมลใหม่ในการแทนอีเมลปัจจุบัน ระบบจะส่งรหัสยืนยัน 6 หลัก ไปยังอีเมลใหม่ของท่าน }
+          </p>
+          <form class="ce-form" (ngSubmit)="submitEmail()" novalidate>
+            <label for="ce-email" class="ce-label">อีเมลใหม่</label>
+            <div class="ce-input" [class.invalid]="emailError">
+              <svg class="ce-lead" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="1"/><path d="M3.5 6.5l8.5 7 8.5-7"/></svg>
+              <input id="ce-email" name="newEmail" type="email" autocomplete="email" inputmode="email" maxlength="254"
+                     placeholder="example@mail.com" [(ngModel)]="newEmail" (ngModelChange)="onEmailInput()"
+                     [attr.aria-invalid]="!!emailError" [attr.aria-describedby]="emailError ? 'ce-email-error' : null">
+            </div>
+            @if (emailError) { <p id="ce-email-error" class="ce-error" role="alert">{{ emailError }}</p> }
+            @if (formError) { <p class="ce-form-error" role="alert">{{ formError }}</p> }
+            <button type="submit" class="ce-submit" [disabled]="busy || cooldown > 0" [attr.aria-busy]="busy">
+              @if (busy) { <span class="ce-spinner" aria-hidden="true"></span>กำลังส่งรหัส... }
+              @else if (cooldown > 0) { ส่งรหัสยืนยัน (อีก {{ cooldown }} วินาที) }
+              @else { ส่งรหัสยืนยัน }
+            </button>
+            <button type="button" class="ce-cancel" (click)="requestClose()" [disabled]="busy">ยกเลิก</button>
+          </form>
+        }
+
+        <!-- ===== 2) OTP ===== -->
+        @case ('otp') {
+          <h2 id="ce-title" class="ce-title">กรอกรหัสยืนยัน</h2>
+          <p class="ce-desc">เราได้ส่งรหัสยืนยัน 6 หลัก ไปยัง <strong>{{ sentTo }}</strong> กรุณากรอกรหัสภายใน {{ otpMinutes }} นาที</p>
+          <form class="ce-form narrow" (ngSubmit)="submitOtp()" novalidate>
+            <span class="ce-label">รหัสยืนยัน</span>
+            <app-otp-input [light]="true" [invalid]="!!otpError" (valueChange)="onOtpChange($event)"></app-otp-input>
+            @if (otpError) { <p class="ce-error" role="alert">{{ otpError }}</p> }
+            @if (infoMessage) { <p class="ce-notice inline" role="status">{{ infoMessage }}</p> }
+            @if (formError) { <p class="ce-form-error" role="alert">{{ formError }}</p> }
+            <button type="submit" class="ce-submit" [disabled]="busy" [attr.aria-busy]="busy">
+              @if (busy) { <span class="ce-spinner" aria-hidden="true"></span>กำลังตรวจสอบ... } @else { ยืนยันตัวตน }
+            </button>
+            <p class="ce-footer">
+              ไม่ได้รับรหัส?
+              <button type="button" class="ce-link" (click)="resend()" [disabled]="cooldown > 0 || resending || busy">
+                {{ resending ? 'กำลังส่ง...' : 'ส่งรหัสอีกครั้ง' }}
+              </button>
+              @if (cooldown > 0) { <span class="ce-countdown" aria-live="polite">(อีก {{ cooldown }} วินาที)</span> }
+            </p>
+          </form>
+        }
+
+        <!-- ===== 3) เสร็จสิ้น ===== -->
+        @case ('done') {
+          <svg class="ce-done-art" viewBox="0 0 180 170" aria-hidden="true">
+            <path class="env-back" d="M10 70L90 14l80 56v88a6 6 0 01-6 6H16a6 6 0 01-6-6z"/>
+            <rect class="paper" x="34" y="24" width="112" height="100" rx="4"/>
+            <circle class="badge" cx="90" cy="66" r="30"/>
+            <circle class="badge-ring" cx="90" cy="66" r="22"/>
+            <path class="check" d="M78 66l9 9 17-19"/>
+            <path class="env-front" d="M10 70l80 54 80-54v88a6 6 0 01-6 6H16a6 6 0 01-6-6z"/>
+            <path class="flap" d="M10 164l64-50h32l64 50"/>
+          </svg>
+          <h2 id="ce-title" class="ce-title center">เรียบร้อย!!</h2>
+          <p class="ce-desc center">{{ adding ? 'เพิ่มอีเมลของคุณเรียบร้อยแล้ว' : 'ทำการเปลี่ยนอีเมลของคุณเรียบร้อยแล้ว' }}</p>
+          <button type="button" class="ce-submit short" (click)="close()">เรียบร้อย</button>
+        }
+      }
+    </div>
+
+    @if (confirmingClose) {
+      <div class="ce-confirm" role="alertdialog" aria-modal="true" aria-labelledby="ce-confirm-title" aria-describedby="ce-confirm-desc">
+        <p id="ce-confirm-title" class="ce-confirm-title">ปิดหน้าต่างนี้?</p>
+        <p id="ce-confirm-desc" class="ce-confirm-desc">รหัสยืนยันที่ส่งไปจะใช้ไม่ได้ และต้องเริ่มเปลี่ยนอีเมลใหม่</p>
+        <div class="ce-confirm-actions">
+          <button type="button" class="ce-submit ce-confirm-stay" (click)="cancelClose()">ทำต่อ</button>
+          <button type="button" class="ce-cancel ce-confirm-leave" (click)="close()">ปิดหน้าต่าง</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+}

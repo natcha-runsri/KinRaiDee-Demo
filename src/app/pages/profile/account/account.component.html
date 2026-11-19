@@ -1,0 +1,255 @@
+@if (toast) {
+  <div class="toast" role="status">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+    {{ toast }}
+  </div>
+}
+
+<section class="card" aria-labelledby="account-title">
+  <header class="card-head">
+    <span class="head-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><circle cx="12" cy="9.5" r="3.6"/><path d="M5.5 19.5c1-3.6 3.6-5.3 6.5-5.3s5.5 1.7 6.5 5.3"/></svg>
+    </span>
+    <h1 id="account-title">บัญชีของฉัน</h1>
+  </header>
+
+  <div class="card-body">
+    @if (!account) {
+      <p class="loading" aria-live="polite">กำลังโหลดข้อมูล...</p>
+    } @else {
+
+    <!-- ================= ตั้งค่าข้อมูลส่วนตัว ================= -->
+    <div class="section" [class.is-editing]="editing">
+      <div class="section-head">
+        <h2>ตั้งค่าข้อมูลส่วนตัว</h2>
+        @if (!editing) {
+          <button type="button" class="edit-link hit44" (click)="startEdit()" aria-label="แก้ไขข้อมูลส่วนตัว">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="7" r="4"/><path d="M3 21c.6-4 3.3-6.5 7-6.5 1.3 0 2.5.3 3.5.9M15 21l1-3.5 4.6-4.6a1.5 1.5 0 012.1 2.1L18.1 19.6 15 21z"/></svg>
+            <span>แก้ไข</span>
+          </button>
+        } @else {
+          <span class="editing-note">กำลังแก้ไข</span>
+        }
+      </div>
+
+      @if (!editing) {
+        <dl class="info">
+          <div class="row full">
+            <dt><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="10" r="3.2"/><path d="M6.4 18.6c1.3-2.4 3.3-3.6 5.6-3.6s4.3 1.2 5.6 3.6"/></svg>ชื่อผู้ใช้</dt>
+            <dd>{{ account.username }}</dd>
+          </div>
+          <div class="row full">
+            <dt><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="1"/><path d="M3.5 6.5l8.5 7 8.5-7"/></svg>อีเมล</dt>
+            @if (account.email) {
+              <dd>{{ account.email }}</dd>
+            } @else {
+              <dd class="email-cell">
+                <span class="empty-email"><span class="muted">ยังไม่ได้เพิ่มอีเมล</span><small>เพิ่มอีเมลเพื่อใช้กู้รหัสผ่าน</small></span>
+                <button type="button" class="email-action hit44" (click)="openEmailDialog($event)" aria-haspopup="dialog">เพิ่มอีเมล</button>
+              </dd>
+            }
+          </div>
+          <div class="row">
+            <dt><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="1"/><path d="M3 9h18M8 2.5v4M16 2.5v4M7 12.5h.01M11 12.5h.01M15 12.5h.01M7 16h.01M11 16h.01M15 16h.01"/></svg>อายุ</dt>
+            <dd [class.muted]="account.age === null">{{ account.age ?? '-' }}</dd>
+          </div>
+          <div class="row">
+            <dt><ng-container *ngTemplateOutlet="genderIcon; context: { $implicit: account.gender }"></ng-container>เพศ</dt>
+            <dd [class.muted]="!account.gender">{{ genderLabel(account.gender) || '-' }}</dd>
+          </div>
+          <div class="row">
+            <dt><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M7.5 9.5a6 6 0 019 0l-2.4 2.2a2.6 2.6 0 00-4.2 0z"/></svg>น้ำหนัก</dt>
+            <dd [class.muted]="account.weightKg === null">
+              {{ account.weightKg ?? '-' }}@if (account.weightKg !== null) {<span class="unit">กก.</span>}
+            </dd>
+          </div>
+          <div class="row">
+            <dt><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12M6 21h12M12 5v14M9 8l3-3 3 3M9 16l3 3 3-3"/></svg>ส่วนสูง</dt>
+            <dd [class.muted]="account.heightCm === null">
+              {{ account.heightCm ?? '-' }}@if (account.heightCm !== null) {<span class="unit">ซม.</span>}
+            </dd>
+          </div>
+          <div class="row full bmi-row">
+            <dt><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18a8 8 0 0116 0z"/><path d="M12 18l4-5"/></svg>BMI</dt>
+            <dd>
+              <app-bmi-badge [bmi]="account.bmi ?? null"></app-bmi-badge>
+              <small class="bmi-note">{{ account.bmi ? 'เกณฑ์สำหรับคนเอเชีย' : 'กรอกน้ำหนักและส่วนสูงเพื่อดูค่า BMI' }}</small>
+            </dd>
+          </div>
+          <div class="row full allergy-row">
+            <dt><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17h.01"/></svg>อาหารที่แพ้</dt>
+            <dd><app-allergy-field [value]="allergyForm"></app-allergy-field></dd>
+          </div>
+        </dl>
+      } @else {
+        <form class="edit-grid" (ngSubmit)="save()" novalidate>
+          <div class="field full">
+            <label for="pf-username">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="10" r="3.2"/><path d="M6.4 18.6c1.3-2.4 3.3-3.6 5.6-3.6s4.3 1.2 5.6 3.6"/></svg>ชื่อผู้ใช้
+            </label>
+            <div class="control">
+              <div class="input-box" [class.invalid]="shownError('username')">
+                <input id="pf-username" name="username" [(ngModel)]="form.username" (ngModelChange)="onFieldChange('username')"
+                       (blur)="onBlur('username')" [attr.maxlength]="usernameMax" autocomplete="username"
+                       [attr.aria-invalid]="!!shownError('username')" aria-describedby="pf-username-count pf-username-error">
+                <span id="pf-username-count" class="counter" aria-live="polite">{{ form.username.trim().length }}/{{ usernameMax }}</span>
+              </div>
+              @if (shownError('username')) { <p id="pf-username-error" class="field-error" role="alert">{{ shownError('username') }}</p> }
+            </div>
+          </div>
+
+          <div class="field full">
+            <span class="label" id="pf-email-label">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="1"/><path d="M3.5 6.5l8.5 7 8.5-7"/></svg>อีเมล
+            </span>
+            <div class="control">
+              <div class="input-box email-readonly">
+                <!-- ตัดบรรทัดได้หลัง @ (อีเมลยาวบนจอแคบไม่แตกกลางคำ) -->
+                <span class="email-value" [class.muted]="!account.email" aria-labelledby="pf-email-label">
+                  @if (account.email) { {{ emailParts(account.email)[0] }}<wbr>{{ emailParts(account.email)[1] }} } @else { ยังไม่ได้เพิ่มอีเมล }
+                </span>
+                <button type="button" class="email-action hit44" (click)="openEmailDialog($event)" aria-haspopup="dialog"
+                        [attr.aria-label]="account.email ? 'เปลี่ยนอีเมล' : 'เพิ่มอีเมล'">
+                  {{ account.email ? 'เปลี่ยน' : 'เพิ่ม' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="pf-age">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16" rx="1"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg>อายุ
+            </label>
+            <div class="control">
+              <div class="input-box short" [class.invalid]="shownError('age')">
+                <input id="pf-age" name="age" inputmode="numeric" [(ngModel)]="form.age" (ngModelChange)="onFieldChange('age')"
+                       (blur)="onBlur('age')" [attr.aria-invalid]="!!shownError('age')" aria-describedby="pf-age-error">
+              </div>
+              @if (shownError('age')) { <p id="pf-age-error" class="field-error" role="alert">{{ shownError('age') }}</p> }
+            </div>
+          </div>
+
+          <div class="field gender-field" role="group" aria-labelledby="pf-gender-label">
+            <span id="pf-gender-label" class="label">
+              <ng-container *ngTemplateOutlet="genderIcon; context: { $implicit: form.gender }"></ng-container>เพศ
+            </span>
+            <div class="control">
+              <div class="genders">
+                @for (g of genderOptions; track g.value) {
+                  <button type="button" class="gender-opt" [class.selected]="form.gender === g.value" [attr.aria-pressed]="form.gender === g.value"
+                          [attr.data-value]="g.value || 'none'" (click)="setGender(g.value)">
+                    @if (g.value) { <ng-container *ngTemplateOutlet="genderIcon; context: { $implicit: g.value }"></ng-container> }
+                    <span>{{ g.label }}</span>
+                  </button>
+                }
+              </div>
+              @if (shownError('gender')) { <p class="field-error" role="alert">{{ shownError('gender') }}</p> }
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="pf-weight">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M7.5 9.5a6 6 0 019 0l-2.4 2.2a2.6 2.6 0 00-4.2 0z"/></svg>น้ำหนัก
+            </label>
+            <div class="control">
+              <div class="input-box short" [class.invalid]="shownError('weightKg')">
+                <input id="pf-weight" name="weightKg" inputmode="decimal" [(ngModel)]="form.weightKg" (ngModelChange)="onFieldChange('weightKg')"
+                       (blur)="onBlur('weightKg')" [attr.aria-invalid]="!!shownError('weightKg')" aria-describedby="pf-weight-error">
+                <span class="unit-in" aria-hidden="true">กก.</span>
+              </div>
+              @if (shownError('weightKg')) { <p id="pf-weight-error" class="field-error" role="alert">{{ shownError('weightKg') }}</p> }
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="pf-height">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12M6 21h12M12 5v14M9 8l3-3 3 3M9 16l3 3 3-3"/></svg>ส่วนสูง
+            </label>
+            <div class="control">
+              <div class="input-box short" [class.invalid]="shownError('heightCm')">
+                <input id="pf-height" name="heightCm" inputmode="decimal" [(ngModel)]="form.heightCm" (ngModelChange)="onFieldChange('heightCm')"
+                       (blur)="onBlur('heightCm')" [attr.aria-invalid]="!!shownError('heightCm')" aria-describedby="pf-height-error">
+                <span class="unit-in" aria-hidden="true">ซม.</span>
+              </div>
+              @if (shownError('heightCm')) { <p id="pf-height-error" class="field-error" role="alert">{{ shownError('heightCm') }}</p> }
+            </div>
+          </div>
+          <div class="field full bmi-field">
+            <span class="label" id="pf-bmi-label">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18a8 8 0 0116 0z"/><path d="M12 18l4-5"/></svg>BMI
+            </span>
+            <div class="control" aria-labelledby="pf-bmi-label" aria-live="polite">
+              <app-bmi-badge [bmi]="liveBmi"></app-bmi-badge>
+              <small class="bmi-note">{{ liveBmi ? 'เกณฑ์สำหรับคนเอเชีย' : 'กรอกน้ำหนักและส่วนสูงเพื่อดูค่า BMI' }}</small>
+            </div>
+          </div>
+          <div class="field full">
+            <span class="label" id="pf-allergy-label">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17h.01"/></svg>อาหารที่แพ้
+            </span>
+            <div class="control" role="group" aria-labelledby="pf-allergy-label">
+              <app-allergy-field [editing]="true" [value]="allergyForm" (valueChange)="allergyForm = $event"></app-allergy-field>
+            </div>
+          </div>
+          @if (formError) { <p class="form-error full" role="alert">{{ formError }}</p> }
+          <!-- ปุ่มท้ายฟอร์ม (มือถือติดด้านล่างจอขณะแก้ไข) — บันทึกกดไม่ได้จนกว่าจะแก้ (Enter ก็ไม่ส่งฟอร์มตอนปุ่มกดไม่ได้) -->
+          <div class="form-actions full">
+            <button type="button" class="form-cancel hit44" (click)="cancelEdit()" [disabled]="saving">ยกเลิก</button>
+            <button type="submit" class="form-save hit44" [disabled]="!dirty || hasErrors || saving" [attr.aria-busy]="saving">
+              {{ saving ? 'กำลังบันทึก...' : 'บันทึก' }}
+            </button>
+          </div>
+        </form>
+      }
+    </div>
+
+    <!-- ================= เปลี่ยนรหัสผ่าน (pop-up OTP ทางอีเมล) ================= -->
+    <div class="section">
+      <div class="section-head">
+        <h2>เปลี่ยนรหัสผ่าน</h2>
+        <button type="button" id="pw-edit-btn" class="edit-link hit44" (click)="openPasswordDialog()" aria-label="แก้ไขรหัสผ่าน"
+                aria-haspopup="dialog">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="7" r="4"/><path d="M3 21c.6-4 3.3-6.5 7-6.5 1.3 0 2.5.3 3.5.9M15 21l1-3.5 4.6-4.6a1.5 1.5 0 012.1 2.1L18.1 19.6 15 21z"/></svg>
+          <span>แก้ไข</span>
+        </button>
+      </div>
+      <dl class="info">
+        <div class="row full password-row">
+          <dt><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="10" width="15" height="11" rx="3"/><path d="M8 10V7a4 4 0 018 0v3M10 15.5h.01M14 15.5h.01"/></svg>รหัสผ่าน</dt>
+          <dd class="dots" aria-label="ซ่อนรหัสผ่าน">••••••••</dd>
+        </div>
+      </dl>
+      @if (pwNeedsEmail) {
+        <div class="needs-email" role="alert">
+          <p>กรุณาเพิ่มอีเมลในข้อมูลส่วนตัวก่อนเปลี่ยนรหัสผ่าน</p>
+          <button type="button" class="needs-email-btn" (click)="addEmailFirst($event)">เพิ่มอีเมล</button>
+        </div>
+      }
+    </div>
+    }
+  </div>
+</section>
+
+@if (emailDialogOpen) {
+  <app-change-email-dialog [currentEmail]="account?.email ?? null" (emailChanged)="onEmailChanged($event)"
+                           (closed)="onEmailDialogClosed()"></app-change-email-dialog>
+}
+@if (pwDialogOpen && account?.email) {
+  <app-change-password-dialog [email]="account!.email!" (closed)="onPasswordDialogClosed($event)"></app-change-password-dialog>
+}
+<!-- ไอคอนช่อง "เพศ" ตามเพศที่เลือก: หญิง ♀ / ชาย ♂ / อื่นๆ หรือไม่ระบุ = รูปคน -->
+<ng-template #genderIcon let-g>
+  <svg viewBox="0 0 24 24" aria-hidden="true" [attr.data-gender]="g || 'none'">
+    @switch (g) {
+      @case ('female') { <circle cx="12" cy="9" r="5"/><path d="M12 14v7M9 18h6"/> }
+      @case ('male') { <circle cx="10" cy="14" r="5"/><path d="M13.6 10.4L20 4M15 4h5v5"/> }
+      @default { <circle cx="12" cy="8" r="3.5"/><path d="M5 20.5c.7-3.9 3.3-6.2 7-6.2s6.3 2.3 7 6.2"/> }
+    }
+  </svg>
+</ng-template>
+
+@if (discardOpen) {
+  <app-confirm-dialog title="ทิ้งการแก้ไขหรือไม่?" message="ข้อมูลที่แก้ไว้ยังไม่ได้บันทึก"
+                      confirmLabel="ทิ้งการแก้ไข" cancelLabel="แก้ไขต่อ" [danger]="true"
+                      (confirmed)="onDiscardConfirmed()" (cancelled)="onDiscardCancelled()"></app-confirm-dialog>
+}

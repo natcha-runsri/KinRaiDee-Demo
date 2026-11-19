@@ -1,0 +1,61 @@
+/* ฉบับสั้นของคำโปรย / หน่วย ใช้เฉพาะมือถือ — จอ ≥ 768 แสดงแบบเดิม */
+.desc-short, .u-short{ display:none; }
+
+/*
+ * มือถือ (≤ 767px): pop-up กะทัดรัดแบบเดียวกับ pop-up ความชอบ — ขอบรอบ 16px, แบนเนอร์ ~100px คงที่ด้านบน,
+ * เนื้อหาเลื่อนในตัว pop-up เมื่อจอเตี้ย และปุ่มล่าง sticky (เงาสีพื้นบังเนื้อหาที่เลื่อนลอดใต้). 390×844 ทั้ง 2 ขั้นไม่ต้องเลื่อน
+ */
+@media (max-width:767.98px){
+  .ad-backdrop{ padding:16px; }
+  .ad-dialog{
+    display:flex;
+    flex-direction:column;
+    max-height:calc(100vh - 32px);
+    max-height:calc(100dvh - 32px);
+    overflow:hidden;
+    border-radius:14px;
+  }
+  .ad-banner{ flex:none; height:clamp(72px, 12dvh, 100px); border-radius:14px 14px 0 0; }
+  .ad-close{ top:8px; right:8px; width:36px; height:36px; background:rgba(0,0,0,.45); }
+  .ad-body{ flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:10px 14px 12px; }
+
+  h2{ margin:6px 0 2px; font-size:18px; }
+  .ad-desc{ margin:0 0 10px; line-height:1.45; }
+  .ad-desc .ph{ display:inline-block; }
+  .desc-long{ display:none; }
+  .desc-short{ display:inline; }
+
+  /* ขั้นที่ 1: น้ำหนัก | ส่วนสูง → อายุ → เพศ */
+  .grid{ grid-template-columns:1fr 1fr; gap:8px; }
+  .field-card:nth-child(n+3){ grid-column:1 / -1; }
+  .field-card{ align-items:center; gap:0 8px; padding:8px 10px; }
+  .fc-icon{ width:24px; height:24px; }
+  .fc-icon svg{ width:16px; height:16px; }
+  .fc-label small{ display:none; }
+  .fc-input{ margin-top:6px; }
+  .fc-input input{ padding:6px 0 6px 12px; }
+  .unit{ padding:0 10px; }
+  .u-long{ display:none; }
+  .u-short{ display:inline; }
+  .genders{ margin-top:6px; gap:6px; }
+  .gender-btn{ flex-direction:row; justify-content:center; gap:6px; min-height:44px; padding:4px 6px; border-radius:8px; }
+  .gender-btn svg{ width:18px; height:18px; }
+
+  /* ขั้นที่ 2: การ์ดคำถามแน่นขึ้น; ตัวเลือกสูง 34px แต่พื้นที่กด 44px (::after ไม่เพิ่มความสูงของ layout) */
+  .questions{ gap:6px; }
+  .q-card{ padding:7px 10px 8px; }
+  legend{ line-height:1.4; }
+  .options{ gap:6px 8px; margin-top:6px; }
+  .opt::after{ content:''; position:absolute; inset:-5px 0; }
+  .opt span{ display:inline-flex; align-items:center; min-height:34px; padding:0 14px; }
+
+  .ad-actions{
+    position:sticky;
+    bottom:0;
+    z-index:1;
+    margin-top:12px;
+    background:#FFFDF9;
+    box-shadow:0 12px 0 0 #FFFDF9, 0 -10px 12px 2px #FFFDF9;
+  }
+  .ad-primary, .ad-back{ min-height:44px; }
+}

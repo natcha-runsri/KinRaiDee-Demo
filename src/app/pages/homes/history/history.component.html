@@ -1,0 +1,199 @@
+<div class="page">
+
+  <app-navbar></app-navbar>
+
+  <nav class="breadcrumb" aria-label="breadcrumb">
+    <span aria-current="page">ประวัติการใช้งาน</span>
+  </nav>
+
+  <main class="content">
+    @if (!loggedIn()) {
+
+      <!-- ---------- ไม่ login (ภาพที่ 2) — แถบ breadcrumb ของหน้านี้วาดไว้ข้างบนแล้ว ---------- -->
+      <app-guest-empty-state title="ไม่มีประวัติการใช้งาน"
+                             subtitle="กรุณาสมัครสมาชิก เพื่อรับบริการบันทึกประวัติการใช้งานของเรา"
+                             returnUrl="/history" [showRegister]="true"></app-guest-empty-state>
+
+    } @else {
+
+      <!-- ---------- B1 การ์ดสรุป ---------- -->
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-art hero-art-left" aria-hidden="true">
+          @if (!missingArt.has('hotpot')) {
+            <img src="images/history/hotpot.png" alt="" (error)="missingArt.add('hotpot')">
+          } @else {
+            <div class="art-ph">images/history/hotpot.png</div>
+          }
+        </div>
+
+        <div class="hero-main">
+          <h1 id="hero-title">ประวัติการใช้งานของคุณ</h1>
+          <p class="hero-sub">เราบันทึกประวัติพฤติกรรมของคุณไว้ เพื่อช่วยให้คุณมีสุขภาพที่ดีในทุกๆวัน</p>
+
+          <ul class="stats" aria-label="สรุปพฤติกรรมการกิน" aria-live="polite">
+            <li class="stat" data-stat="range">
+              <span class="stat-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path class="dots" d="M7.5 13.5h1M11.5 13.5h1M15.5 13.5h1M7.5 17h1M11.5 17h1"/></svg>
+              </span>
+              <span class="stat-text">
+                <strong class="stat-value">{{ rangeParts[0] }}</strong>
+                @if (rangeParts[1]) { <span class="stat-unit">{{ rangeParts[1] }}</span> }
+              </span>
+            </li>
+            <li class="stat" data-stat="meals">
+              <span class="stat-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M7 3v8M5 3v5a2 2 0 004 0V3M7 11v10M17 21V3c-2 1-3.5 3.5-3.5 7 0 2 1.5 3 3.5 3"/></svg>
+              </span>
+              <span class="stat-text">
+                @if (summary?.avgMealsPerDay != null) {
+                  <strong class="stat-value">{{ formatNumber(summary!.avgMealsPerDay!) }}</strong>
+                  <span class="stat-unit">มื้อ/วัน (เฉลี่ย)</span>
+                } @else {
+                  <strong class="stat-value">-</strong>
+                  <span class="stat-empty"><span class="sr-only">มื้อเฉลี่ยต่อวัน: </span>ยังไม่มีข้อมูล</span>
+                }
+              </span>
+            </li>
+            <li class="stat" data-stat="score">
+              <span class="stat-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 14c.9 1.4 2.1 2.1 3.5 2.1s2.6-.7 3.5-2.1M9 9.5v.5M15 9.5v.5"/></svg>
+              </span>
+              <span class="stat-text">
+                <span class="stat-label">คะแนนพฤติกรรม</span>
+                @if (summary?.avgScore != null) {
+                  <strong class="stat-value">{{ formatNumber(summary!.avgScore!) }} <span class="stat-max">/{{ summary!.maxScore }}</span></strong>
+                } @else {
+                  <strong class="stat-value">- <span class="stat-empty">ยังไม่มีข้อมูล</span></strong>
+                }
+              </span>
+            </li>
+          </ul>
+          @if (summaryError) { <p class="load-error" role="alert">โหลดสรุปไม่สำเร็จ กรุณารีเฟรชหน้า</p> }
+        </div>
+
+        <div class="hero-art hero-art-right" aria-hidden="true">
+          @if (!missingArt.has('veggies')) {
+            <img src="images/history/veggies.png" alt="" (error)="missingArt.add('veggies')">
+          } @else {
+            <div class="art-ph">images/history/veggies.png</div>
+          }
+        </div>
+      </section>
+
+      <!-- ---------- B2 เมนูที่เคยแนะนำ ---------- -->
+      <section class="liked" aria-labelledby="liked-title">
+        <header class="sec-head">
+          <span class="sec-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M7 3v8M5 3v5a2 2 0 004 0V3M7 11v10M17 21V3c-2 1-3.5 3.5-3.5 7 0 2 1.5 3 3.5 3"/></svg>
+          </span>
+          <h2 id="liked-title">เมนูอาหารที่เคยแนะนำ</h2>
+          @if (liked.length) {
+            <a routerLink="/history/liked" class="see-all hit44">ดูทั้งหมด <span aria-hidden="true">▸</span></a>
+          }
+        </header>
+
+        @if (likedLoading) {
+          <p class="state-msg" aria-live="polite">กำลังโหลด...</p>
+        } @else if (likedError) {
+          <p class="state-msg" role="alert">โหลดเมนูที่ถูกใจไม่สำเร็จ กรุณารีเฟรชหน้า</p>
+        } @else if (!liked.length) {
+          <div class="empty">
+            <p>ยังไม่มีเมนูที่คุณถูกใจ</p>
+            <a routerLink="/recommend/random" class="empty-btn">ไปสุ่มเมนู</a>
+          </div>
+        } @else {
+          <ul class="liked-strip" aria-label="เมนูที่ถูกใจล่าสุด">
+            @for (item of liked; track item.recipe.id) {
+              <li><app-liked-card [item]="item"></app-liked-card></li>
+            }
+          </ul>
+        }
+      </section>
+
+      <!-- ---------- C ประวัติการวิเคราะห์ ---------- -->
+      <section class="analyses" aria-labelledby="analyses-title">
+        <header class="sec-head">
+          <span class="sec-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+          </span>
+          <div class="sec-titles">
+            <h2 id="analyses-title">ประวัติการวิเคราะห์</h2>
+            <p>รายการตรวจสอบพฤติกรรมการทานอาหารย้อนหลัง</p>
+          </div>
+          <label class="range">
+            <span class="sr-only">ช่วงเวลา</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+            <select class="min44" id="history-range" [value]="range" (change)="onRangeChange($any($event.target).value)">
+              @for (r of ranges; track r.value) {
+                <option [value]="r.value" [selected]="r.value === range">{{ r.label }}</option>
+              }
+            </select>
+          </label>
+        </header>
+
+        @if (analysesLoading && !analyses) {
+          <p class="state-msg" aria-live="polite">กำลังโหลด...</p>
+        } @else if (analysesError) {
+          <p class="state-msg" role="alert">โหลดประวัติการวิเคราะห์ไม่สำเร็จ กรุณาลองใหม่</p>
+        } @else if (!analyses?.content?.length) {
+          <div class="empty empty-analyses">
+            <p>ยังไม่มีประวัติการวิเคราะห์ในช่วงนี้</p>
+            <a routerLink="/analysis" class="empty-btn">ไปวิเคราะห์</a>
+          </div>
+        } @else {
+          <div class="table-wrap">
+            <table class="a-table">
+              <caption class="sr-only">ประวัติการวิเคราะห์ ({{ rangeParts.join(' ') }})</caption>
+              <thead>
+                <tr>
+                  <th scope="col">วันที่บันทึก</th>
+                  <th scope="col">รายการอาหารที่บันทึก</th>
+                  <th scope="col">หมู่อาหาร</th>
+                  <th scope="col">คะแนนพฤติกรรมการกิน</th>
+                  <th scope="col">สถานะ</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of analyses!.content; track row.id) {
+                  <tr>
+                    <td data-label="วันที่บันทึก" class="c-date">
+                      <a class="row-link hit44" [routerLink]="['/analysis/result', row.id]" [attr.aria-label]="'ดูผลการวิเคราะห์วันที่ ' + formatDate(row.recordedDate)">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+                        {{ formatDate(row.recordedDate) }}
+                      </a>
+                    </td>
+                    <td data-label="รายการอาหารที่บันทึก">{{ row.itemCount != null ? row.itemCount + ' รายการ' : '-' }}</td>
+                    <td data-label="หมู่อาหาร">
+                      @if (row.foodGroups.length) {
+                        <span class="groups" role="img" [attr.aria-label]="groupsLabel(row.foodGroups)" [title]="groupsLabel(row.foodGroups)">
+                          @for (g of row.foodGroups; track g.key) {
+                            <span class="dot" [class.on]="g.present" [title]="g.label + (g.present ? ' (มี)' : ' (ขาด)')"></span>
+                          }
+                        </span>
+                      } @else { - }
+                    </td>
+                    <td data-label="คะแนนพฤติกรรมการกิน">{{ row.score != null ? formatNumber(row.score) : '-' }}</td>
+                    <td data-label="สถานะ">
+                      @if (row.status) {
+                        <span [class]="'pill ' + toneClass(row.status.tone)" [title]="row.note || row.status.label">{{ row.status.label }}</span>
+                      } @else { - }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          @if (analyses!.totalPages > 1) {
+            <nav class="pager" aria-label="เปลี่ยนหน้าประวัติการวิเคราะห์">
+              <button type="button" (click)="goPage(analyses!.page - 1)" [disabled]="analyses!.page === 0">‹ ก่อนหน้า</button>
+              <span>หน้า {{ analyses!.page + 1 }} / {{ analyses!.totalPages }}</span>
+              <button type="button" (click)="goPage(analyses!.page + 1)" [disabled]="!analyses!.hasNext">ถัดไป ›</button>
+            </nav>
+          }
+        }
+      </section>
+    }
+  </main>
+
+  <footer class="footer-bar" aria-hidden="true"></footer>
+</div>

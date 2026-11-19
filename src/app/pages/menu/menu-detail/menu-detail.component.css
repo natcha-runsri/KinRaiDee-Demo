@@ -1,0 +1,203 @@
+:host{
+  --maroon:var(--color-primary);
+  --maroon-dark:var(--color-primary);
+  --navy:#1F2D4D;
+  --cream:#FFFDF7;
+  --blue-line:#A9C6F0;
+  --ink:#2A2A2A;
+  display:block;
+  font-family:'Prompt', sans-serif;
+}
+
+*{ box-sizing:border-box; }
+
+.page{
+  min-height:100vh;
+  background:var(--cream);
+  display:flex;
+  flex-direction:column;
+  overflow-x:hidden;
+}
+
+.breadcrumb{
+  background:var(--maroon-dark);
+  color:#fff;
+  font-weight:700;
+  font-size:18px;
+  padding:26px clamp(16px, 5vw, 74px);
+  display:flex;
+  gap:6px;
+}
+
+.content{
+  flex:1;
+  width:100%;
+  max-width:1120px;
+  margin:0 auto;
+  padding:40px clamp(16px, 4vw, 40px) 64px;
+}
+
+.state-msg{ text-align:center; color:#6b5b5b; margin:60px 0; }
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:900;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:12px 20px;
+  border-radius:999px;
+  background:var(--navy);
+  color:#FFEBAC;
+  font-weight:600;
+  font-size:15px;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
+  animation:toast-in .25s ease-out;
+}
+.toast svg{ width:18px; height:18px; fill:none; stroke:#FFEBAC; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
+@keyframes toast-in{ from{ opacity:0; transform:translate(-50%, -10px); } }
+
+/* ---------- รูป + ป้าย ---------- */
+.hero{
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:120px;
+}
+.hero-img{
+  width:min(400px, 72vw);
+  aspect-ratio:1 / 1;
+  border-radius:50%;
+  overflow:hidden;
+  border:8px solid #f3efe7;
+  box-shadow:0 18px 36px rgba(0,0,0,.18);
+  background:#efe6d8;
+}
+.hero-img app-menu-image{ width:100%; height:100%; }
+
+.hero-chips{
+  list-style:none;
+  margin:0;
+  padding:0;
+  position:absolute;
+  left:calc(50% + min(200px, 36vw) + 44px);
+  top:50%;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+/* เรียงเฉียงลงซ้ายแบบ mockup */
+.hero-chips .chip:nth-child(2){ transform:translateX(-18px); }
+.hero-chips .chip:nth-child(3){ transform:translateX(-36px); }
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  width:max-content;
+  padding:6px 16px;
+  border-radius:999px;
+  border:1.5px solid var(--blue-line);
+  background:#fff;
+  color:var(--ink);
+  font-size:13px;
+}
+.chip svg{ width:16px; height:16px; fill:none; stroke:var(--maroon); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+
+.name{
+  margin:32px 0 0;
+  text-align:center;
+  font-size:clamp(26px, 3.4vw, 38px);
+  font-weight:800;
+  color:var(--navy);
+  line-height:1.25;
+  overflow-wrap:anywhere;
+}
+.desc{
+  margin:12px auto 0;
+  max-width:640px;
+  text-align:center;
+  font-size:15px;
+  line-height:1.6;
+  color:#2A3550;
+}
+
+.nutrition{
+  list-style:none;
+  margin:20px 0 0;
+  padding:0;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:12px;
+}
+.nutrition li{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 14px;
+  border-radius:6px;
+  background:#F8E4E2;
+  font-size:13px;
+}
+.nutrition li span:last-child{ color:#6b5b5b; }
+.n-dot{ width:14px; height:14px; border-radius:50%; background:#F4C55C; }
+
+/* ---------- ไม่พบ ---------- */
+.not-found{ text-align:center; margin:60px auto; max-width:440px; }
+.not-found h1{ color:var(--maroon); font-size:30px; margin:0 0 10px; }
+.not-found p{ color:#5a4a4a; margin:0 0 24px; }
+.home-btn{
+  display:inline-block;
+  padding:12px 28px;
+  border-radius:999px;
+  background:var(--maroon-dark);
+  color:#fff;
+  font-weight:700;
+  text-decoration:none;
+}
+.home-btn:focus-visible{ outline:3px solid var(--blue-line); outline-offset:3px; }
+
+.footer-bar{
+  height:40px;
+  background:var(--maroon-dark);
+  border-top:6px solid #FDEBB0;
+}
+
+@media (max-width:767.98px){
+  .hero{ flex-direction:column; gap:18px; }
+  .hero-chips{
+    position:static;
+    flex-direction:row;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:10px;
+  }
+  .hero-chips .chip:nth-child(n){ transform:none; }
+}
+@media (max-width:479.98px){
+  .breadcrumb{ font-size:15px; padding:16px; }
+}
+@media (prefers-reduced-motion:reduce){
+  .toast{ animation:none; }
+}
+
+/* แถบเตือนอาหารที่แพ้ (login + เมนูมีอาหารที่แพ้) */
+.allergy-warn{
+  display:flex; align-items:flex-start; gap:8px; max-width:640px; margin:10px auto 0; padding:10px 14px;
+  border-radius:12px; background:var(--color-danger-bg); color:var(--color-danger-text); font-size:15px; font-weight:600; line-height:1.5; text-align:left;
+}
+.allergy-warn svg{ flex:none; width:20px; height:20px; margin-top:2px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+/* วัตถุดิบที่ผู้ใช้แพ้ (ส่วนประกอบ — คลาส allergen จาก isAllergen) */
+.ingredients li.allergen .ing-img{ border:3px solid #E07A7A; }
+.ingredients li.allergen .ing-name-text{ color:#B42318; }
+.ing-chips li.allergen .ing-chip{ background:var(--color-danger-bg); color:#B42318; box-shadow:inset 0 0 0 1.5px #E07A7A; }
+
+/* ตัวอักษรบนมือถือ (≤ 767px): เนื้อหาหลัก 14px, ข้อความรอง ≥ 12px */
+@media (max-width:767.98px){
+  .nutrition li{ font-size:14px; }
+}

@@ -1,0 +1,53 @@
+<div class="demo-grid">
+  <section class="card">
+    <div class="card-head">
+      <span class="head-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v8l6 4"/></svg></span>
+      <h2>สัดส่วนเพศผู้ใช้</h2>
+    </div>
+    <div class="donut-row">
+      <svg class="donut" viewBox="0 0 160 160" role="img" [attr.aria-label]="genderSummary">
+        <g transform="rotate(-90 80 80)">
+          @for (a of arcs; track $index) {
+            <circle cx="80" cy="80" [attr.r]="r" fill="none" [attr.stroke]="a.color" stroke-width="22"
+                    [attr.stroke-dasharray]="a.dash" [attr.stroke-dashoffset]="a.offset"></circle>
+          }
+        </g>
+        <text x="80" y="78" class="donut-total">{{ total?.label ?? '-' }}</text>
+        <text x="80" y="100" class="donut-unit">คน</text>
+      </svg>
+      <ul class="slices">
+        @for (s of gender; track s.key) {
+          <li>
+            <span class="swatch" [style.background]="s.count.value == null ? hiddenColor : colors[s.key]"></span>
+            <span class="s-label">{{ s.label }}</span>
+            <span class="s-pct">{{ s.percent != null ? s.percent + '%' : '' }}</span>
+            <span class="s-count">({{ s.count.label }})</span>
+          </li>
+        }
+      </ul>
+    </div>
+    @if (hasHiddenGender) { <p class="note">สีเทา = รวมกลุ่มที่มีผู้ใช้น้อยกว่า 5 คน</p> }
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <span class="head-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20h16M7 20v-6M12 20V8M17 20v-9"/></svg></span>
+      <h2>ช่วงอายุผู้ใช้</h2>
+    </div>
+    <div class="bars" role="img" [attr.aria-label]="ageSummary">
+      <div class="axis" aria-hidden="true">
+        @for (t of ageTicks; track t) { <span [style.bottom.px]="(t / barMax) * barH">{{ t }}</span> }
+      </div>
+      @for (s of age; track s.key) {
+        <div class="bar-col" [attr.title]="s.label + ': ' + s.count.label + ' คน'">
+          <span class="bar-val">{{ barText(s) }}</span>
+          <span class="bar" [class.hidden-bar]="s.count.value == null" [style.height.px]="barHeight(s)"></span>
+          <span class="bar-label">{{ s.label }}</span>
+        </div>
+      }
+    </div>
+    <ul class="sr-only">
+      @for (s of age; track s.key) { <li>{{ s.label }}: {{ s.count.label }} คน</li> }
+    </ul>
+  </section>
+</div>

@@ -1,0 +1,48 @@
+.scrim{ position:fixed; inset:0; z-index:50; background:var(--overlay-bg); -webkit-backdrop-filter:var(--overlay-blur); backdrop-filter:var(--overlay-blur); }
+.panel{
+  position:fixed;
+  top:0;
+  right:0;
+  bottom:0;
+  z-index:51;
+  width:min(560px, 100%);
+  display:flex;
+  flex-direction:column;
+  background:#fff;
+  box-shadow:-12px 0 40px rgba(0,0,0,.25), var(--popup-ring);
+  outline:none;
+}
+.panel-head{ display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid var(--adm-line); }
+.panel-head h2{ flex:1; margin:0; font-size:19px; font-weight:600; color:var(--adm-red-800); }
+.close{ display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border:0; border-radius:10px; background:transparent; cursor:pointer; }
+.close:hover{ background:var(--adm-bg); }
+.close svg{ width:22px; height:22px; stroke:var(--adm-text); stroke-width:2; stroke-linecap:round; }
+.close:focus-visible{ outline:2px solid var(--adm-red-700); }
+.panel-body{ flex:1; overflow-y:auto; padding:16px 20px 28px; display:flex; flex-direction:column; gap:16px; }
+.loading{ padding:20px; }
+
+.summary{ display:flex; gap:14px; align-items:flex-start; }
+.hero{ display:block; width:120px; height:120px; flex:none; border-radius:14px; overflow:hidden; }
+.full{ margin:0 0 4px; font-size:14px; }
+.meta{ margin:0 0 4px; font-size:13px; color:var(--adm-muted); }
+.links{ margin:0; font-size:13px; }
+.links a{ color:var(--adm-red-700); }
+
+.block{ display:flex; flex-direction:column; gap:8px; padding:14px; border:1px solid var(--adm-line); border-radius:14px; }
+.block h3{ margin:0 0 2px; font-size:15px; font-weight:600; }
+.state{ margin:0; font-weight:500; color:#1f6e45; }
+.state[data-hidden="true"]{ color:#9b1c2a; }
+.sources{ margin:0; padding-left:18px; font-size:13px; }
+.history{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; font-size:13px; }
+.history li{ padding-bottom:8px; border-bottom:1px dashed var(--adm-line); }
+.history .hint{ margin-left:6px; }
+.why{ display:block; color:var(--adm-text); }
+details{ margin-top:4px; }
+summary{ cursor:pointer; color:var(--adm-red-700); }
+code{ display:block; margin-top:4px; padding:6px 8px; border-radius:8px; background:var(--adm-bg); font-size:12px; white-space:pre-wrap; overflow-wrap:anywhere; }
+
+@media (max-width:767.98px){
+  .panel{ width:100%; }
+  .panel-head, .panel-body{ padding-left:16px; padding-right:16px; }
+  .hero{ width:96px; height:96px; }
+}

@@ -1,0 +1,64 @@
+<section class="card">
+  <div class="filters">
+    <label class="field"><span>แอดมิน</span>
+      <select class="min44" [(ngModel)]="adminFilter" (ngModelChange)="onFilter()" name="admin">
+        <option value="">ทุกคน</option>
+        @for (a of data()?.admins ?? []; track a.id) { <option [value]="a.id">{{ a.username }}</option> }
+        <option value="script">สคริปต์ของระบบ</option>
+      </select>
+    </label>
+    <label class="field"><span>ประเภท</span>
+      <select class="min44" [(ngModel)]="type" (ngModelChange)="onFilter()" name="type">
+        <option value="">ทุกประเภท</option>
+        @for (t of typeOptions; track t[0]) { <option [value]="t[0]">{{ t[1] }}</option> }
+      </select>
+    </label>
+    <label class="field"><span>การกระทำ</span>
+      <select class="min44" [(ngModel)]="action" (ngModelChange)="onFilter()" name="action">
+        <option value="">ทั้งหมด</option>
+        @for (a of actionOptions; track a[0]) { <option [value]="a[0]">{{ a[1] }}</option> }
+      </select>
+    </label>
+    <p class="range-note">ช่วงวันที่: {{ rangeState.label() }} (เปลี่ยนได้ที่หัวหน้า)</p>
+  </div>
+
+  @if (error()) {
+    <p class="err" role="alert">โหลดประวัติการแก้ไขไม่สำเร็จ</p>
+  } @else {
+    <ol class="log" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+      @for (e of data()?.items ?? []; track e.id) {
+        <li>
+          <button type="button" class="entry" (click)="toggle(e)" [attr.aria-expanded]="open() === e.id">
+            <span class="type" [attr.data-type]="e.targetType">{{ data()?.types?.[e.targetType] ?? e.targetType }}</span>
+            <span class="what"><strong>{{ e.actionLabel }}</strong> {{ e.targetName ?? e.targetId }}</span>
+            <span class="who">{{ e.adminName ?? 'สคริปต์ของระบบ' }}</span>
+            <time class="at">{{ when(e.at) }}</time>
+          </button>
+          @if (e.reason) { <p class="reason">เหตุผล: {{ e.reason }}</p> }
+          @if (open() === e.id) {
+            <div class="diff">
+              <div><h3>ก่อน</h3>
+                <dl>@for (f of fields(e.before); track f[0]) { <dt>{{ f[0] }}</dt><dd>{{ f[1] }}</dd> } @empty { <dd>—</dd> }</dl>
+              </div>
+              <div><h3>หลัง</h3>
+                <dl>@for (f of fields(e.after); track f[0]) { <dt>{{ f[0] }}</dt><dd>{{ f[1] }}</dd> } @empty { <dd>—</dd> }</dl>
+              </div>
+              @if (e.targetType === 'RECIPE' && e.targetId) {
+                <a class="link-all" routerLink="/admin/menus" [queryParams]="{ menu: e.targetId }">เปิดเมนูนี้ →</a>
+              }
+            </div>
+          }
+        </li>
+      } @empty {
+        @if (!loading()) { <li class="empty-note">ไม่มีการแก้ไขในช่วงนี้</li> }
+      }
+    </ol>
+    @if (data(); as d) {
+      <nav class="pager" aria-label="แบ่งหน้า">
+        <span>{{ d.total }} รายการ · หน้า {{ d.page + 1 }} / {{ pages }}</span>
+        <button type="button" class="btn" [disabled]="d.page === 0" (click)="goPage(d.page - 1)">ก่อนหน้า</button>
+        <button type="button" class="btn" [disabled]="d.page + 1 >= pages" (click)="goPage(d.page + 1)">ถัดไป</button>
+      </nav>
+    }
+  }
+</section>

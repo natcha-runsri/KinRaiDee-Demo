@@ -1,0 +1,141 @@
+<!-- ---------- แบนเนอร์ ---------- -->
+<section class="banner" aria-labelledby="db-title">
+  <app-art-image class="ban-art left" src="images/dashboard/banner-left.webp"></app-art-image>
+  <div class="ban-text">
+    <h1 id="db-title">สรุปผลโภชนาการของคุณ</h1>
+    <p>สรุปผลพฤติกรรมการกินของผู้ใช้เป็นราย วัน / สัปดาห์</p>
+  </div>
+  <div class="toggle" role="group" aria-label="ช่วงเวลา">
+    @for (r of ranges; track r.value) {
+      <button type="button" class="tg hit44" [class.on]="range === r.value" [attr.aria-pressed]="range === r.value" (click)="setRange(r.value)">{{ r.label }}</button>
+    }
+  </div>
+  <app-art-image class="ban-art right" src="images/dashboard/banner-right.webp"></app-art-image>
+</section>
+
+@if (loading && !data) {
+  <p class="state-msg" aria-live="polite">กำลังโหลด...</p>
+} @else if (loadError) {
+  <p class="state-msg" role="alert">โหลดข้อมูลไม่สำเร็จ กรุณารีเฟรชหน้า</p>
+} @else if (data && !data.hasAnyAnalysis) {
+  <!-- ---------- ยังไม่เคยวิเคราะห์ ---------- -->
+  <section class="page-empty" aria-live="polite">
+    <span class="pe-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/><path d="M3.5 9h17M9 9v11.5M12 17.5v-3M15 17.5v-5M18 17.5v-2"/></svg></span>
+    <p>ยังไม่มีข้อมูลโภชนาการ</p>
+    <a routerLink="/analysis" class="btn-maroon hit44">เริ่มวิเคราะห์ <span aria-hidden="true">▸</span></a>
+  </section>
+} @else if (data) {
+  <!-- ---------- การ์ดสรุป 3 ใบ ---------- -->
+  <section class="cards" [attr.aria-label]="'สรุปผล' + rangeWord" aria-live="polite">
+    <article class="card c-score">
+      <h2><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 14c.9 1.4 2.1 2.1 3.5 2.1s2.6-.7 3.5-2.1M9 9.5v.5M15 9.5v.5"/></svg></span>คะแนนพฤติกรรมการกิน</h2>
+      @if (data.score != null) {
+        <div class="c-row">
+          <p class="big"><strong>{{ num(data.score) }}</strong>&nbsp;<small>/ {{ data.maxScore }}</small></p>
+          @if (data.level) { <span [class]="'pill tone-' + data.level.tone">{{ data.level.label }}</span> }
+        </div>
+        <div class="bar" role="progressbar" aria-label="คะแนนพฤติกรรมการกิน" [attr.aria-valuenow]="data.score" aria-valuemin="0" [attr.aria-valuemax]="data.maxScore">
+          <span [style.width.%]="percentWidth(data.score, data.maxScore)"></span>
+        </div>
+      } @else {
+        <p class="big"><strong>-</strong></p><p class="no-data">ยังไม่มีผลวิเคราะห์</p>
+      }
+    </article>
+
+    <article class="card c-groups">
+      <h2><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 3v8M5 3v5a2 2 0 004 0V3M7 11v10M17 21V3c-2 1-3.5 3.5-3.5 7 0 2 1.5 3 3.5 3"/></svg></span>หมวดหมู่ที่รับประทาน</h2>
+      @if (data.foodGroups; as fg) {
+        <div class="c-row">
+          <p class="big"><strong>{{ num(fg.count) }}/{{ fg.max }}</strong></p>
+          @if (data.groupStatus) { <span [class]="'pill tone-' + data.groupStatus.tone">{{ data.groupStatus.label }}</span> }
+        </div>
+        <ul class="dots" role="img" [attr.aria-label]="dotsLabel">
+          @for (d of fg.dots; track d.key) { <li class="dot" [class.on]="d.present" [title]="dotTitle(d)"></li> }
+        </ul>
+      } @else {
+        <p class="big"><strong>-</strong></p><p class="no-data">ยังไม่มีผลวิเคราะห์</p>
+      }
+    </article>
+
+    <article class="card c-meals">
+      <h2><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><circle cx="8" cy="12.5" r="3.2"/><circle cx="16" cy="12.5" r="3.2"/><path d="M12 15v6"/></svg></span>เมนูอาหารที่บันทึก</h2>
+      @if (data.mealCount != null) {
+        <p class="big"><strong>{{ data.mealCount }}</strong>&nbsp;<span class="unit">รายการ</span></p>
+      } @else {
+        <p class="big"><strong>-</strong></p><p class="no-data">ยังไม่มีผลวิเคราะห์</p>
+      }
+      <a class="detail-btn hit44" [routerLink]="mealsLink.path" [queryParams]="mealsLink.query">รายละเอียด <span aria-hidden="true">▸</span></a>
+    </article>
+    <article class="card c-bmi" aria-labelledby="bmi-title">
+      <h2 id="bmi-title"><span class="ci" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 18a8 8 0 0116 0z"/><path d="M12 18l4-5"/></svg></span>BMI</h2>
+      @if (account()?.bmi; as bmi) {
+        <app-bmi-badge class="big-bmi" [bmi]="bmi"></app-bmi-badge>
+        <p class="bmi-note">เกณฑ์สำหรับคนเอเชีย</p>
+      } @else {
+        <p class="big"><strong>-</strong></p>
+        <a class="bmi-fill" routerLink="/profile">กรอกข้อมูล <span aria-hidden="true">▸</span></a>
+      }
+    </article>
+  </section>
+
+  <!-- ---------- แนวโน้มของคุณ (ช่วง 7 / 30 วันของส่วนนี้เอง) ---------- -->
+  <app-dashboard-trends></app-dashboard-trends>
+
+  <!-- ---------- สัดส่วนหมู่อาหาร (มื้อที่มีหมู่ ÷ มื้อทั้งหมด — ยังไม่มีปริมาณสารอาหารจริงต่อเมนู) ---------- -->
+  <section class="panel nutrients" aria-labelledby="nt-title">
+    <header class="panel-head">
+      <span class="ph-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 14c.9 1.4 2.1 2.1 3.5 2.1s2.6-.7 3.5-2.1M9 9.5v.5M15 9.5v.5"/></svg></span>
+      <div>
+        <h2 id="nt-title">สัดส่วนหมู่อาหารที่ได้รับ{{ rangeWord }}</h2>
+        @if (data.nutrientNote) { <p class="note">{{ data.nutrientNote }}</p> }
+      </div>
+    </header>
+    @if (!hasData) {
+      <p class="no-data center">ยังไม่มีผลวิเคราะห์{{ rangeWord }}</p>
+    } @else {
+      <ul class="nt-grid">
+        @for (n of data.nutrients; track n.key) {
+          <li [class]="'nt nt-' + n.key">
+            <div class="donut" aria-hidden="true">
+              <svg viewBox="0 0 80 80"><circle class="track" cx="40" cy="40" r="34"/>
+                <circle class="arc" cx="40" cy="40" r="34" [attr.stroke-dasharray]="circumference" [attr.stroke-dashoffset]="dashOffset(n.percent)"/></svg>
+              <span class="nt-icon">
+                @switch (n.key) {
+                  @case ('protein') { <svg viewBox="0 0 24 24"><path d="M6 14c-1.5-3 0-8 5-8.5 4-.4 7.5 2 7.5 5.5 0 3.5-3.5 6.5-7.5 6.5-2.3 0-4-1.3-5-3.5zM10 12a2 2 0 104 0 2 2 0 00-4 0"/></svg> }
+                  @case ('carb') { <svg viewBox="0 0 24 24"><path d="M6 20V9a4 4 0 014-4h4a4 4 0 014 4v11zM9 9h6M10 13l4 3M14 13l-4 3"/></svg> }
+                  @case ('vitamin') { <svg viewBox="0 0 24 24"><path d="M12 8c-2-2-7-1.5-7 3.5S9 20 12 19c3 1 7-3.5 7-7.5S14 6 12 8zM12 8c0-2 1-3.5 3-4"/></svg> }
+                  @case ('mineral') { <svg viewBox="0 0 24 24"><path d="M4 13h16a8 8 0 01-16 0zM9 13c0-3 1.5-6 5-7M13 13c.5-2 2-3.5 4-4"/></svg> }
+                  @default { <svg viewBox="0 0 24 24"><path d="M9 7c-2 3-3 4.5-3 6a3 3 0 006 0c0-1.5-1-3-3-6zM16 11c-1.3 2-2 3-2 4a2 2 0 004 0c0-1-.7-2-2-4z"/></svg> }
+                }
+              </span>
+            </div>
+            <div class="nt-text">
+              <h3>{{ n.label }}</h3>
+              <p class="pct">{{ n.percent != null ? n.percent + '%' : '-' }}</p>
+              <p class="detail">{{ n.detailText }}</p>
+            </div>
+            @if (n.status) { <span [class]="'pill tone-' + n.status.tone">{{ n.status.label }}</span> }
+          </li>
+        }
+      </ul>
+    }
+  </section>
+
+  <!-- ---------- คำแนะนำ ---------- -->
+  <section class="panel advice" aria-labelledby="adv-title">
+    <span class="ph-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.4 1 1.1 1 1.8V16h5v-.3c0-.7.4-1.4 1-1.8A6 6 0 0012 3z"/></svg></span>
+    <div class="adv-text">
+      <h2 id="adv-title">คำแนะนำสำหรับคุณ</h2>
+      @if (data.advice && data.latestAnalysisId) {
+        <p>{{ data.advice }}</p>
+      } @else {
+        <p>ยังไม่มีคำแนะนำ เริ่มวิเคราะห์เพื่อรับคำแนะนำ</p>
+      }
+    </div>
+    @if (data.advice && data.latestAnalysisId) {
+      <a class="btn-maroon hit44" [routerLink]="['/analysis/result', data.latestAnalysisId]">ดูผลวิเคราะห์ <span aria-hidden="true">▸</span></a>
+    } @else {
+      <a class="btn-maroon hit44" routerLink="/analysis">ไปวิเคราะห์ <span aria-hidden="true">▸</span></a>
+    }
+  </section>
+}

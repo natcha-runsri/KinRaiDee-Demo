@@ -1,0 +1,98 @@
+<section class="card">
+  <div class="filters" role="search">
+    <label class="search">
+      <span class="sr-only">ค้นหาเมนู</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+      <input type="search" class="min44" placeholder="ค้นหาชื่อเมนู" [ngModel]="filter.q" (ngModelChange)="onSearch($event)" name="q">
+    </label>
+    <label class="field">
+      <span>ประเภท</span>
+      <select class="min44" [ngModel]="filter.type" (ngModelChange)="apply({ type: $event, page: 0 })" name="type">
+        <option value="">ทุกประเภท</option>
+        @for (t of data()?.types ?? []; track t) { <option [value]="t">{{ t }}</option> }
+      </select>
+    </label>
+    <label class="field">
+      <span>สถานะ</span>
+      <select class="min44" [ngModel]="filter.status" (ngModelChange)="apply({ status: $event, page: 0 })" name="status">
+        @for (s of statuses; track s.value) { <option [value]="s.value">{{ s.label }}</option> }
+      </select>
+    </label>
+    <label class="field">
+      <span>รูป</span>
+      <select class="min44" [ngModel]="filter.image" (ngModelChange)="apply({ image: $event, page: 0 })" name="image">
+        <option value="">ทั้งหมด</option>
+        <option value="has">มีรูป</option>
+        <option value="none">ไม่มีรูป</option>
+      </select>
+    </label>
+    <label class="field">
+      <span>เรียงตาม</span>
+      <select class="min44" [ngModel]="filter.sort" (ngModelChange)="apply({ sort: $event, page: 0 })" name="sort">
+        @for (s of sorts; track s.value) { <option [value]="s.value">{{ s.label }}</option> }
+      </select>
+    </label>
+  </div>
+
+  @if (data(); as d) {
+    <ul class="counts" aria-label="สรุปเมนู">
+      <li>ทั้งหมด <b>{{ d.counts.all }}</b></li>
+      <li>แนะนำอยู่ <b>{{ d.counts.recommended }}</b></li>
+      <li>ถูกซ่อน <b>{{ d.counts.hidden }}</b> <small>(แอดมิน {{ d.counts.adminHidden }} · ไม่ใช่มื้ออาหาร {{ d.counts.nonMeal }} · ข้อมูลไม่ตรง {{ d.counts.suspect }})</small></li>
+      <li>ไม่มีรูป <b>{{ d.counts.noImage }}</b></li>
+      <li>แอดมินแก้แล้ว <b>{{ d.counts.edited }}</b></li>
+    </ul>
+  }
+
+  @if (error()) {
+    <div class="error" role="alert"><p>โหลดรายการเมนูไม่สำเร็จ</p><button type="button" class="btn" (click)="retry()">ลองใหม่</button></div>
+  } @else {
+    <div class="table-wrap" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+      <table class="menus">
+        <thead>
+          <tr>
+            <th scope="col" class="c-img"><span class="sr-only">รูป</span></th>
+            <th scope="col">เมนู</th>
+            <th scope="col" class="c-type">ประเภท</th>
+            <th scope="col">สถานะ</th>
+            <th scope="col" class="c-pop">ความนิยม</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of data()?.items ?? []; track r.id) {
+            <tr (click)="open(r)" [class.selected]="selected() === r.id">
+              <td class="c-img"><app-menu-image class="thumb" [src]="r.imageUrl" [alt]="r.shortName"></app-menu-image></td>
+              <td>
+                <button type="button" class="name-btn" (click)="open(r); $event.stopPropagation()">
+                  <strong>{{ r.shortName }}</strong>
+                  @if (r.edited) { <span class="edited" title="แอดมินแก้แล้ว">แก้แล้ว</span> }
+                </button>
+                <small class="full">{{ r.menuName }}</small>
+              </td>
+              <td class="c-type">{{ r.type }}</td>
+              <td>
+                <span class="badge" [attr.data-tone]="statusOf(r).tone">{{ statusOf(r).label }}</span>
+                @if (!r.hasImage) { <span class="badge" data-tone="warn">ไม่มีรูป</span> }
+              </td>
+              <td class="c-pop">{{ r.popularity.label }}</td>
+            </tr>
+          } @empty {
+            @if (!loading()) { <tr><td colspan="5" class="empty-note">ไม่พบเมนูตามตัวกรองนี้</td></tr> }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (data(); as d) {
+      <nav class="pager" aria-label="แบ่งหน้า">
+        <span>{{ d.total.toLocaleString('th-TH') }} เมนู · หน้า {{ d.page + 1 }} / {{ pages }}</span>
+        <button type="button" class="btn" [disabled]="d.page === 0" (click)="apply({ page: d.page - 1 })">ก่อนหน้า</button>
+        <button type="button" class="btn" [disabled]="d.page + 1 >= pages" (click)="apply({ page: d.page + 1 })">ถัดไป</button>
+      </nav>
+    }
+  }
+</section>
+
+@if (selected(); as id) {
+  <app-admin-menu-detail [menuId]="id" (closed)="closeDetail($event)" (changed)="onChanged()"></app-admin-menu-detail>
+}

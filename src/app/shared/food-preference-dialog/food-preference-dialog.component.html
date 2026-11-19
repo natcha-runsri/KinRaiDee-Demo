@@ -1,0 +1,79 @@
+<div class="fpd-backdrop" (mousedown)="onBackdropMouseDown($event)" (click)="onBackdropClick($event)">
+  <div #dialog class="fpd-dialog" role="dialog" aria-modal="true" aria-labelledby="fpd-title" aria-describedby="fpd-lead">
+
+    <div class="fpd-banner" [class.short]="step === 2">
+      @if (!bannerBroken) {
+        <!-- รูปจริง public/images/preferences/banner.webp (1120×520); โหลดไม่ได้ → ภาพต่อกันจาก images/food-types -->
+        <img src="images/preferences/banner.webp" alt="" (error)="bannerBroken = true">
+      } @else {
+        <div class="fpd-collage" aria-hidden="true">
+          @for (name of collage; track name) {
+            <img [src]="'images/food-types/' + name + '.jpg'" alt="">
+          }
+        </div>
+      }
+      <button type="button" class="fpd-close hit44" (click)="close()" aria-label="ปิด" [disabled]="busy">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="fpd-body">
+      <p class="fpd-steps">
+        <span class="sr-only">ขั้นที่ {{ step }} จาก 2</span>
+        <span class="fpd-dot" [class.on]="step === 1" aria-hidden="true"></span>
+        <span class="fpd-dot" [class.on]="step === 2" aria-hidden="true"></span>
+        <span class="fpd-step-no" aria-hidden="true">{{ step }}/2</span>
+      </p>
+
+      @if (step === 1) {
+        <p id="fpd-lead" class="fpd-lead">ก่อนที่เราจะไปขั้นตอนถัดไป เราขอถามอะไรคุณเล็กน้อยก่อนได้ไหม......</p>
+        <h2 id="fpd-title" class="fpd-title" tabindex="-1">บอกเราหน่อย คุณชอบอาหารแบบไหน</h2>
+
+        <div class="fpd-grid" role="group" aria-label="เลือกความชอบได้หลายข้อ" [attr.aria-busy]="!optionsReady">
+          @for (o of options; track o.key) {
+            <button type="button" class="fpd-card" [class.selected]="isSelected(o.key)"
+                    [attr.aria-pressed]="isSelected(o.key)" [attr.data-key]="o.key" (click)="toggle(o.key)">
+              <span class="fpd-icon">
+                @if (brokenIcons.has(o.key)) {
+                  <span class="fpd-emoji" aria-hidden="true">{{ o.fallback }}</span>
+                } @else {
+                  <img [src]="o.image" alt="" (error)="onIconError(o)">
+                }
+              </span>
+              <span class="fpd-label">{{ o.label }}</span>
+              <span class="fpd-check" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+              </span>
+            </button>
+          }
+        </div>
+
+        <button type="button" class="fpd-submit" (click)="next()" [disabled]="selected.size === 0 || busy">ไปกันต่อ</button>
+      } @else {
+        <p id="fpd-lead" class="fpd-lead">เราจะไม่แนะนำเมนูที่มีอาหารเหล่านี้ให้คุณ</p>
+        <h2 id="fpd-title" class="fpd-title" tabindex="-1">มีอาหารที่แพ้ไหม?</h2>
+
+        <app-allergy-picker class="fpa-picker" variant="popup" idPrefix="fpa" [showNone]="true" [showEmoji]="true"
+                            [value]="allergyValue" (valueChange)="allergyValue = $event"></app-allergy-picker>
+
+        @if (errorMessage) {
+          <p class="fpd-error" role="alert">{{ errorMessage }}</p>
+        }
+
+        <div class="fpa-actions">
+          <button type="button" class="fpa-back" (click)="back()" [disabled]="busy">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>ย้อนกลับ
+          </button>
+          <button type="button" class="fpd-submit" (click)="submit()" [disabled]="busy" [attr.aria-busy]="busy">
+            @if (busy) {
+              <span class="fpd-spinner" aria-hidden="true"></span><span>กำลังบันทึก...</span>
+            } @else {
+              เริ่มสุ่มเมนู
+            }
+          </button>
+        </div>
+      }
+    </div>
+
+  </div>
+</div>

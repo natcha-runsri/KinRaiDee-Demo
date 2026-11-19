@@ -1,0 +1,294 @@
+:host{
+  --maroon-deep:var(--color-primary);
+  --maroon-darker:var(--color-primary-active);
+  --cream:#FFFDF7;
+  --cream-light:#FFFAF0;
+  --cream-dim:#EEDBA9;
+  --periwinkle:#A9C6F0;
+  --periwinkle-dark:#7FA3D6;
+  --ink:#3a0c0c;
+
+  display:block;
+  font-family:'Prompt', sans-serif;
+}
+
+*{ box-sizing:border-box; }
+
+.page{
+  min-height:100vh;
+  background:var(--cream);   /* พื้นหลังฐานของทั้งหน้าเป็นครีม */
+}
+
+/* ---------- Hero: รูป → หัวข้อ → คำโปรย เรียงลงมาเป็นชุดเดียวกันทุกขนาดจอ (หัวข้อไม่ทับภาพวาด) ---------- */
+/* รูป (bg.webp พื้นใส ตัดขอบเหลือ ~4%) ไม่ครอป: สูงไม่เกิน 40vh กว้างไม่เกิน 640px ไม่ขยายเกินขนาดจริง
+   → การ์ดด้านล่างอยู่ในจอแรกที่ 1280×720 / 1366×768 */
+.hero {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: 24px 24px 56px;   /* ล่าง: การ์ด (margin-top -30px) ลอยทับพื้นแดง */
+  background: var(--maroon-deep);
+}
+
+.hero-img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: min(640px, 100%);
+  max-height: 40vh;
+  object-fit: contain;
+}
+
+.hero-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 2px;           /* + ขอบใสในรูป (~4%) ≈ ระยะภาพวาด → หัวข้อ 8px */
+}
+@media (min-width:768px){
+  .hero-overlay{ margin-top: -4px; }   /* รูปใหญ่ขึ้น ขอบใสก็ใหญ่ขึ้น — ชดเชยให้ระยะยังราว 8px */
+}
+
+.hero-title{
+  font-family:'Baloo 2', sans-serif;
+  font-weight:800;
+  font-size:clamp(30px, 5vw, 42px);
+  line-height:1.2;
+  color:var(--periwinkle);   /* บนพื้น --maroon-deep: contrast 6.44:1 */
+  margin:0;
+  text-shadow:0 2px 12px rgba(0,0,0,.4);
+  text-wrap:balance;
+}
+
+.hero-subtitle{
+  color:#fff;
+  opacity:.95;
+  font-size:15px;
+  max-width:560px;
+  margin:8px 0 0;
+  padding:0 16px;            /* ไม่ชิดขอบจอ */
+  text-shadow:0 1px 8px rgba(0,0,0,.4);
+  text-wrap:balance;
+}
+
+/* ---------- Feature cards (ลอยทับรอยต่อภาพ hero กับส่วนล่าง) ---------- */
+.feature-section{
+  position:relative;
+  z-index:5;
+  display:flex;
+  justify-content:center;
+  gap:40px;
+  flex-wrap:wrap;
+  padding:0 24px;
+  background:transparent;
+  margin-top:-30px;    /* คาบเกี่ยวขอบล่างภาพ hero */
+  margin-bottom:-30px; /* คาบเกี่ยวเข้าไปในส่วน recommend ด้านล่าง */
+}
+
+.feature-card{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:24px;
+  background:var(--cream-light);
+  border-radius:20px;
+  padding:26px 34px;
+  width:360px;
+  box-shadow:0 10px 24px rgba(0,0,0,.3);
+}
+
+.feature-icon-circle{
+  flex-shrink:0;
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.05);
+  overflow:hidden;
+}
+
+.feature-img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.feature-content{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:12px;
+}
+
+.feature-desc{
+  color:var(--ink);
+  font-size:14px;
+  font-weight:700;
+  text-align:left;
+  line-height:1.5;
+  opacity:.9;
+  margin:0;
+}
+
+.feature-btn{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--maroon-deep);
+  color:var(--cream);
+  border:none;
+  font-family:'Prompt', sans-serif;
+  font-weight:700;
+  font-size:13px;
+  padding:10px 20px;
+  border-radius:999px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition: transform .15s ease, background .15s ease;
+}
+
+.feature-btn:hover{
+  background:var(--maroon-darker);
+  transform:translateY(-2px);
+}
+
+.play-icon{ font-size:10px; }
+
+/* ---------- Recommended menu section ---------- */
+.recommend-section{
+  position:relative;
+  background:var(--cream-light);
+  padding:70px 24px 50px;  /* เผื่อพื้นที่ให้การ์ดที่ลอยทับด้านบน */
+  text-align:center;
+}
+
+.recommend-title{
+  font-family:'Baloo 2', sans-serif;
+  font-weight:800;
+  font-size:clamp(24px, 4vw, 32px);
+  color:var(--color-primary);
+  margin-bottom:22px;
+}
+
+.filter-tags{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-bottom:30px;
+}
+
+.filter-tag{
+  background:var(--cream);
+  color:var(--ink);
+  border:none;
+  font-family:'Prompt', sans-serif;
+  font-weight:700;
+  font-size:13px;
+  padding:10px 22px;
+  border-radius:999px;
+  cursor:pointer;
+  transition: background .15s ease, color .15s ease;
+}
+
+.filter-tag.active{
+  background:var(--maroon-deep);
+  color:var(--cream);
+}
+
+.menu-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));
+  gap:22px;
+  max-width:960px;
+  margin:0 auto;
+}
+
+.menu-card{
+  background:none;
+  border:none;
+  cursor:pointer;
+  text-align:left;
+  font-family:'Prompt', sans-serif;
+  padding:0;
+}
+
+.menu-img{
+  width:100%;
+  aspect-ratio:1/0.85;
+  object-fit:cover;
+  border-radius:16px;
+  margin-bottom:10px;
+}
+
+.menu-info{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+
+.menu-name{
+  font-weight:700;
+  font-size:14px;
+  color:var(--ink);
+  margin:0;
+}
+
+.menu-cal{
+  font-size:11px;
+  color:var(--ink);
+  opacity:.6;
+  margin:2px 0 0;
+}
+
+.menu-arrow{
+  flex-shrink:0;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:var(--maroon-deep);
+  color:var(--cream);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+}
+
+.menu-loading,
+.menu-empty{
+  color:var(--ink);
+  opacity:.6;
+  font-size:14px;
+  padding:30px 0;
+}
+
+.footer-bar{
+  height:24px;
+  background:var(--maroon-deep);
+}
+
+/* มือถือ: รูปเต็มความกว้าง (≤ 480px); การ์ด (-40px) ลอยทับพื้นแดงด้านล่าง */
+@media (max-width:767.98px){
+  .hero{ padding:20px 16px 60px; }
+  .hero-img{ width:100%; max-width:480px; }
+  .hero-subtitle{ padding:0; }
+  .feature-section{ gap:18px; margin-top:-40px; }
+  .feature-card{ width:100%; max-width:340px; padding:18px 20px; gap:16px; }
+  .feature-icon-circle{ width:80px; height:80px; }
+  .menu-grid{ grid-template-columns:repeat(2, 1fr); }
+}
+
+/* ตัวอักษรบนมือถือ (≤ 767px): เนื้อหาหลัก 14px, ข้อความรอง ≥ 12px */
+@media (max-width:767.98px){
+  .feature-btn{ font-size:14px; }
+  .filter-tag{ font-size:14px; }
+  .menu-cal{ font-size:12px; }
+}

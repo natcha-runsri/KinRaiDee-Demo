@@ -1,0 +1,178 @@
+<div class="scrim" (click)="close()" aria-hidden="true"></div>
+<aside #panel class="panel" role="dialog" aria-modal="true" aria-labelledby="menu-detail-title" tabindex="-1">
+  <header class="panel-head">
+    <h2 id="menu-detail-title">{{ data()?.effective?.shortName ?? 'รายละเอียดเมนู' }}</h2>
+    <button type="button" class="close" aria-label="ปิด" (click)="close()">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </header>
+
+  @if (error()) {
+    <p class="err" role="alert">{{ error() }}</p>
+  }
+  @if (data(); as d) {
+    <div class="panel-body">
+      @if (notice()) { <p class="notice" role="status">{{ notice() }}</p> }
+      @if (fieldErrors['general']) { <p class="err" role="alert">{{ fieldErrors['general'] }}</p> }
+
+      <section class="summary">
+        <app-menu-image class="hero" [src]="d.effective.imageUrl" [alt]="d.effective.shortName"></app-menu-image>
+        <div>
+          <p class="full">{{ d.menuName }}</p>
+          <p class="meta">{{ d.type }} · ความนิยม {{ d.popularity.label }} · ข้อมูลเมนู {{ when(d.scrapedAt) }}</p>
+          <p class="links">
+            <a [href]="'/menu/' + d.id" target="_blank" rel="noopener">เปิดหน้าเมนู</a>
+            @if (d.sourceUrl) { · <a [href]="d.sourceUrl" target="_blank" rel="noopener noreferrer">ต้นทาง</a> }
+          </p>
+        </div>
+      </section>
+
+      <!-- ส่วนที่แก้ได้ (สถานะ / ชื่อและ tag / รูป / ย้อนกลับ) — บัญชีผู้ประเมินกดไม่ได้ -->
+      <fieldset class="ro-lock" [disabled]="ro()">
+      <!-- สถานะ -->
+      <section class="block" aria-labelledby="h-status">
+        <h3 id="h-status">สถานะการแนะนำ</h3>
+        <p class="state" [attr.data-hidden]="d.hidden">
+          {{ d.hidden ? 'ถูกซ่อนจากการแนะนำ' : d.recommended ? 'แนะนำอยู่ (สุ่ม แชต AI เมนูแนะนำ หน้าแรก)' : 'ไม่แนะนำ — ไม่มีรูปต้นทาง' }}
+        </p>
+        @if (d.hiddenSources.length) {
+          <ul class="sources">
+            @for (s of d.hiddenSources; track s.key) { <li [attr.data-key]="s.key">{{ s.label }}</li> }
+          </ul>
+        }
+        @if (d.override?.visibility === 'SHOWN') { <p class="hint">แอดมินเปิดทับรายการซ่อนจากไฟล์</p> }
+        @if (d.override?.visibilityReason) {
+          <p class="hint">เหตุผล: {{ d.override?.visibilityReason }} — {{ d.override?.updatedBy ?? '-' }}, {{ when(d.override?.updatedAt ?? null) }}</p>
+        }
+        <label class="lbl">เหตุผล <span class="req">(จำเป็น)</span>
+          <textarea rows="2" maxlength="300" [(ngModel)]="visibilityReason" name="vreason"
+                    [attr.aria-invalid]="!!fieldErrors['reason']"></textarea>
+        </label>
+        @if (fieldErrors['reason']) { <p class="err">{{ fieldErrors['reason'] }}</p> }
+        <button type="button" class="btn" [class.danger]="!d.hidden" [class.primary]="d.hidden" [disabled]="busy()"
+                (click)="toggleVisibility()">{{ d.hidden ? 'เปิดเมนู' : 'ซ่อนเมนู' }}</button>
+        <p class="hint">ซ่อนแล้วไม่ออกในสุ่ม แชต AI เมนูแนะนำ หน้าแรก และค้นหาเพิ่มมื้อ (หน้าเมนูยังเปิดจากประวัติได้)</p>
+      </section>
+
+      <!-- ชื่อ / tag -->
+      <section class="block" aria-labelledby="h-display">
+        <h3 id="h-display">ชื่อสั้นและ tag</h3>
+        <label class="lbl">ชื่อสั้น
+          <input type="text" maxlength="200" class="min44" [(ngModel)]="shortName" name="shortName" [placeholder]="d.source.shortName"
+                 [attr.aria-invalid]="!!fieldErrors['shortName'] || nameLength > maxName" aria-describedby="name-count">
+        </label>
+        <p class="hint">ต้นทาง: {{ d.source.shortName }}
+          · <span id="name-count" [class.over]="nameLength > maxName">{{ nameLength }}/{{ maxName }} ตัวอักษร</span></p>
+        @if (fieldErrors['shortName']) { <p class="err">{{ fieldErrors['shortName'] }}</p> }
+        <div class="lbl">tag
+          <div class="tags">
+            @for (t of tags; track t) {
+              <span class="chip">{{ t }}<button type="button" [attr.aria-label]="'ลบ tag ' + t" (click)="removeTag(t)">×</button></span>
+            }
+            <input type="text" maxlength="200" [(ngModel)]="newTag" name="newTag" placeholder="เพิ่ม tag แล้วกด Enter"
+                   (keydown)="onTagKey($event)" (blur)="addTag()" aria-label="เพิ่ม tag">
+          </div>
+        </div>
+        <p class="hint">ต้นทาง: {{ d.source.tags.join(', ') || '-' }}
+          · <span [class.over]="tags.length > maxTags">{{ tags.length }}/{{ maxTags }} รายการ</span></p>
+        @if (fieldErrors['tags']) { <p class="err">{{ fieldErrors['tags'] }}</p> }
+        <label class="lbl">เหตุผล (ไม่บังคับ)<input type="text" maxlength="300" class="min44" [(ngModel)]="displayReason" name="dreason"></label>
+        <button type="button" class="btn primary" [disabled]="busy() || !displayChanged" (click)="saveDisplay()">บันทึกชื่อและ tag</button>
+      </section>
+
+      <!-- รูป + เครดิต -->
+      <section class="block" aria-labelledby="h-image">
+        <h3 id="h-image">รูปและเครดิต</h3>
+        <div class="image-row">
+          <app-menu-image class="current" [src]="preview ?? d.effective.imageUrl" [alt]="d.effective.shortName"></app-menu-image>
+          <div class="image-info">
+            <p>{{ preview ? 'รูปใหม่ (ยังไม่บันทึก)' : d.effective.imageUrl ? 'รูปที่ใช้อยู่' : 'ยังไม่มีรูป' }}</p>
+            <p class="hint">{{ creditText(d.effective.credit) }}</p>
+            <label class="file-btn btn">
+              เลือกไฟล์รูป
+              <input #fileInput type="file" accept="image/jpeg,image/png,image/webp" (change)="onFile(fileInput)" class="sr-only">
+            </label>
+            @if (file) { <button type="button" class="link-btn" (click)="clearFile(); fileInput.value = ''">ยกเลิกไฟล์</button> }
+            <p class="hint">JPEG / PNG / WebP ไม่เกิน 5MB — ระบบครอปกลาง 1:1 ย่อด้านยาวไม่เกิน 1200px เป็น WebP</p>
+          </div>
+        </div>
+        @if (fileNote) { <p class="hint" role="status">{{ fileNote }}</p> }
+        @if (fieldErrors['file']) { <p class="err">{{ fieldErrors['file'] }}</p> }
+
+        <label class="lbl">ที่มาของรูป
+          <select class="min44" [(ngModel)]="siteChoice" name="site" [attr.aria-invalid]="!!fieldErrors['site']">
+            <option value="">เลือก…</option>
+            <optgroup label="เว็บรูปฟรี (ใบอนุญาตของเว็บ)">@for (s of stock; track s) { <option [value]="s">{{ s }}</option> }</optgroup>
+            <optgroup label="Magnific / Freepik (designed by)">@for (s of designedBy; track s) { <option [value]="s">{{ s }}</option> }</optgroup>
+            <optgroup label="เครื่องมือ AI">@for (s of aiTools; track s) { <option [value]="s">{{ s }}</option> }</optgroup>
+            <option value="other">เว็บอื่น (CC / Public Domain)…</option>
+          </select>
+        </label>
+        @if (siteChoice === 'other') {
+          <label class="lbl">ชื่อเว็บ<input type="text" class="min44" maxlength="200" [(ngModel)]="siteOther" name="siteOther" placeholder="เช่น Wikimedia Commons, Flickr"></label>
+        }
+        @if (fieldErrors['site']) { <p class="err">{{ fieldErrors['site'] }}</p> }
+        @if (creditKind && creditKind !== 'ai') {
+          <label class="lbl">ลิงก์หน้ารูป<input type="url" class="min44" maxlength="500" [(ngModel)]="credit.url" name="url" placeholder="https://"
+                 [attr.aria-invalid]="!!fieldErrors['url']"></label>
+          @if (fieldErrors['url']) { <p class="err">{{ fieldErrors['url'] }}</p> }
+          @if (creditKind === 'web') {
+            <label class="lbl">ใบอนุญาต
+              <input type="text" class="min44" maxlength="200" [(ngModel)]="credit.license" name="license" list="licenses"
+                     placeholder="CC0, CC BY 4.0, CC BY-SA 4.0, Public Domain" [attr.aria-invalid]="!!fieldErrors['license']">
+              <datalist id="licenses"><option value="CC0"></option><option value="CC BY 4.0"></option><option value="CC BY-SA 4.0"></option><option value="Public Domain"></option></datalist>
+            </label>
+            @if (fieldErrors['license']) { <p class="err">{{ fieldErrors['license'] }}</p> }
+          }
+          <label class="lbl">ชื่อช่างภาพ / ผู้สร้าง @if (needsName) { <span class="req">(จำเป็น)</span> }
+            <input type="text" class="min44" maxlength="200" [(ngModel)]="credit.photographer" name="photographer"
+                   [attr.aria-invalid]="!!fieldErrors['photographer']"></label>
+          @if (fieldErrors['photographer']) { <p class="err">{{ fieldErrors['photographer'] }}</p> }
+        }
+        <label class="lbl">เหตุผล (ไม่บังคับ)<input type="text" maxlength="300" class="min44" [(ngModel)]="imageReason" name="ireason"></label>
+        <button type="button" class="btn primary" [disabled]="busy() || !siteValue || (!file && !d.effective.imageUrl)" (click)="saveImage()">
+          {{ busy() === 'image' ? 'กำลังบันทึก…' : file ? 'อัปโหลดรูปและบันทึกเครดิต' : 'บันทึกเครดิต' }}
+        </button>
+        <p class="hint">รูปต้นทางบน Cloudinary ถูกเก็บสำเนาไว้ — ย้อนกลับได้ด้านล่าง</p>
+      </section>
+
+      <!-- ย้อนกลับ -->
+      @if (revertable.length) {
+        <section class="block" aria-labelledby="h-revert">
+          <h3 id="h-revert">ย้อนกลับเป็นค่าต้นทาง</h3>
+          @for (r of revertable; track r.part) {
+            <label class="check"><input type="checkbox" [(ngModel)]="revertParts[r.part]" [name]="'rv-' + r.part"> {{ r.label }}</label>
+          }
+          <label class="lbl">เหตุผล (ไม่บังคับ)<input type="text" maxlength="300" class="min44" [(ngModel)]="revertReason" name="rreason"></label>
+          <button type="button" class="btn danger" [disabled]="busy() || !(revertParts.visibility || revertParts.display || revertParts.image)"
+                  (click)="confirmRevert.set(true)">ย้อนส่วนที่เลือก</button>
+        </section>
+      }
+
+      </fieldset>
+
+      <!-- ประวัติ -->
+      <section class="block" aria-labelledby="h-history">
+        <h3 id="h-history">ประวัติการแก้ไขของเมนูนี้</h3>
+        <ol class="history">
+          @for (h of d.history; track h.id) {
+            <li>
+              <strong>{{ h.actionLabel }}</strong> <span class="hint">โดย {{ h.adminName ?? 'สคริปต์' }} · {{ when(h.at) }}</span>
+              @if (h.reason) { <span class="why">เหตุผล: {{ h.reason }}</span> }
+              <details><summary>ค่าก่อน / หลัง</summary><code>ก่อน: {{ json(h.before) }}</code><code>หลัง: {{ json(h.after) }}</code></details>
+            </li>
+          } @empty {
+            <li class="hint">ยังไม่มีการแก้ไข</li>
+          }
+        </ol>
+      </section>
+    </div>
+  } @else if (!error()) {
+    <p class="hint loading">กำลังโหลด…</p>
+  }
+</aside>
+
+@if (confirmRevert()) {
+  <app-confirm-dialog title="ย้อนส่วนที่เลือกกลับเป็นค่าต้นทาง?" confirmLabel="ย้อนกลับ" cancelLabel="ยกเลิก" [danger]="true"
+                      (confirmed)="revert()" (cancelled)="confirmRevert.set(false)"></app-confirm-dialog>
+}

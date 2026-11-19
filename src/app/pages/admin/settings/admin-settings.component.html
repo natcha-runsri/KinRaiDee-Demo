@@ -1,0 +1,86 @@
+@if (error()) {
+  <section class="card" role="alert"><p>โหลดค่าตั้งไม่สำเร็จ</p></section>
+}
+@if (data(); as d) {
+  <div class="page">
+    @if (notice()) { <p class="notice" role="status">{{ notice() }}</p> }
+    <!-- ค่าตั้ง + ปุ่มบันทึก/คืนค่า — บัญชีผู้ประเมินกดไม่ได้ (กฎของระบบด้านล่างเปิดอ่านได้ตามเดิม) -->
+    <fieldset class="ro-lock" [disabled]="ro()">
+    @for (g of groups; track g.name) {
+      <section class="card">
+        <div class="card-head"><h2>{{ g.name }}</h2></div>
+        @for (s of g.items; track s.definition.key) {
+          <div class="row" [class.disabled]="s.definition.type === 'categories' && !nonMealOn">
+            <div class="row-text">
+              <label class="row-label" [attr.for]="'set-' + s.definition.key">{{ s.definition.label }}</label>
+              <small>{{ s.definition.hint }}</small>
+              <small class="meta">ค่าเริ่มต้น: {{ display(s.defaultValue) }}
+                @if (s.overridden) { · แก้โดย {{ s.updatedBy ?? '-' }} {{ when(s.updatedAt) }} }
+              </small>
+            </div>
+            <div class="row-input">
+              @switch (s.definition.type) {
+                @case ('int') {
+                  <input type="number" class="num min44" [id]="'set-' + s.definition.key" [min]="s.definition.min" [max]="s.definition.max"
+                         step="1" [(ngModel)]="draft[s.definition.key]" [name]="s.definition.key"
+                         [attr.aria-invalid]="!!fieldErrors[s.definition.key]">
+                  <span class="range">{{ s.definition.min }}–{{ s.definition.max }}</span>
+                }
+                @case ('bool') {
+                  <label class="switch">
+                    <input type="checkbox" [id]="'set-' + s.definition.key" [(ngModel)]="draft[s.definition.key]" [name]="s.definition.key">
+                    <span>{{ draft[s.definition.key] ? 'เปิด' : 'ปิด' }}</span>
+                  </label>
+                }
+                @case ('categories') {
+                  <fieldset class="cats" [disabled]="!nonMealOn" [attr.aria-label]="s.definition.label">
+                    @for (c of s.definition.options ?? []; track c) {
+                      <label class="cat"><input type="checkbox" [checked]="hasCategory(s.definition.key, c)"
+                             (change)="toggleCategory(s.definition.key, c, $any($event.target).checked)"> {{ c }}</label>
+                    }
+                  </fieldset>
+                }
+              }
+              @if (s.overridden) {
+                <button type="button" class="link-btn" (click)="askReset([s.definition.key])" [disabled]="busy()">คืนค่าเริ่มต้น</button>
+              }
+            </div>
+            @if (fieldErrors[s.definition.key]) { <p class="err">{{ fieldErrors[s.definition.key] }}</p> }
+          </div>
+        }
+      </section>
+    }
+
+    <section class="card actions">
+      <label class="lbl">เหตุผลของการแก้ (ไม่บังคับ — บันทึกในประวัติการแก้ไข)
+        <input type="text" maxlength="300" class="min44" [(ngModel)]="reason" name="reason">
+      </label>
+      @if (generalError) { <p class="err" role="alert">{{ generalError }}</p> }
+      <div class="buttons">
+        <button type="button" class="btn primary" [disabled]="busy() || !changed.length" (click)="save()">
+          บันทึก{{ changed.length ? ' (' + changed.length + ')' : '' }}
+        </button>
+        <button type="button" class="btn" [disabled]="busy() || !changed.length" (click)="discard()">ยกเลิกการแก้</button>
+        <button type="button" class="btn danger" [disabled]="busy() || !overridden.length" (click)="askReset([])">คืนค่าเริ่มต้นทั้งหมด</button>
+      </div>
+    </section>
+    </fieldset>
+
+    <section class="card">
+      <div class="card-head"><h2>กฎของระบบ (แสดงอย่างเดียว)</h2></div>
+      <p class="hint">แก้ได้ที่ไฟล์ใน backend/src/main/resources เท่านั้น — ไม่เปิดให้แก้ผ่านเว็บ</p>
+      @for (f of d.readOnly; track f.name) {
+        <details class="file">
+          <summary><strong>{{ f.name }}</strong> — {{ f.description }}</summary>
+          <pre>{{ f.content }}</pre>
+        </details>
+      }
+    </section>
+  </div>
+}
+
+@if (confirmReset(); as keys) {
+  <app-confirm-dialog [title]="keys.length ? 'คืนค่านี้เป็นค่าเริ่มต้น?' : 'คืนค่าเริ่มต้นทั้งหมด?'" message="มีผลทันทีกับผู้ใช้ทุกคน"
+                      confirmLabel="คืนค่าเริ่มต้น" cancelLabel="ยกเลิก" [danger]="true"
+                      (confirmed)="reset()" (cancelled)="confirmReset.set(null)"></app-confirm-dialog>
+}

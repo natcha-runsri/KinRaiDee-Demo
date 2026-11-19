@@ -1,0 +1,21 @@
+:host{
+  --maroon:var(--color-primary);
+  --navy:#1F2D4D;
+  --cream:#FFFDF7;
+  display:block;
+  font-family:'Prompt', sans-serif;
+}
+*{ box-sizing:border-box; }
+
+.page{ min-height:100vh; display:flex; flex-direction:column; background:var(--cream); overflow-x:hidden; }
+.content{ flex:1; display:flex; align-items:center; justify-content:center; padding:48px 16px 64px; }
+.footer-bar{ height:40px; background:var(--maroon); border-top:6px solid #FDEBB0; }
+
+.nf{ display:flex; flex-direction:column; align-items:center; text-align:center; max-width:520px; }
+.nf-code{ margin:0; font-size:clamp(72px, 14vw, 120px); font-weight:800; line-height:1; color:var(--maroon); opacity:.9; }
+.nf h1{ margin:14px 0 0; font-size:clamp(24px, 3.2vw, 34px); font-weight:700; color:var(--navy); }
+.nf-sub{ margin:8px 0 24px; font-size:16px; color:#7a6a6a; }
+.nf-home{ display:inline-flex; align-items:center; min-height:48px; padding:0 32px; border-radius:999px; background:var(--navy);
+  color:#fff; font-size:16px; font-weight:600; text-decoration:none; }
+.nf-home:hover{ background:#2C3E66; }
+.nf-home:focus-visible{ outline:3px solid #A9C6F0; outline-offset:3px; }

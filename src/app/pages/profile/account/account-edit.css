@@ -1,0 +1,102 @@
+/* โหมดแก้ไขข้อมูลส่วนตัว — แยกไฟล์จาก account.component.css เพราะ budget CSS ต่อ component */
+
+.editing-note{ font-size:13px; font-weight:600; color:#6b6b6b; }
+
+.edit-grid{
+  display:grid; grid-template-columns:1fr 1fr; column-gap:clamp(16px, 3vw, 48px); row-gap:16px;
+  margin-top:22px; padding:0 clamp(0px, 4vw, 60px);
+}
+.field{ display:grid; grid-template-columns:minmax(100px, 34%) 1fr; align-items:start; gap:10px; }
+.field.full{ grid-column:1 / -1; grid-template-columns:minmax(100px, 17%) 1fr; }
+.field > label, .field > .label{
+  display:flex; align-items:center; gap:10px; min-height:46px;
+  font-size:17px; color:var(--navy);
+}
+.field > label svg, .field > .label svg{ width:26px; height:26px; flex:none; fill:none; stroke:var(--navy); stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+.control{ min-width:0; }
+
+/* ทุกช่องรูปแบบเดียวกัน: ข้อความชิดซ้าย, หน่วย/ตัวนับ/ปุ่มอยู่ขวาในช่อง */
+.input-box{
+  display:flex; align-items:center;
+  min-height:46px; border-radius:6px;
+  background:#F7E3C2; border:1.5px solid transparent;
+  transition:border-color .15s ease, box-shadow .15s ease;
+}
+.input-box:focus-within{ border-color:var(--navy); box-shadow:0 0 0 3px rgba(157,189,235,.45); }
+.input-box.invalid{ border-color:var(--color-danger); }
+.input-box input{
+  flex:1; min-width:0; border:none; background:transparent; outline:none;
+  padding:10px 14px; font:inherit; font-size:17px; color:var(--navy); text-align:left;
+}
+.input-box.short{ max-width:180px; }
+.counter{ flex:none; padding-right:14px; font-size:13px; color:#444; }
+.unit-in{ flex:none; padding-right:14px; font-size:13px; color:#555; }
+
+/* อีเมล: อ่านอย่างเดียว กว้างเท่าช่องอื่น + ปุ่มเล็กในช่อง */
+.email-readonly{ background:#EFE7DA; gap:8px; padding-right:6px; }
+.email-readonly:focus-within{ border-color:transparent; box-shadow:none; }
+.email-value{ flex:1; min-width:0; padding:10px 0 10px 14px; font-size:17px; color:var(--navy); text-align:left; overflow-wrap:break-word; }
+.email-value.muted{ color:#9a9a9a; font-size:15px; }
+.email-action{
+  flex:none; min-height:34px; padding:4px 14px; border:1.5px solid var(--navy); border-radius:999px;
+  background:#fff; color:var(--navy); font:inherit; font-size:13px; font-weight:600; cursor:pointer;
+}
+.email-action:hover{ background:#F3F6FC; }
+
+/* เพศ: ปุ่มเลือก 4 ปุ่มแบ่งเท่ากัน (แบบ pop-up วิเคราะห์) */
+.genders{ display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px; }
+.gender-opt{
+  display:flex; align-items:center; justify-content:center; gap:4px; min-width:0; min-height:46px; padding:4px 6px;
+  border:1.5px solid #E2CFCF; border-radius:8px; background:#fff; color:var(--color-primary);
+  font:inherit; font-size:15px; font-weight:600; cursor:pointer; transition:background-color .15s ease, border-color .15s ease;
+}
+.gender-opt svg{ width:18px; height:18px; flex:none; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.gender-opt:hover:not(.selected){ border-color:var(--color-primary); }
+.gender-opt.selected{ background:var(--color-primary); border-color:var(--color-primary); color:#fff; }
+
+.field-error{ flex-basis:100%; margin:5px 2px 0; font-size:12.5px; line-height:1.4; color:var(--color-danger); }
+.field-hint{ margin:5px 2px 0; font-size:12px; color:#6b6b6b; }
+.form-error{ margin:4px 0 0; font-size:13px; color:var(--color-danger); }
+.full{ grid-column:1 / -1; }
+
+/* ปุ่มท้ายฟอร์ม */
+.form-actions{ display:flex; justify-content:flex-end; gap:12px; margin-top:8px; padding-top:16px; border-top:1px solid #EADFD3; }
+.form-cancel, .form-save{
+  min-width:120px; min-height:44px; padding:9px 22px; border-radius:999px;
+  font:inherit; font-size:15px; font-weight:700; cursor:pointer; transition:background-color .15s ease, opacity .15s ease;
+}
+.form-cancel{ border:1.5px solid var(--navy); background:#fff; color:var(--navy); }
+.form-cancel:hover:not(:disabled){ background:#F3F6FC; }
+.form-save{ border:1.5px solid var(--navy); background:var(--navy); color:#fff; }
+.form-save:hover:not(:disabled){ background:#2A3B63; }
+.form-save:disabled{ background:#C9D2E3; border-color:#C9D2E3; color:#5b6478; cursor:not-allowed; }
+.form-cancel:disabled{ opacity:.6; cursor:progress; }
+
+button:focus-visible{ outline:3px solid #A9C6F0; outline-offset:2px; }
+
+/* จอกว้าง: ช่องเพศอยู่ครึ่งคอลัมน์ — ป้ายชื่อแคบลงให้ปุ่ม 4 ปุ่มมีที่ */
+@media (min-width:1024px){
+  .field.gender-field{ grid-template-columns:auto 1fr; }
+}
+@media (max-width:1023.98px){
+  .edit-grid{ grid-template-columns:1fr; padding:0; }
+  .field, .field.full{ grid-template-columns:1fr; gap:4px; }
+  .field > label, .field > .label{ min-height:auto; }
+  .input-box.short{ max-width:none; }
+}
+
+/* มือถือ: ปุ่มท้ายฟอร์มติดด้านล่างจอขณะแก้ไข (เงาสีพื้นบังเนื้อหาที่เลื่อนลอดใต้) */
+@media (max-width:767.98px){
+  .form-actions{
+    position:sticky; bottom:0; z-index:2; margin:8px -16px 0; padding:10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    background:var(--cream); border-top:1px solid #EADFD3; box-shadow:0 -6px 12px rgba(0,0,0,.06);
+  }
+  .form-cancel, .form-save{ flex:1; min-width:0; }
+  .gender-opt{ font-size:14px; padding:4px 2px; }
+  .email-action{ font-size:14px; }
+  .field-error{ font-size:13px; }
+  .form-error{ font-size:14px; }
+}
+@media (max-width:479.98px){
+  .gender-opt svg{ display:none; }
+}

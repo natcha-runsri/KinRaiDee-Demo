@@ -1,0 +1,48 @@
+/*
+ * มือถือ (≤ 767px): pop-up กะทัดรัด เห็นพื้นหลังจางรอบ ๆ — ขั้นที่ 1 และ 2 พอดีจอ 390×844 ไม่ต้องเลื่อน
+ * แบนเนอร์แถวเดียวสูงตามจอ, การ์ด 3 คอลัมน์, ปุ่ม ✕ พื้นทึบ. จอเตี้ยกว่านั้น: เนื้อหาเลื่อนในตัว pop-up และปุ่มล่าง (ไปกันต่อ /
+ * ย้อนกลับ + เริ่มสุ่มเมนู) ติดอยู่ด้านล่างเสมอ (sticky + เงาสีพื้นบังเนื้อหาที่เลื่อนลอดใต้)
+ */
+@media (max-width:767.98px){
+  .fpd-backdrop{ padding:16px; align-items:center; overflow:hidden; }
+  .fpd-dialog{
+    display:flex;
+    flex-direction:column;
+    max-height:calc(100vh - 32px);
+    max-height:calc(100dvh - 32px);
+    border-radius:16px;
+  }
+
+  /* แบนเนอร์สูงตามความสูงจอ: 390×844 = 140px, จอเตี้ยลดเอง (360×640 ≈ 109px) — ขั้น 1 และ 2 สูงเท่ากัน */
+  .fpd-banner, .fpd-banner.short{ flex:none; height:clamp(88px, 17vh, 140px); height:clamp(88px, 17dvh, 140px); }
+  .fpd-collage{ grid-template-columns:repeat(3, minmax(0, 1fr)); }
+  .fpd-collage img:nth-child(n+4){ display:none; }
+  .fpd-close{ top:8px; right:8px; width:36px; height:36px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.3); }
+  .fpd-close:hover{ background:#fff; }
+
+  .fpd-body{ flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:12px 14px 14px; }
+  .fpd-steps{ margin-bottom:4px; }
+  .fpd-lead{ line-height:1.45; }
+  .fpd-title{ margin:4px 0 12px; font-size:18px; }
+
+  .fpd-grid{ grid-template-columns:repeat(3, minmax(0, 1fr)); gap:8px; }
+  .fpd-card{ min-height:0; padding:10px 4px 8px; gap:6px; border-radius:10px; }
+  .fpd-card.selected{ padding:8.5px 2.5px 6.5px; }
+  .fpd-icon{ width:36px; height:36px; border-radius:8px; }
+  .fpd-emoji{ font-size:20px; }
+  .fpd-label{ line-height:1.25; }
+  .fpd-check{ top:4px; right:4px; width:18px; height:18px; }
+
+  /* ปุ่มล่างติดขอบล่างของ pop-up เมื่อเนื้อหายาวกว่าจอ; ปุ่มที่กดไม่ได้ใช้สีจางแทน opacity (เงาบังเนื้อหาต้องทึบ) */
+  .fpd-body > .fpd-submit,
+  .fpa-actions{
+    position:sticky;
+    bottom:0;
+    z-index:1;
+    margin-top:16px;
+    box-shadow:0 14px 0 0 #FFFDF7, 0 -10px 12px 2px #FFFDF7;
+  }
+  .fpa-actions{ background:#FFFDF7; }
+  .fpd-body > .fpd-submit{ padding:10px 20px; font-size:16px; }
+  .fpd-submit:disabled{ opacity:1; background:#C7D8F2; color:rgba(30,42,68,.5); }
+}

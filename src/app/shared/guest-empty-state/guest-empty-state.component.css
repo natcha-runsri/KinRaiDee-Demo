@@ -1,0 +1,34 @@
+:host{
+  --maroon:var(--color-primary);
+  --navy:#1F2D4D;
+  display:block;
+  font-family:'Prompt', sans-serif;
+}
+/* ใช้เป็นเนื้อหาหลักของหน้าเอง (มี breadcrumb) → ยืดเต็มความสูงที่เหลือ ดัน footer ลงล่าง */
+:host(.standalone){ flex:1; display:flex; flex-direction:column; }
+*{ box-sizing:border-box; }
+
+.breadcrumb{ background:var(--maroon); color:#fff; font-weight:700; font-size:18px; padding:26px clamp(16px, 5vw, 74px); }
+:host(.standalone) .guest-body{ flex:1; width:100%; max-width:1180px; margin:0 auto; padding:34px clamp(16px, 4vw, 40px) 64px; }
+
+.guest{ display:flex; flex-direction:column; align-items:center; text-align:center; padding:30px 0 20px; }
+.guest-art{ width:min(320px, 80%); height:auto; margin-bottom:18px; }
+.art-ph{ display:flex; align-items:center; justify-content:center; padding:8px; border:2px dashed #D9A9A9; border-radius:14px;
+  color:#B07C7C; font-size:11px; text-align:center; word-break:break-all; aspect-ratio:1; }
+.guest h1{ margin:0; font-size:clamp(26px, 3.4vw, 40px); font-weight:700; color:var(--navy); overflow-wrap:anywhere; }
+.guest-sub{ margin:6px 0 16px; font-size:clamp(14px, 1.4vw, 18px); color:#8a8a8a; overflow-wrap:anywhere; }
+.guest-login{ padding:8px 28px; border:none; border-radius:999px; background:var(--navy); color:#fff;
+  font:inherit; font-size:15px; font-weight:600; cursor:pointer; }
+.guest-login:hover{ background:#2C3E66; }
+.guest-login:focus-visible{ outline:3px solid #A9C6F0; outline-offset:3px; }
+
+.guest-register{ margin:14px 0 0; font-size:14px; color:#8a8a8a; }
+.guest-register a{ color:var(--navy); font-weight:600; text-decoration:underline; text-underline-offset:3px; }
+.guest-register a:hover{ color:#2C3E66; }
+.guest-register a:focus-visible{ outline:3px solid #A9C6F0; outline-offset:2px; border-radius:4px; }
+
+/* มือถือ: แถบเตี้ยลงและระยะขอบแคบลง เหมือนหน้าประวัติ */
+@media (max-width:479.98px){
+  .breadcrumb{ font-size:15px; padding:16px; }
+  :host(.standalone) .guest-body{ padding:22px 16px 48px; }
+}

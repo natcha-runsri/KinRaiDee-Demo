@@ -1,0 +1,71 @@
+/* You can add global styles to this file, and also import other style files */
+@import './app/shared/auth-form.css';
+
+/* Breakpoint กลางของทั้งเว็บ — @media อ่าน custom property ไม่ได้ จึงต้องเขียนค่าเดียวกันนี้ตรง ๆ ใน @media ทุกไฟล์:
+     sm ≤ 479.98px มือถือ · md ≤ 767.98px มือถือ/แท็บเล็ตเล็ก · lg ≤ 1023.98px แท็บเล็ต · xl ≤ 1199.98px โน้ตบุ๊กเล็ก
+   ใช้เฉพาะ max-width 4 ค่านี้ หรือ min-width ขอบเดียวกันจากอีกด้าน (480/768/1024/1200px) — `npm run check:breakpoints` ล้มเมื่อเจอค่าอื่น
+   (ค่าในนี้คือแหล่งเดียวที่สคริปต์อ่าน) */
+:root{
+  --bp-sm:479.98px;
+  --bp-md:767.98px;
+  --bp-lg:1023.98px;
+  --bp-xl:1199.98px;
+
+  /* สีแดงหลักของแบรนด์ — แหล่งเดียวของทั้งเว็บ (หน้าผู้ใช้, แอดมิน, pop-up, ปุ่ม, กราฟ). เปลี่ยนสีหลัก = แก้ที่นี่ + meta theme-color ใน index.html
+     เฉด: hover = สว่างขึ้น (L 33%), active = เข้มขึ้น (L 21%), soft = พื้นจาง (L 95%), accent = โทนกลางสำหรับกราฟ/จุดตกแต่ง (L 42%)
+     contrast: ขาว/ครีมบน primary 11:1, hover 9:1, accent 6.7:1; primary บนครีม #FFF5DE 10:1, บน soft 9.8:1 */
+  --color-primary:#6E1E1E;
+  --color-primary-rgb:110, 30, 30;          /* ใช้กับ rgba(var(--color-primary-rgb), .12) — เงา/พื้นโปร่ง */
+  --color-primary-hover:#842424;
+  --color-primary-active:#541717;
+  --color-primary-soft:#F9ECEC;
+  --color-primary-accent:#A13636;
+
+  /* สีแดงบอกสถานะ (error, ข้อมูลไม่ครบ, อันตราย) — แยกจากสีแบรนด์ ห้ามผูกกับ --color-primary */
+  --color-danger:#C62828;                   /* ข้อความ error / กรอบช่องที่ผิด (บนขาว 5.6:1) */
+  --color-danger-text:#9B2C2C;              /* ข้อความบนพื้น --color-danger-bg (6.4:1) */
+  --color-danger-bg:#FDE8E6;
+
+  /* pop-up ลืมรหัสผ่านหน้า Login: การ์ดครีม หัวข้อแดงชิดซ้าย ปุ่มหลักสีแดง (pop-up เปลี่ยนรหัสผ่าน/อีเมลในหน้าโปรไฟล์คงหน้าตาเดิม — เจ้าของสั่ง 2026-10-25) */
+  --dialog-max:680px;
+  --dialog-bg:#FFFDF7;
+  --dialog-border:#EADFCF;
+  --dialog-radius:16px;
+  --dialog-shadow:var(--popup-shadow);
+  --dialog-text:#2E2424;
+  --dialog-muted:#6F6262;                   /* บนครีม 5.9:1 */
+  --dialog-input-border:#D6C8BA;
+  --dialog-input-radius:10px;
+  --dialog-focus-ring:0 0 0 3px rgba(var(--color-primary-rgb), .18);
+
+  /* พื้นหลังด้านหลัง pop-up ทุกตัว (backdrop / scrim): ใส ไม่มีสี ไม่เบลอ — หน้าด้านหลังเห็นชัด (เจ้าของเลือก 2026-10-25);
+     ยังเป็นชั้นเต็มจอรับคลิก "กดพื้นหลังปิด" เหมือนเดิม. --overlay-blur ใช้เป็นค่า backdrop-filter ตรง ๆ (none | blur(4px)) */
+  --overlay-bg:transparent;
+  --overlay-blur:none;
+  /* pop-up เด่นจากหน้าด้านหลังด้วยเงา + ขอบบางสีแดงจาง */
+  --popup-ring:0 0 0 1px rgba(var(--color-primary-rgb), .14);
+  --popup-shadow:0 12px 40px rgba(0,0,0,.25), var(--popup-ring);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* พื้นที่กดขั้นต่ำ 44×44 บนจอ ≤ 767px (--bp-md) โดยหน้าตาไม่เปลี่ยน:
+   .hit44 (ปุ่ม/ลิงก์) = ::after โปร่งใสขยายพื้นที่กดรอบตัว (ตัวที่ position:absolute อยู่แล้วคงเดิม — selector ของ component ชนะ)
+   .min44 (input/select ที่มี ::after ไม่ได้) = สูงขั้นต่ำ 44px */
+@media (max-width:767.98px){
+  .hit44{ position:relative; }
+  .hit44::after{
+    content:'';
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:max(100%, 44px);
+    height:max(100%, 44px);
+    transform:translate(-50%, -50%);
+  }
+  .min44{ min-height:44px; }
+}

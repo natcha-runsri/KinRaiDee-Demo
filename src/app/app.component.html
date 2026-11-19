@@ -1,0 +1,7 @@
+<router-outlet></router-outlet>
+
+<!-- pop-up ยืนยันออกจากระบบ (ใช้ร่วมกันทั้ง dropdown ใน navbar และ sidebar หน้าโปรไฟล์ — ดู LogoutService) -->
+@if (logout.confirmOpen()) {
+  <app-confirm-dialog title="ต้องการออกจากระบบใช่ไหม" confirmLabel="ออกจากระบบ" cancelLabel="ยกเลิก" [danger]="true"
+                      (confirmed)="logout.confirm()" (cancelled)="logout.cancel()"></app-confirm-dialog>
+}

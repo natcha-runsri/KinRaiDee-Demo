@@ -1,0 +1,75 @@
+/* ================= ตู้สุ่ม: จานหมุน → เด้งตอนหยุด → การ์ดผลค่อย ๆ ปรากฏ + confetti (มุม/จังหวะอยู่ใน component) ================= */
+.dish{ will-change:transform; }
+.dish.landed{ animation:dish-land .55s cubic-bezier(.3,1.6,.5,1); }
+@keyframes dish-land{
+  0%{ transform:scale(1); }
+  35%{ transform:scale(1.07); }
+  65%{ transform:scale(.97); }
+  100%{ transform:scale(1); }
+}
+
+/* ระหว่างหมุนใหม่: เนื้อหาการ์ดผลเดิมจางลง (ปุ่มกดไม่ได้อยู่แล้ว) → หยุดแล้วไล่ปรากฏทีละส่วน */
+.result-card > *{ transition:opacity .2s ease; }
+.result-card.dimmed > *{ opacity:.18; }
+.result-card.reveal > *{ animation:reveal-up .45s ease-out both; }
+.result-card.reveal > :nth-child(2){ animation-delay:.08s; }
+.result-card.reveal > :nth-child(3){ animation-delay:.16s; }
+.result-card.reveal > :nth-child(4){ animation-delay:.22s; }
+.result-card.reveal > :nth-child(5){ animation-delay:.3s; }
+.result-card.reveal > :nth-child(n+6){ animation-delay:.38s; }
+@keyframes reveal-up{ from{ opacity:0; transform:translateY(12px); } }
+
+.confetti{ position:absolute; inset:0; z-index:4; pointer-events:none; }
+.confetti i{
+  position:absolute;
+  top:46%;
+  left:50%;
+  width:8px;
+  height:12px;
+  margin:-6px 0 0 -4px;
+  border-radius:2px;
+  opacity:0;
+  animation:confetti-burst 1.3s cubic-bezier(.15,.75,.35,1) var(--delay) forwards;
+}
+.confetti i:nth-child(3n){ width:7px; height:7px; border-radius:50%; }
+@keyframes confetti-burst{
+  0%{ opacity:1; transform:translate(0, 0) rotate(0); }
+  70%{ opacity:1; }
+  100%{ opacity:0; transform:translate(var(--dx), calc(var(--dy) + 70px)) rotate(var(--rot)); }
+}
+
+/* ================= มือถือ (≤ 767px): หลังสุ่มเห็นจาน + ชื่อเมนู + ปุ่มถูกใจ/สุ่มใหม่ในจอเดียว (390×844) ================= */
+@media (max-width:767.98px){
+  .content{ padding-top:12px; gap:6px; }
+  .showcase{ padding:30px 0 24px; }
+  .dish{ width:clamp(150px, 25vh, 210px); border-width:5px; }
+  .plate{ width:min(88%, 330px); }
+  .bubble{ top:0; padding:10px 18px; font-size:14px; }
+  .bubble::after{ bottom:-9px; border-width:9px; }
+
+  .result-card{ padding:18px 14px 14px; border-radius:18px; }
+  .result-title{ font-size:24px; }
+  .chips{ margin-top:10px; gap:8px; }
+  .chip{ padding:5px 12px; }
+  .result-desc{
+    margin-top:10px;
+    font-size:14px;
+    line-height:1.5;
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+    line-clamp:2;
+    overflow:hidden;
+  }
+  .divider-pink{ margin:12px 0 12px; }
+  .actions{ gap:8px; }
+  .like-btn, .respin-btn{ padding:9px 14px; font-size:16px; }
+  .quota{ margin-top:6px; min-height:0; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .dish{ will-change:auto; }
+  .dish.landed, .result-card.reveal > *{ animation:none; }
+  .result-card > *{ transition:none; }
+  .confetti{ display:none; }
+}

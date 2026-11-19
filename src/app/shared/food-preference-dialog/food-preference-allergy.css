@@ -1,0 +1,25 @@
+/* ตัวบอกขั้น + ปุ่มของขั้นที่ 2 (ตัวเลือกอาหารที่แพ้อยู่ใน shared/allergy-picker) — สไตล์เดียวกับขั้นที่ 1 */
+.sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+.fpd-banner.short{ height:clamp(90px, 16vw, 130px); }
+.fpd-title:focus{ outline:none; }
+.fpd-title:focus-visible{ outline:3px solid #8FB4EE; outline-offset:4px; border-radius:4px; }
+
+.fpd-steps{ display:flex; align-items:center; gap:6px; margin:0 0 8px; }
+.fpd-dot{ width:8px; height:8px; border-radius:50%; background:#E7CFCF; transition:width .15s ease, background .15s ease; }
+.fpd-dot.on{ width:22px; border-radius:999px; background:var(--color-primary); }
+.fpd-step-no{ margin-left:4px; font-size:12px; font-weight:600; color:#9B6A6A; }
+
+.fpa-picker{ width:100%; }
+
+.fpa-actions{ width:100%; display:flex; gap:12px; margin-top:22px; }
+.fpa-actions .fpd-submit{ flex:1; margin-top:0; }
+.fpa-back{ display:inline-flex; align-items:center; gap:4px; padding:11px 18px; border:1.5px solid var(--color-primary); border-radius:8px;
+  background:#fff; color:var(--color-primary); font-family:inherit; font-size:15px; font-weight:700; cursor:pointer; }
+.fpa-back svg{ width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+.fpa-back:disabled{ opacity:.5; cursor:not-allowed; }
+.fpa-back:focus-visible{ outline:3px solid #8FB4EE; outline-offset:2px; }
+
+@media (max-width:767.98px){
+  .fpa-back{ padding:11px 12px; }
+}
+@media (prefers-reduced-motion:reduce){ .fpd-dot{ transition:none; } }

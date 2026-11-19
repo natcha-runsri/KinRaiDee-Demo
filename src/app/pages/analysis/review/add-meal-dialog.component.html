@@ -1,0 +1,67 @@
+<div class="am-backdrop" (mousedown)="onBackdrop($event)">
+  <div #dialog class="am-dialog" role="dialog" aria-modal="true" aria-labelledby="am-title" aria-describedby="am-desc">
+    <header class="am-head">
+      <h2 id="am-title">เพิ่มเมนูที่กิน</h2>
+      <button type="button" class="am-close hit44" (click)="close()" aria-label="ปิด" [disabled]="submitting">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>
+      </button>
+    </header>
+    <p id="am-desc" class="am-desc">ค้นหาเมนูที่กิน{{ dayWord }}แต่ไม่ได้มาจากการสุ่ม แล้วเลือกมื้อ</p>
+
+    <div class="am-search">
+      <label for="am-search" class="sr-only">ค้นหาชื่อเมนู</label>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+      <input id="am-search" type="search" autocomplete="off" placeholder="พิมพ์ชื่อเมนู เช่น ข้าวผัด"
+             [ngModel]="query" (ngModelChange)="onQuery($event)" aria-describedby="am-status" aria-controls="am-results">
+    </div>
+
+    <p id="am-status" class="am-status" aria-live="polite">
+      @if (tooShort) {
+        พิมพ์อย่างน้อย 2 ตัวอักษร
+      } @else if (searching) {
+        กำลังค้นหา...
+      } @else if (searchError) {
+        ค้นหาไม่สำเร็จ กรุณาลองใหม่
+      } @else if (results && !results.length) {
+        ไม่พบเมนูนี้ในระบบ
+      } @else if (results) {
+        พบ {{ results.length }} เมนู{{ results.length >= 20 ? ' (แสดง 20 รายการแรก พิมพ์ชื่อให้ละเอียดขึ้นเพื่อหาเมนูอื่น)' : '' }}
+      }
+    </p>
+
+    <div id="am-results" class="am-results" role="radiogroup" aria-label="ผลการค้นหาเมนู">
+      @for (r of results ?? []; track r.id) {
+        <label class="am-item" [class.on]="selected?.id === r.id">
+          <input type="radio" name="am-menu" class="sr-only" [value]="r.id" [checked]="selected?.id === r.id" (change)="pick(r)">
+          <span class="am-thumb"><app-menu-image [src]="r.imageUrl"></app-menu-image></span>
+          <span class="am-name">
+            <b [title]="r.menuName">{{ r.name }}</b>
+            @if (r.foodGroups.length) {
+              <span class="am-groups">
+                @for (g of r.foodGroups; track g) { <span [class]="'chip ' + groupClass[g]">{{ label(g) }}</span> }
+              </span>
+            }
+          </span>
+          <svg class="am-check" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.7 2.7L16 9.6"/></svg>
+        </label>
+      }
+    </div>
+
+    <footer class="am-foot">
+      <label class="am-slot">
+        <span>มื้อ</span>
+        <select id="am-slot" [(ngModel)]="slot">
+          @for (s of slots; track s.key) { <option [value]="s.key">{{ s.label }}</option> }
+        </select>
+      </label>
+      @if (submitError) { <p class="am-error" role="alert">{{ submitError }}</p> }
+      <p class="am-left">เพิ่มเองได้อีก {{ remaining }} รายการ</p>
+      <div class="am-btns">
+        <button type="button" class="btn-soft hit44" (click)="close()" [disabled]="submitting">ยกเลิก</button>
+        <button type="button" class="btn-primary hit44" (click)="submit()" [disabled]="!selected || submitting || remaining <= 0">
+          {{ submitting ? 'กำลังเพิ่ม...' : 'เพิ่ม' }}
+        </button>
+      </div>
+    </footer>
+  </div>
+</div>

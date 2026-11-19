@@ -1,0 +1,11 @@
+@if (!editing) {
+  @if (viewLabels.length) {
+    <ul class="tags" aria-label="อาหารที่แพ้">
+      @for (t of viewLabels; track t) { <li class="tag">{{ t }}</li> }
+    </ul>
+  } @else {
+    <span class="muted">ไม่มี</span>
+  }
+} @else {
+  <app-allergy-picker idPrefix="pf-allergy" [value]="value" (valueChange)="onChange($event)"></app-allergy-picker>
+}

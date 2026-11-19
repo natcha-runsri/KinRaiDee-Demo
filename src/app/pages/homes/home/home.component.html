@@ -1,0 +1,89 @@
+<div class="page">
+
+  <!-- ---------- Navbar (shared) ---------- -->
+  <app-navbar></app-navbar>
+
+  <!-- ---------- Hero (ภาพเต็มความกว้าง + ข้อความทับบนภาพ) ---------- -->
+  <section class="hero">
+    <img src="images/main/bg.webp" alt="อาหารแนะนำ" class="hero-img">
+    <div class="hero-overlay">
+      <h1 class="hero-title">มื้อนี้กินไรดี?....</h1>
+      <p class="hero-subtitle">เลือกโหมดที่คุณอยากลอง เปิดประสบการณ์ใหม่ๆ ไปพร้อมกับเรา!!!</p>
+    </div>
+  </section>
+
+  <!-- ---------- Feature cards (แนวนอน: ไอคอนซ้าย ข้อความ+ปุ่มขวา) ---------- -->
+  <section class="feature-section">
+    <div class="feature-card">
+      <div class="feature-icon-circle">
+        <img src="images/main/random.png" alt="สุ่มเมนู" class="feature-img">
+      </div>
+      <div class="feature-content">
+        <p class="feature-desc">ลูกเล่นที่น่าลอง<br>สุ่มจากความชอบของคุณ</p>
+        <button class="feature-btn hit44" (click)="goToRandomMenu()" [disabled]="checkingPreference">
+          เริ่มสุ่มเมนู <span class="play-icon">▶</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon-circle">
+        <img src="images/main/ai.png" alt="แนะนำด้วย AI" class="feature-img">
+      </div>
+      <div class="feature-content">
+        <p class="feature-desc">บอกความต้องการเอง<br>ให้ AI เลือกให้ตรงใจ</p>
+        <button class="feature-btn hit44" (click)="goToAskAi()">
+          เริ่มการแนะนำ <span class="play-icon">▶</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- Recommended menu ---------- -->
+  <section class="recommend-section">
+    <h2 class="recommend-title">เมนูแนะนำน่าลอง</h2>
+
+    <div class="filter-tags">
+      <button
+        *ngFor="let tag of filterTags"
+        class="filter-tag hit44"
+        [class.active]="activeFilter === tag.key"
+        (click)="setFilter(tag.key)">
+        {{ tag.label }}
+      </button>
+    </div>
+
+    <div class="menu-grid" *ngIf="!isLoadingMenu && menuItems.length > 0">
+      <button
+        *ngFor="let item of menuItems"
+        class="menu-card"
+        (click)="goToMenuItem(item)">
+        <app-menu-image class="menu-img" [src]="item.imageUrl" [alt]="item.name"></app-menu-image>
+        <div class="menu-info">
+          <div class="menu-text">
+            <p class="menu-name" [title]="item.fullName">{{ item.name }}</p>
+            <p class="menu-cal" *ngIf="item.calories">{{ item.calories }}</p>
+          </div>
+          <span class="menu-arrow">➜</span>
+        </div>
+      </button>
+    </div>
+
+    <p class="menu-loading" *ngIf="isLoadingMenu">กำลังโหลดเมนู...</p>
+    <p class="menu-empty" *ngIf="!isLoadingMenu && menuItems.length === 0 && !loadError">
+      ยังไม่มีเมนูแนะนำในหมวดนี้
+    </p>
+    <p class="menu-empty" *ngIf="loadError">
+      โหลดเมนูไม่สำเร็จ ลองใหม่อีกครั้ง
+    </p>
+  </section>
+
+  <footer class="footer-bar"></footer>
+
+
+  @if (preferenceDialogOpen) {
+    <app-food-preference-dialog [initialAllergies]="preferenceAllergies" [busy]="preferenceSaving" [errorMessage]="preferenceError"
+                                (confirmed)="onPreferenceConfirmed($event)"
+                                (dismissed)="onPreferenceDismissed()"></app-food-preference-dialog>
+  }
+</div>

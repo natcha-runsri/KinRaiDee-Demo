@@ -1,0 +1,103 @@
+@if (error()) {
+  <section class="card error" role="alert"><p>โหลดภาพรวมการวิเคราะห์ไม่สำเร็จ</p><button type="button" class="btn" (click)="retry()">ลองใหม่</button></section>
+}
+@if (data(); as d) {
+  <div class="page" [class.is-loading]="loading()" [attr.aria-busy]="loading()">
+    <p class="privacy-note">สถิติรวมแบบไม่ระบุตัวตน — กลุ่มที่มีผู้ใช้น้อยกว่า 5 คนแสดงเป็น "น้อยกว่า 5" · ใช้ผลวิเคราะห์ล่าสุดของแต่ละคนต่อวัน ไม่นับบัญชีทดสอบและข้อมูลสาธิต</p>
+
+    <div class="summary">
+      <section class="card stat"><h2>ผู้ใช้ที่มีผลวิเคราะห์</h2><p class="num" [class.hidden-value]="d.people.value == null">{{ d.people.label }}</p><small>คน</small></section>
+      <section class="card stat"><h2>ผลวิเคราะห์ในช่วงนี้</h2><p class="num" [class.hidden-value]="d.analyses.value == null">{{ d.analyses.label }}</p><small>วัน-คน</small></section>
+      <section class="card stat"><h2>คะแนนเฉลี่ยรวม</h2><p class="num" [class.hidden-value]="d.averageTotal.value == null">{{ d.averageTotal.label }}@if (d.averageTotal.value != null) {<span class="unit"> / 100</span>}</p><small>Behavior Score</small></section>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <div class="card-head"><span class="head-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h13"/></svg></span><h2>คะแนนเฉลี่ยแต่ละด้าน</h2></div>
+        <ul class="bars">
+          @for (a of d.areas; track a.key) {
+            <li>
+              <span class="bar-label">{{ a.label }}</span>
+              <span class="track" role="img" [attr.aria-label]="a.label + ' ' + a.average.label + ' จาก ' + a.max">
+                <span class="fill" [style.width.%]="areaPercent(a.average.value, a.max)"></span>
+              </span>
+              <span class="bar-value">{{ a.average.label }}@if (a.average.value != null) { <small>/ {{ a.max }}</small> }</span>
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="head-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v8l6 4"/></svg></span><h2>สัดส่วนระดับคะแนน</h2></div>
+        <ul class="bars">
+          @for (l of d.levels; track l.key) {
+            <li>
+              <span class="bar-label"><i class="dot" [style.background]="levelColor(l.key)"></i>{{ l.label }}</span>
+              <span class="track" role="img" [attr.aria-label]="l.label + ' ' + (l.percent != null ? l.percent + '%' : l.count.label)">
+                <span class="fill" [class.hatched]="l.percent == null" [style.width.%]="l.percent ?? 6" [style.background]="l.percent == null ? null : levelColor(l.key)"></span>
+              </span>
+              <span class="bar-value">{{ l.percent != null ? l.percent + '%' : '' }} <small>({{ l.count.label }})</small></span>
+            </li>
+          }
+        </ul>
+        @if (hiddenLevels) { <p class="note">แถบลาย = มีผู้ใช้น้อยกว่า 5 คน (ไม่แสดงตัวเลข)</p> }
+      </section>
+
+      <section class="card">
+        <div class="card-head"><span class="head-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg></span><h2>หมู่อาหารที่ผู้ใช้ขาดบ่อยที่สุด</h2></div>
+        <ol class="bars ranked">
+          @for (g of d.missingGroups; track g.key; let i = $index) {
+            <li>
+              <span class="bar-label"><b class="rank">{{ i + 1 }}</b>{{ g.label }}</span>
+              <span class="track" role="img" [attr.aria-label]="g.label + ' ' + (g.percent != null ? g.percent + '% ของผู้ใช้' : g.people.label + ' คน')">
+                <span class="fill missing" [class.hatched]="g.percent == null" [style.width.%]="g.percent ?? 6"></span>
+              </span>
+              <span class="bar-value">{{ g.percent != null ? g.percent + '%' : '' }} <small>({{ g.people.label }} คน)</small></span>
+            </li>
+          }
+        </ol>
+        <p class="note">% ของผู้ใช้ที่ขาดหมู่นั้นอย่างน้อย 1 วันในช่วงนี้</p>
+      </section>
+
+      <section class="card trend">
+        <div class="card-head">
+          <span class="head-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M5 15l4-4 4 3 6-7"/></svg></span>
+          <h2>แนวโน้มคะแนนเฉลี่ยรายวัน</h2>
+          <button type="button" class="link-btn" (click)="showTable = !showTable" [attr.aria-expanded]="showTable">{{ showTable ? 'ซ่อนตาราง' : 'ดูเป็นตาราง' }}</button>
+        </div>
+        <p class="sr-only">{{ summary }}</p>
+        <div class="plot" #plot (mouseleave)="active = null">
+          <svg [attr.width]="width" [attr.height]="height" role="img" [attr.aria-label]="summary">
+            @for (t of ticks; track t) {
+              <line class="grid" [attr.x1]="pad.left" [attr.x2]="width - pad.right" [attr.y1]="y(t)" [attr.y2]="y(t)"></line>
+              <text class="tick" [attr.x]="pad.left - 8" [attr.y]="y(t) + 4">{{ t }}</text>
+            }
+            @for (l of xLabels; track l.date) { <text class="tick x" [attr.x]="l.x" [attr.y]="height - 8">{{ dm(l.date) }}</text> }
+            <path class="line" [attr.d]="path"></path>
+            @for (p of pts; track p.date; let i = $index) {
+              @if (p.y != null) { <circle class="pt" [attr.cx]="p.x" [attr.cy]="p.y" [attr.r]="active === i ? 5.5 : 4"></circle> }
+              <rect class="hit" [attr.x]="p.x - colW / 2" [attr.y]="pad.top" [attr.width]="colW" [attr.height]="plotH"
+                    (mouseenter)="active = i" (touchstart)="active = i"></rect>
+            }
+          </svg>
+          @if (active != null && pts[active]; as p) {
+            <div class="tip" role="status" [style.left.px]="p.x > width - 150 ? width - 150 : p.x">
+              <strong>{{ dm(p.date) }}</strong> {{ p.y == null ? 'ผู้ใช้น้อยกว่า 5 คน' : 'เฉลี่ย ' + p.label + ' คะแนน' }}
+            </div>
+          }
+        </div>
+        @if (shownDays < d.trend.length) { <p class="note">วันที่เว้นว่าง = มีผู้ใช้น้อยกว่า 5 คน (ไม่แสดงค่าเฉลี่ย)</p> }
+        @if (showTable) {
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th scope="col">วันที่</th><th scope="col">คะแนนเฉลี่ย</th><th scope="col">ผลวิเคราะห์</th></tr></thead>
+              <tbody>@for (t of d.trend; track t.date) { <tr><th scope="row">{{ dm(t.date) }}</th><td>{{ t.average.label }}</td><td>{{ t.analyses.label }}</td></tr> }</tbody>
+            </table>
+          </div>
+        }
+      </section>
+    </div>
+  </div>
+} @else if (!error()) {
+  <p class="empty-note">กำลังโหลด…</p>
+}
