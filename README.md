@@ -1,59 +1,149 @@
-# Frontend
+# KinRaiDee (กินไรดี) — เดโมหน้าเว็บ
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.19.
+**KinRaiDee: Thai Meal Recommendation and Eating Behaviour Analysis System — Frontend Demo**
 
-## Development server
+เดโมหน้าเว็บของระบบแนะนำเมนูอาหารไทยที่ใช้ LLM ช่วยแนะนำเมนู พร้อมวิเคราะห์พฤติกรรมการกินเบื้องต้น
+repo นี้มีเฉพาะส่วน frontend (Angular) ที่ทำงานใน **โหมดเดโม** โดยไม่มี backend จริง
 
-To start a local development server, run:
+🌐 **เดโม:** <https://natcha-runsri.github.io/KinRaiDee-Demo/>
 
-```bash
-ng serve
+<!-- TODO: ชื่อผู้พัฒนา -->
+
+---
+
+## สารบัญ
+
+1. [ภาพรวม](#1-ภาพรวม)
+2. [สิ่งที่ต่างจากระบบจริง](#2-สิ่งที่ต่างจากระบบจริง)
+3. [ลองใช้เดโม](#3-ลองใช้เดโม)
+4. [เทคโนโลยีของระบบเต็ม](#4-เทคโนโลยีของระบบเต็ม)
+5. [โครงสร้างโหมดเดโม](#5-โครงสร้างโหมดเดโม)
+6. [รันเดโมในเครื่อง](#6-รันเดโมในเครื่อง)
+7. [การ deploy ขึ้น GitHub Pages](#7-การ-deploy-ขึ้น-github-pages)
+
+---
+
+## 1) ภาพรวม
+
+"มื้อนี้กินอะไรดี" เป็นการตัดสินใจเล็ก ๆ ที่ต้องทำทุกวัน KinRaiDee ช่วยเลือกเมนูให้ตามความชอบและอาหารที่แพ้
+ในระบบเต็ม **ระบบคัดเมนูและคำนวณคะแนนด้วยกฎในโค้ด** ส่วนแบบจำลองภาษา (LLM) ช่วยเลือกเมนูและเขียนคำตอบหรือคำแนะนำเป็นภาษาไทย
+ถ้า LLM ไม่พร้อมใช้งาน ระบบจะตอบด้วยข้อความสำรองจาก template แทน
+
+ความสามารถที่ลองได้ในเดโม:
+
+| # | ฟังก์ชัน | หน้า |
+|---|---|---|
+| 1 | ดูเมนูแนะนำแยกหมวด และหน้ารายละเอียดเมนู (วัตถุดิบ, วิธีทำ, โภชนาการโดยประมาณ) | `/home`, `/menu/:id` |
+| 2 | สุ่มเมนูตามความชอบและอาหารที่แพ้ (มีโควตาต่อวัน) | `/recommend/random` |
+| 3 | แชตแนะนำเมนู: พิมพ์ความต้องการภาษาไทย เช่น "อยากกินอะไรเผ็ด ๆ ไม่เอาหมู 2 เมนู" | `/recommend/ai` |
+| 4 | สมัคร / เข้าสู่ระบบ / ลืมรหัสผ่านด้วย OTP | `/login`, `/register` |
+| 5 | ถูกใจเมนู แล้วนำไปเป็นรายการมื้อของวัน | `/history/liked` |
+| 6 | วิเคราะห์พฤติกรรมการกิน: ตรวจรายการมื้อ → แบบสอบถาม → คะแนน 4 ด้าน, อาหาร 5 หมู่, BMI, เมนูแนะนำ | `/analysis` |
+| 7 | ประวัติผลวิเคราะห์ และ Dashboard แนวโน้ม 7 / 30 วัน | `/history`, `/profile/dashboard` |
+| 8 | บัญชีของฉัน: แก้ข้อมูลส่วนตัว อาหารที่แพ้ รูปโปรไฟล์ เปลี่ยนอีเมลหรือรหัสผ่านด้วย OTP | `/profile` |
+| 9 | หน้าผู้ดูแลระบบ: ภาพรวม, ข้อมูลเมนู, ผู้ใช้, ภาพรวมการวิเคราะห์, ตั้งค่า, ประวัติการแก้ไข | `/admin` |
+
+---
+
+## 2) สิ่งที่ต่างจากระบบจริง
+
+| เรื่อง | ระบบจริง | เดโมนี้ |
+|---|---|---|
+| Backend / API | Spring Boot REST API | ไม่มี — `HttpInterceptor` ในเบราว์เซอร์ดักทุกคำขอ `/api/**` แล้วตอบด้วยข้อมูลจำลอง |
+| ฐานข้อมูล | PostgreSQL | ไม่มี — สถานะเก็บในหน่วยความจำของแท็บ **รีเฟรชหน้าแล้วข้อมูลที่แก้หายหมด** |
+| ข้อมูลเมนู | ข้อมูลที่รวบรวมและประมวลผลจากหลายแหล่ง | เมนูตัวอย่าง 16 เมนูที่แต่งขึ้นเอง (คำอธิบาย วัตถุดิบ วิธีทำ ตัวเลขโภชนาการโดยประมาณ) |
+| รูปเมนู | รูปบน Cloudinary | ภาพ placeholder ที่วาดเอง (`public/images/demo/`) |
+| แชตแนะนำเมนู | กฎแปลงข้อความเป็นเงื่อนไข + LLM (Ollama) | กฎย่อจับคำสำคัญ + ข้อความสำเร็จรูป (template) ไม่เรียก LLM |
+| คะแนนและคำแนะนำ | กฎคำนวณฝั่ง backend + LLM เขียนคำแนะนำ | สูตรอย่างง่ายในเบราว์เซอร์ + ข้อความ template |
+| เข้าสู่ระบบ / OTP | JWT + refresh token, OTP ทางอีเมล | ชื่อและรหัสอะไรก็ได้ ได้ token ปลอม; OTP กรอกอะไรก็ได้ ไม่มีการส่งอีเมล |
+| อัปโหลดรูป | อัปโหลดขึ้น Cloudinary | แสดงในเบราว์เซอร์เท่านั้น (ไม่อัปโหลด) |
+| เปรียบเทียบราคาสินค้าวัตถุดิบ | สินค้าจากซูเปอร์มาร์เก็ตที่จับคู่กับวัตถุดิบ | ไม่มีในเดโม (ไม่แสดงกล่องเปรียบเทียบ) |
+| ตัวเลขในหน้าผู้ดูแล | นับจากข้อมูลจริง | ตัวเลขจำลองทั้งหมด |
+
+> ทุกหน้ามีแถบ "โหมดเดโม" ที่ขอบล่างของจอ ตัวเลขและคำแนะนำทั้งหมดเป็นข้อมูลจำลอง ไม่ใช่คำแนะนำทางการแพทย์
+
+---
+
+## 3) ลองใช้เดโม
+
+- ปุ่มบนแถบเดโม **"ลองเป็นผู้ใช้ทั่วไป"** เข้าสู่ระบบเป็น `demo_user` ซึ่งมีประวัติตัวอย่าง (ถูกใจ 3 เมนูวันนี้ และผลวิเคราะห์ย้อนหลังหลายวัน)
+- ปุ่ม **"ลองเป็นแอดมิน"** เข้าสู่ระบบเป็น `demo_admin` แล้วเปิดหน้า `/admin`
+- เข้าสู่ระบบผ่านฟอร์มก็ได้ ใช้ชื่อและรหัสผ่านอะไรก็ได้ ถ้าชื่อมีคำว่า `admin` จะได้สิทธิ์ผู้ดูแล ถ้ามีคำว่า `reviewer` จะได้สิทธิ์ดูหน้าผู้ดูแลอย่างเดียว
+- ตัวอย่างข้อความแชต: `อยากกินอะไรเผ็ด ๆ`, `เมนูคลีน 2 เมนู`, `ขอก๋วยเตี๋ยว`, `ไม่เอาหมู`, `มื้อเช้ากินอะไรดี`
+
+---
+
+## 4) เทคโนโลยีของระบบเต็ม
+
+ซอร์สโค้ดของระบบเต็ม (backend, ฐานข้อมูล, ส่วนรวบรวมข้อมูล) เป็น **private** repo นี้เผยแพร่เฉพาะ frontend ในโหมดเดโม
+
+| ส่วน | เทคโนโลยี | อยู่ใน repo นี้ |
+|---|---|:---:|
+| **Frontend** | Angular 19.2 (standalone components), TypeScript 5.7, RxJS 7.8 | ✅ |
+| **Backend** | Java 17, Spring Boot 3.5 (Web, Data JPA, Security, Validation, Mail), Flyway, JWT | ❌ |
+| **Database** | PostgreSQL 16 | ❌ |
+| **AI** | Ollama + โมเดล Qwen (`qwen3.5:9b`) — มีข้อความสำรองจาก template | ❌ |
+| **Data pipeline** | Python (Playwright, BeautifulSoup, pandas, RapidFuzz, PyThaiNLP) | ❌ |
+| **Deploy (ระบบจริง)** | Docker Compose บน VPS + Nginx + GitHub Actions | ❌ |
+| **Deploy (เดโมนี้)** | GitHub Pages + GitHub Actions | ✅ |
+
+```
+ระบบเต็ม:   เบราว์เซอร์ (Angular) ──/api──▶ Spring Boot ──▶ PostgreSQL
+                                                  └──▶ Ollama (LLM)
+
+เดโมนี้:     เบราว์เซอร์ (Angular) ──/api──▶ demoInterceptor (ข้อมูลจำลองในหน่วยความจำ)
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## 5) โครงสร้างโหมดเดโม
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+โค้ดหน้าเว็บเหมือนระบบจริง โหมดเดโมเพิ่มเข้ามาผ่าน `fileReplacements` เท่านั้น
+ดังนั้น build ปกติ (`ng build`) ยังทำงานกับ backend จริงเหมือนเดิม และไม่มีโค้ดข้อมูลจำลองติดไปด้วย
 
-```bash
-ng generate component component-name
-```
+| ไฟล์ | หน้าที่ |
+|---|---|
+| `src/environments/environment.demo.ts` | ค่าตั้งโหมดเดโม (`demo: true`) แทน `environment.ts` |
+| `src/app/demo/demo-mode.ts` | โหมดปกติ: ไม่มี interceptor/provider เพิ่ม |
+| `src/app/demo/demo-mode.demo.ts` | โหมดเดโม: ลงทะเบียน `demoInterceptor` + แถบเดโม (แทนไฟล์ด้านบนตอน build demo) |
+| `src/app/demo/demo.interceptor.ts` | ดักคำขอ `/api/**` แล้วตอบจากข้อมูลจำลอง (หน่วง 250 ms) |
+| `src/app/demo/demo-api.ts` | ตาราง endpoint ทั้งหมด + สถานะในหน่วยความจำ (ผู้ใช้ ถูกใจ มื้อ ผลวิเคราะห์ ค่าตั้ง ประวัติแอดมิน) |
+| `src/app/demo/demo-data.ts` | เมนูตัวอย่าง อาหารที่แพ้ แบบสอบถาม คำสำคัญของแชต |
+| `src/app/demo/demo-banner.ts` | แถบ "โหมดเดโม" ขอบล่างทุกหน้า + ปุ่มเข้าสู่ระบบด่วน |
+| `public/images/demo/` | ภาพ placeholder ของเมนู |
+| `scripts/copy-404.mjs` | คัดลอก `index.html` เป็น `404.html` (SPA fallback ของ GitHub Pages) |
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+คำขอที่ยังไม่มีข้อมูลจำลองจะตอบ 404 (`DEMO_NOT_MOCKED`) และเขียนเตือนใน console
 
-```bash
-ng generate --help
-```
+---
 
-## Building
+## 6) รันเดโมในเครื่อง
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+ต้องใช้ Node.js `^18.19.1`, `^20.11.1` หรือ `>=22` (แนะนำ 22 LTS)
 
 ```bash
-ng test
+npm ci
+
+# dev server โหมดเดโม → http://localhost:4200/
+npm run start:demo
+
+# build แบบเดียวกับ GitHub Pages (ผลลัพธ์ใน dist/frontend/browser/ พร้อม 404.html)
+npm run build:demo
 ```
 
-## Running end-to-end tests
+`npm start` / `npm run build` คือโหมดปกติที่ต้องมี backend จริง (`proxy.conf.json` ส่ง `/api` ไป backend ในเครื่อง) — ใช้กับ repo นี้ไม่ได้เพราะไม่มี backend
 
-For end-to-end (e2e) testing, run:
+---
 
-```bash
-ng e2e
-```
+## 7) การ deploy ขึ้น GitHub Pages
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+workflow `.github/workflows/pages.yml` ทำงานเมื่อ push เข้า `main` หรือสั่งเองจากแท็บ Actions:
 
-## Additional Resources
+1. checkout → ติดตั้ง Node 22 (cache npm) → `npm ci`
+2. `ng build --configuration demo --base-href "/KinRaiDee-Demo/"`
+3. คัดลอก `index.html` เป็น `404.html`
+4. upload `dist/frontend/browser` → deploy ด้วย `actions/deploy-pages`
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+ตั้งค่าครั้งแรก: **Settings → Pages → Build and deployment → Source = GitHub Actions**
+
+ถ้าเปลี่ยนชื่อ repo ต้องแก้ `--base-href` ใน workflow และ `package.json` รวมถึง `og:url` / `og:image` ใน `src/index.html` ให้ตรงกัน
